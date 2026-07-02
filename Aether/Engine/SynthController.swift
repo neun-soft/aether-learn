@@ -142,6 +142,10 @@ final class SynthController: ObservableObject {
         engine.toneOff()
     }
 
+    // MARK: Additive lesson (build a saw from sine partials)
+
+    func setAdditive(_ n: Int) { engine.setAdditive(n) }
+
     // MARK: Playback-gear simulation
 
     func setSim(low: Double, high: Double) { engine.setSim(low: low, high: high) }

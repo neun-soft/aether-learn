@@ -34,6 +34,15 @@ enum WaveTables {
     // Ordered by brightness; morph blends adjacent tables.
     static let ramp: [[Double]] = [sine, triangle, saw, square]
 
+    // Partial-sum saws for the additive lesson: n = 1 is a pure sine, n = 8 is close to a saw.
+    static let maxPartials = 8
+    static let partialSaws: [[Double]] = (1...maxPartials).map { n in
+        build { k in k <= n ? 1.0 / Double(k) : 0 }
+    }
+    @inline(__always) static func partialSaw(_ n: Int) -> [Double] {
+        partialSaws[max(1, min(maxPartials, n)) - 1]
+    }
+
     @inline(__always) static func sample(morph: Double, phase: Double) -> Double {
         let m = clamp01(morph) * Double(ramp.count - 1)
         let i0 = Int(m)
@@ -69,6 +78,16 @@ final class Oscillator {
             s = (s - second) * 0.7
         }
         return s
+    }
+
+    // Play one fixed table directly (the additive lesson's partial-sum saws).
+    @inline(__always) func render(hz: Double, table: [Double]) -> Double {
+        phase += hz / sampleRate
+        if phase >= 1 { phase -= 1 }
+        let p = phase * Double(WaveTables.size)
+        let idx = Int(p) & WaveTables.mask
+        let nxt = (idx + 1) & WaveTables.mask
+        return lerp(table[idx], table[nxt], p - Double(Int(p)))
     }
 }
 

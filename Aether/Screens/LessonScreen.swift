@@ -17,6 +17,7 @@ struct LessonScreen: View {
     @State private var matches: [String: String] = [:]
     @State private var showCover = true
     @State private var octaveShift = 0
+    @State private var additiveCount = 1
 
     enum Phase: String, CaseIterable { case theory = "Learn", demo = "Watch", play = "Play" }
 
@@ -102,6 +103,7 @@ struct LessonScreen: View {
     private func loadExercise() {
         synth.apply(lesson.exercise.basePatch)
         synth.setRouting(lesson.exercise.initialRouting)
+        if lesson.exercise.visual == .additive { synth.setAdditive(additiveCount) }
         if let t = lesson.exercise.tone {
             toneNorm = t.startNorm
             synth.setToneHz(frequencyFor(t, norm: t.startNorm))
@@ -386,6 +388,9 @@ struct LessonScreen: View {
             WaveScope(samples: synth.scope, accent: accent)
         case .spectrum:
             SpectrumBars(spectrum: synth.spectrum, accent: accent)
+        case .additive:
+            AdditiveGraph(count: $additiveCount, accent: accent)
+                .onChange(of: additiveCount) { _, n in synth.setAdditive(n) }
         case .filter:
             FilterGraph(cutoff: synth.binding(.cutoff), resonance: synth.binding(.resonance),
                         filterType: synth.patch[.filterType], spectrum: synth.spectrum,

@@ -9,7 +9,7 @@ enum Route: Hashable {
 // Content and progress are separate models: content is static data shipped in the binary,
 // progress is per-user state persisted locally. Updating a lesson never wipes progress.
 
-enum LessonVisual { case none, scope, spectrum, filter, envelope, lfo, equipment, output, match, beating }
+enum LessonVisual { case none, scope, spectrum, additive, filter, envelope, lfo, equipment, output, match, beating }
 
 // Configures the frequency-explorer control for the frequency/pitch lessons.
 struct ToneConfig {

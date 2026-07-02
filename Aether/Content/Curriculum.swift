@@ -34,7 +34,7 @@ enum Curriculum {
                 id: "mpl1", title: "Not Every Speaker Plays Bass",
                 concept: "The gear you listen on can only reproduce part of the sound. Small speakers lose the bass.",
                 theory: [
-                    "How low a device can go depends on physical size. Low notes are long, slow vibrations that move a lot of air, and only a big driver, a woofer or a subwoofer, can push that much air.",
+                    "How low a device can go depends on physical size. Low notes are slow vibrations, and making them audible means moving a lot of air. Only a big driver, a woofer or a subwoofer, can push that much air.",
                     "A tiny phone speaker cannot move enough air for deep bass, so it rolls the low end away. Bigger drivers, in headphones, in studio monitors, or in a club rig with subs, reach lower and lower.",
                     "Pick a device below and the chart highlights the range it can reproduce. Play a note and a line shows where it sits, so you can see when a low note falls below a small speaker's reach. You will hear the real difference for yourself in the next lesson."
                 ],
@@ -46,8 +46,7 @@ enum Curriculum {
                     basePatch: Patch([.oscWave: 0.4, .cutoff: 0.85, .ampSustain: 0.95, .ampRelease: 0.3]),
                     visual: .equipment,
                     keyboardRoot: 36,
-                    showOctave: true,
-                    holdDefault: false
+                    showOctave: true
                 )
             ),
             Lesson(
@@ -74,14 +73,12 @@ enum Curriculum {
                 concept: "Different jobs need different gear. Matching them is part of the craft.",
                 theory: [
                     "Because every device shows a different slice of sound, the setup you choose should fit the job in front of you.",
-                    "When you design or mix sound yourself, this matters most of all. Work on studio monitors or accurate, professional headphones, like the Audio-Technica studio range. They are built to tell you the truth, so what you make holds up everywhere else. Cheap or bass-boosted gear flatters the sound and lies to you, and your work will fall apart on other systems.",
-                    "You still check on a phone speaker, because that is where many people will actually listen. A club needs subs to move air for a crowd, and a commute needs sealed earbuds. Different job, different tool.",
-                    "Matching sound to a space is a whole field of its own. Every room, venue, and pair of headphones has its own acoustics, and shaping sound for each one is why sound engineering exists. This app is only the first step into it."
+                    "When you design or mix sound yourself, this matters most of all. Work on studio monitors or accurate, professional headphones. They are built to tell you the truth, so what you make holds up everywhere else. Cheap or bass-boosted gear flatters the sound and lies to you, and your work will fall apart on other systems.",
+                    "You still check on a phone speaker, because that is where many people will actually listen. A club needs subs to move air for a crowd, and a commute needs sealed earbuds. Different job, different tool."
                 ],
                 takeaways: [
                     "Design and mix on honest monitors or pro headphones",
-                    "The right setup depends on the purpose",
-                    "Shaping sound for a space is what sound engineering is"
+                    "The right setup depends on the purpose"
                 ],
                 demo: nil,
                 exercise: Exercise(
@@ -241,9 +238,10 @@ enum Curriculum {
                 theory: [
                     "Two sounds can share the same frequency and loudness and still sound completely different. The difference is the shape of the wave, called its waveform.",
                     "First, read the display properly. Left to right is time, so you are watching the sound unfold. The flat centerline is the speaker at rest, silence.",
-                    "Up and down is the speaker cone. The height tells the cone how far to push out or pull back at each instant: above the line it pushes out, below it pulls in, on the line it sits still. You are not moving air directly, you are moving the cone, and the cone shoving out squeezes the air in front of it while pulling back leaves it thinner. That squeeze and thin is the sound. A taller wiggle means the cone travels further, a bigger push your ear hears as louder. The waveform is the shape of one full push and pull, repeated over and over.",
+                    "Up and down is the speaker cone. The height tells the cone how far to push out or pull back at each instant: above the line it pushes out, below it pulls in, on the line it sits still. The cone pushing out squeezes the air in front of it, and pulling back leaves it thinner. That squeeze and thin is the sound.",
+                    "And as you saw with amplitude, a taller wiggle means the cone travels further, a bigger push, louder. The waveform is something different: not how tall the wave is, but the shape of one full push and pull, repeated over and over.",
                     "Each basic shape has a character. A sine is smooth and pure, good for sub bass and soft, flute-like tones. A triangle is a little brighter but still mellow. A saw is rich and buzzy, the backbone of strings, brass, and big supersaw leads. A square is hollow and woody, used for clarinet-like tones and classic chiptune sounds.",
-                    "Tap a key, try each shape, and watch the display. Sharper shapes carry more harmonics and sound brighter."
+                    "Tap a key, try each shape, and watch the display. Sharper shapes sound brighter."
                 ],
                 takeaways: [
                     "Left to right is time, up and down is the speaker cone pushing out and pulling in",
@@ -265,10 +263,31 @@ enum Curriculum {
                 )
             ),
             Lesson(
+                id: "m1l5b", title: "Built from Sines",
+                concept: "Any repeating wave can be built by adding simple sine waves together.",
+                theory: [
+                    "Here is the surprise. Every shape you just heard, the triangle, the saw, the square, can be built out of nothing but sine waves added together.",
+                    "Start with one sine at the note's pitch. Add a second sine that vibrates twice as fast at half the strength, and the shape bends. Keep adding faster, quieter sines and the wiggles pile up, creeping closer and closer to a sharp saw edge.",
+                    "Below, each faint line is one sine. The bright line is their sum, and that sum is what the speaker actually plays. Add sines one at a time, hold a key, and hear the tone grow brighter with every sine."
+                ],
+                takeaways: [
+                    "Complex waves are sums of simple sine waves",
+                    "Each added sine is faster and quieter than the last",
+                    "More sines make a sharper shape and a brighter sound"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Add sines one at a time and hold a key. Watch the sum sharpen and hear it brighten.",
+                    visibleParams: [],
+                    basePatch: Patch([.cutoff: 0.98, .ampSustain: 0.95, .ampRelease: 0.3]),
+                    visual: .additive
+                )
+            ),
+            Lesson(
                 id: "m1l6", title: "Harmonics",
                 concept: "A bright shape is really many sine waves, at different frequencies, stacked up.",
                 theory: [
-                    "Here is the surprise. Every complex shape is secretly a stack of simple sine waves added together. Those hidden sine waves are called harmonics.",
+                    "You just built a wave out of sine waves by hand. Every sound the synth makes works the same way: each shape is secretly a stack of sine waves, and those hidden sine waves are called harmonics.",
                     "Each bar below is one of those sine waves. The tall bar on the left is the fundamental, the main pitch you hear. Each bar to its right is a harmonic at a higher frequency, a whole-number multiple of the fundamental. How tall a bar is shows how strong that harmonic is.",
                     "A pure sine has a single bar, only the fundamental, so it sounds plain. A saw or square stacks up many bars, which is why they sound bright and rich.",
                     "Change the shape and watch the bars appear. More bars, and taller ones, means a brighter sound."
@@ -352,10 +371,10 @@ enum Curriculum {
         lessons: [
             Lesson(
                 id: "m2l1", title: "Cutoff",
-                concept: "A low-pass filter removes the faster harmonics above a point you set.",
+                concept: "A low-pass filter removes the higher harmonics above a point you set.",
                 theory: [
                     "You know now that a bright shape is a stack of harmonics. Subtractive synthesis starts with all of them and carves some away.",
-                    "The low-pass filter keeps the low harmonics and removes the faster ones above its cutoff point. Sweep the cutoff down and the tone gets darker as those harmonics disappear from the display.",
+                    "The low-pass filter keeps the low harmonics and removes the higher ones above its cutoff point. Sweep the cutoff down and the tone gets darker as those harmonics disappear from the display.",
                     "A saw shape is used here because it has plenty of harmonics for the filter to remove."
                 ],
                 takeaways: ["Low-pass keeps the low harmonics and removes the high ones", "Sweeping cutoff is the classic filter sound"],
@@ -544,7 +563,7 @@ enum Curriculum {
                 id: "m3l6", title: "Delay",
                 concept: "Delay makes the sound wait a moment before it even begins.",
                 theory: [
-                    "Delay is a pause at the very start. When you press a note, the sound waits for a set time before the attack begins.",
+                    "Delay here is a pause at the very start of the note, not the echo effect that shares the name. When you press a note, the sound waits for a set time before the attack begins.",
                     "It is useful for staggered, rhythmic sounds, or for layering, so one part comes in a beat after another.",
                     "Tap a key and raise DELAY. Watch a flat gap appear at the start of the envelope, before the rise."
                 ],
@@ -595,9 +614,9 @@ enum Curriculum {
                 id: "m4l1", title: "The LFO",
                 concept: "A slow, looping shape you point at a knob to make it move on its own.",
                 theory: [
-                    "An oscillator that vibrates fast enough makes a tone. Slow that same looping shape right down and it is too slow to hear as a pitch. Instead of making sound, it can move another control up and down, over and over.",
+                    "A wave that repeats fast enough makes a tone. Slow that same looping shape right down and it is too slow to hear as a pitch. Instead of making sound, it can move another control up and down, over and over.",
                     "That slow looping shape is called an LFO. Here it is pointed at the volume, so the sound gets louder and quieter by itself, over and over, with no help from you. RATE sets how fast it loops, DEPTH sets how far it moves, and SHAPE sets the wave it traces.",
-                    "Change the DEST to send the same LFO somewhere else, like the pitch or the filter. This picker is the mod matrix in miniature."
+                    "Change the DEST to send the same LFO somewhere else, like the pitch or the filter. Pointing a source at a destination like this is called routing, and the same idea repeats across the whole synth."
                 ],
                 takeaways: ["An LFO is a shape too slow to hear, used to move other controls", "Rate, depth, shape, and destination describe any modulation"],
                 demo: DemoScript(

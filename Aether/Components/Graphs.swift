@@ -1,5 +1,100 @@
 import SwiftUI
 
+// MARK: - Additive build-up (add sine partials one at a time and watch the sum become a saw)
+
+struct AdditiveGraph: View {
+    @Binding var count: Int          // 1…WaveTables.maxPartials sine partials
+    var accent: Color
+    @EnvironmentObject var lang: LangStore
+    var height: CGFloat = 190
+
+    private let cycles = 2.0
+
+    // The sum's peak, so the bright line always fills the display height.
+    private var sumPeak: Double {
+        var peak = 0.0
+        for i in 0..<256 {
+            let x = Double(i) / 256.0
+            peak = max(peak, abs(sum(x)))
+        }
+        return max(peak, 0.001)
+    }
+    private func sum(_ x: Double) -> Double {
+        (1...count).reduce(0) { $0 + sin(2 * .pi * Double($1) * x) / Double($1) }
+    }
+
+    var body: some View {
+        VStack(spacing: 10) {
+            GeometryReader { geo in
+                let w = geo.size.width, h = geo.size.height, mid = h / 2
+                let amp = mid - 12
+                let norm = sumPeak
+                ZStack {
+                    Rectangle().fill(Color.black.opacity(0.28))
+                    Path { p in p.move(to: CGPoint(x: 0, y: mid)); p.addLine(to: CGPoint(x: w, y: mid)) }
+                        .stroke(Theme.hairline(0.10), lineWidth: 1)
+
+                    // Each faint line is one sine partial, at its true relative strength.
+                    ForEach(1...count, id: \.self) { k in
+                        Path { p in
+                            var x: CGFloat = 0
+                            var first = true
+                            while x <= w {
+                                let ph = Double(x / w) * cycles
+                                let y = mid - CGFloat(sin(2 * .pi * Double(k) * ph) / Double(k) / norm) * amp
+                                if first { p.move(to: CGPoint(x: x, y: y)); first = false }
+                                else { p.addLine(to: CGPoint(x: x, y: y)) }
+                                x += 3
+                            }
+                        }
+                        .stroke(accent.opacity(0.22), lineWidth: 1.2)
+                    }
+
+                    // The bright line is their sum, what the speaker actually plays.
+                    Path { p in
+                        var x: CGFloat = 0
+                        var first = true
+                        while x <= w {
+                            let ph = Double(x / w) * cycles
+                            let y = mid - CGFloat(sum(ph) / norm) * amp
+                            if first { p.move(to: CGPoint(x: x, y: y)); first = false }
+                            else { p.addLine(to: CGPoint(x: x, y: y)) }
+                            x += 2
+                        }
+                    }
+                    .stroke(accent, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                }
+            }
+            .frame(height: height)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.hairline(), lineWidth: 1))
+            .animation(.easeInOut(duration: 0.25), value: count)
+
+            HStack(spacing: 12) {
+                stepButton("minus") { count = max(1, count - 1) }
+                VStack(spacing: 1) {
+                    Text("\(count)").mono(16, .semibold).foregroundColor(accent)
+                    Text(lang.t(count == 1 ? "SINE WAVE" : "SINE WAVES"))
+                        .mono(9, .semibold).tracking(1.2).foregroundColor(Theme.textDim)
+                }
+                .frame(width: 100)
+                stepButton("plus") { count = min(WaveTables.maxPartials, count + 1) }
+            }
+        }
+    }
+
+    private func stepButton(_ icon: String, _ action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: icon).font(.system(size: 15, weight: .semibold))
+                .foregroundColor(Theme.textSecondary)
+                .frame(width: 52, height: 38)
+                .background(Theme.inset)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 // MARK: - Filter / EQ graph (harmonic bars with the filter curve cutting them, Ableton-style)
 
 struct FilterGraph: View {

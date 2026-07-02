@@ -10,10 +10,11 @@ struct RenderSnapshot {
     var toneOn: Bool            // pure test-tone gate
     var simLow: Double          // playback simulation: master high-pass cutoff (0 = off)
     var simHigh: Double         // playback simulation: master low-pass cutoff (>=20000 = off)
+    var additiveCount: Int      // >0 = play a partial-sum saw with this many sines (additive lesson)
 
     static let empty = RenderSnapshot(
         base: ParamID.allCases.map { $0.spec.def }, routingSource: 0, routingDest: 0,
-        toneHz: 220, toneOn: false, simLow: 0, simHigh: 22000)
+        toneHz: 220, toneOn: false, simLow: 0, simHigh: 22000, additiveCount: 0)
 
     @inline(__always) func v(_ id: ParamID) -> Double { base[id.index] }
 }
@@ -83,8 +84,15 @@ final class Voice {
         let hz = noteHz * pow(2.0, pitchSemi / 12.0)
         let det = s.v(.detune) * 0.02
         let pulse = s.v(.oscPulse)
-        let a = osc1.render(hz: hz * (1 - det), morph: morph, pulse: pulse)
-        let b = osc2.render(hz: hz * (1 + det), morph: morph, pulse: pulse)
+        let a: Double, b: Double
+        if s.additiveCount > 0 {
+            let table = WaveTables.partialSaw(s.additiveCount)
+            a = osc1.render(hz: hz * (1 - det), table: table)
+            b = osc2.render(hz: hz * (1 + det), table: table)
+        } else {
+            a = osc1.render(hz: hz * (1 - det), morph: morph, pulse: pulse)
+            b = osc2.render(hz: hz * (1 + det), morph: morph, pulse: pulse)
+        }
         let raw = (a + b) * 0.5
 
         let cutoffHz = 60.0 * pow(2.0, clamp01(cutoffNorm) * 8.0)
