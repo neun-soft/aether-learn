@@ -24,6 +24,11 @@ struct RootView: View {
                 }
         }
         .tint(Theme.tone)
+        #if DEBUG
+        .onAppear {
+            if let id = Shot.lessonID { path = [.lesson(Curriculum.indexOf(id))] }
+        }
+        #endif
     }
 }
 

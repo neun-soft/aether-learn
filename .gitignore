@@ -16,3 +16,4 @@ fastlane/test_output/
 *.mobileprovision
 *.ipa
 *.dSYM.zip
+build-sim/

@@ -37,8 +37,8 @@ export default function Home() {
             <Image
               src="/shots/harmonics.png"
               alt="A waveform being built from pure sine waves, one at a time"
-              width={1290}
-              height={2796}
+              width={1320}
+              height={2868}
               style={{ height: "auto" }}
               priority
             />
@@ -168,7 +168,7 @@ export default function Home() {
               { src: "/shots/play.png", alt: "Playing the built-in synth" },
             ].map((s) => (
               <div className="shot" key={s.src}>
-                <Image src={s.src} alt={s.alt} width={1290} height={2796} />
+                <Image src={s.src} alt={s.alt} width={1320} height={2868} />
               </div>
             ))}
           </div>

@@ -62,7 +62,12 @@ struct LessonScreen: View {
         }
         .navigationTitle(lang.t(lesson.title))
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear { synth.start(); loadExercise(); holdMode = lesson.exercise.holdDefault }
+        .onAppear {
+            synth.start(); loadExercise(); holdMode = lesson.exercise.holdDefault
+            #if DEBUG
+            applyShotIfNeeded()
+            #endif
+        }
         .onDisappear { demo.stop(); synth.stop() }
         .onChange(of: phase) { _, new in
             demo.stop(); synth.clearLatch(); synth.stopTone()
@@ -109,6 +114,31 @@ struct LessonScreen: View {
             synth.setToneHz(frequencyFor(t, norm: t.startNorm))
         }
     }
+
+    #if DEBUG
+    // Screenshot harness: jump this lesson into a phase with a note playing.
+    private func applyShotIfNeeded() {
+        guard Shot.lessonID == lesson.id else { return }
+        showCover = false
+        switch Shot.phase {
+        case "theory": phase = .theory
+        case "watch":  phase = .demo
+        default:       phase = .play
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            loadExercise()
+            if let n = Shot.additive { additiveCount = n; synth.setAdditive(n) }
+            if Shot.play {
+                if phase == .demo, let script = lesson.demo {
+                    demo.play(script, on: synth)
+                } else {
+                    holdMode = true
+                    synth.toggleLatch(lesson.exercise.keyboardRoot + Shot.noteOffset)
+                }
+            }
+        }
+    }
+    #endif
 
     // MARK: Cover
 
