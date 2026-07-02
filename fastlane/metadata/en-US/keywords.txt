@@ -1,1 +1,1 @@
-synth,synthesizer,sound design,music theory,learn music,audio,frequency,waveform,filter,LFO,production,ear training
+synth,synthesizer,sound design,music theory,waveform,filter,LFO,ear training,producer
