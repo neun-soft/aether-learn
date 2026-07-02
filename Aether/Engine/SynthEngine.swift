@@ -162,7 +162,7 @@ final class SynthEngine {
 
     func triggerKick() { lock.sync { kickArm = true } }
 
-    /// 0 disables additive mode; 1…8 plays a saw built from that many sine partials.
+    /// 0 disables additive mode; 1…WaveTables.maxPartials plays a saw built from that many sine partials.
     func setAdditive(_ n: Int) { lock.sync { pending.additiveCount = n } }
 
     /// Copy of the recent output samples for the live waveform display.

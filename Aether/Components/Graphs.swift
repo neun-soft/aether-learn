@@ -207,7 +207,7 @@ struct FilterGraph: View {
         let denom = sqrt((1 - x2) * (1 - x2) + x2 / (q * q))
         switch mode {
         case 1:  return min(10, x2 / denom)            // highpass
-        case 2:  return min(10, (x / q) / denom * q)   // bandpass (unity peak, Q sets width)
+        case 2:  return min(10, (x / q) / denom)       // bandpass (unity peak, Q sets width)
         case 3:  return min(10, abs(1 - x2) / denom)   // notch
         default: return min(10, 1 / denom)             // lowpass
         }

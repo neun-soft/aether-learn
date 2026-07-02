@@ -12,8 +12,9 @@ struct RootView: View {
                     switch route {
                     case .lesson(let i):
                         // Guard against a stale/out-of-range index ever landing in the path.
-                        let ref = Curriculum.flat[min(max(0, i), Curriculum.flat.count - 1)]
-                        LessonScreen(index: i, lesson: ref.lesson, accent: ref.module.accent, path: $path)
+                        let idx = min(max(0, i), Curriculum.flat.count - 1)
+                        let ref = Curriculum.flat[idx]
+                        LessonScreen(index: idx, lesson: ref.lesson, accent: ref.module.accent, path: $path)
                             .environmentObject(progress)
                             .id(i)   // fresh identity per lesson so it opens on Learn, not the prior tab
                     case .congrats(let moduleID):
