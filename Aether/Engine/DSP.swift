@@ -34,8 +34,9 @@ enum WaveTables {
     // Ordered by brightness; morph blends adjacent tables.
     static let ramp: [[Double]] = [sine, triangle, saw, square]
 
-    // Partial-sum saws for the additive lesson: n = 1 is a pure sine, n = 8 is close to a saw.
-    static let maxPartials = 8
+    // Partial-sum saws for the additive lesson: n = 1 is a pure sine, n = 24 is the full saw
+    // (the same 24 harmonics the saw table itself is built from).
+    static let maxPartials = 24
     static let partialSaws: [[Double]] = (1...maxPartials).map { n in
         build { k in k <= n ? 1.0 / Double(k) : 0 }
     }

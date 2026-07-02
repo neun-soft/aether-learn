@@ -290,6 +290,12 @@ struct LessonScreen: View {
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                         }
+                        if let hint = lesson.exercise.controlsHint, !lesson.exercise.visibleParams.isEmpty {
+                            Text(lang.t(hint)).ui(12).foregroundColor(Theme.textDim)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(.horizontal, 8)
+                        }
                         knobRow(interactive: true)
                         if lesson.exercise.showSystemVolume { systemVolumeBar }
                         if lesson.exercise.showRouting {
@@ -395,11 +401,15 @@ struct LessonScreen: View {
             FilterGraph(cutoff: synth.binding(.cutoff), resonance: synth.binding(.resonance),
                         filterType: synth.patch[.filterType], spectrum: synth.spectrum,
                         accent: accent, interactive: interactive)
+        case .detune:
+            DetuneGraph(detune: synth.binding(.detune), accent: accent)
         case .envelope:
             EnvelopeGraph(delay: synth.patch[.ampDelay], attack: synth.patch[.ampAttack],
                           hold: synth.patch[.ampHold], decay: synth.patch[.ampDecay],
                           sustain: synth.patch[.ampSustain], release: synth.patch[.ampRelease],
-                          curve: synth.patch[.ampCurve], playhead: synth.noteAge, accent: accent)
+                          curve: synth.patch[.ampCurve], playhead: synth.noteAge,
+                          releaseAge: synth.releaseAge, accent: accent,
+                          height: lesson.exercise.visibleParams.count > 4 ? 140 : 180)
         case .lfo:
             LFOGraph(rate: synth.patch[.lfoRate], shape: synth.patch[.lfoShape],
                      depth: synth.patch[.lfoDepth], dest: synth.routing.dest, accent: accent)
@@ -412,10 +422,11 @@ struct LessonScreen: View {
             ScenarioMatchView(scenarios: Playback.scenarios, gear: Playback.gear,
                               matches: $matches, accent: accent)
         case .beating:
-            VStack(spacing: 10) {
-                WaveScope(samples: synth.scope, accent: accent, height: 120)
-                Text(lang.t("LOUDNESS OVER TIME")).mono(10, .semibold).tracking(1.5).foregroundColor(Theme.textDim)
-                BeatScope(history: synth.ampHistory, accent: accent)
+            // Compact stack so the knobs stay visible above the keyboard on first render.
+            VStack(spacing: 8) {
+                WaveScope(samples: synth.scope, accent: accent, height: 92)
+                Text(lang.t("VOLUME OVER TIME")).mono(10, .semibold).tracking(1.5).foregroundColor(Theme.textDim)
+                BeatScope(history: synth.ampHistory, accent: accent, height: 72)
             }
         case .none:
             EmptyView()

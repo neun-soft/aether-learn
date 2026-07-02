@@ -35,6 +35,7 @@ struct AdditiveGraph: View {
                         .stroke(Theme.hairline(0.10), lineWidth: 1)
 
                     // Each faint line is one sine partial, at its true relative strength.
+                    // High partials fade so the display stays readable on the way to the full saw.
                     ForEach(1...count, id: \.self) { k in
                         Path { p in
                             var x: CGFloat = 0
@@ -44,10 +45,10 @@ struct AdditiveGraph: View {
                                 let y = mid - CGFloat(sin(2 * .pi * Double(k) * ph) / Double(k) / norm) * amp
                                 if first { p.move(to: CGPoint(x: x, y: y)); first = false }
                                 else { p.addLine(to: CGPoint(x: x, y: y)) }
-                                x += 3
+                                x += 2
                             }
                         }
-                        .stroke(accent.opacity(0.22), lineWidth: 1.2)
+                        .stroke(accent.opacity(k <= 8 ? 0.22 : 0.10), lineWidth: 1.2)
                     }
 
                     // The bright line is their sum, what the speaker actually plays.
@@ -71,17 +72,21 @@ struct AdditiveGraph: View {
             .animation(.easeInOut(duration: 0.25), value: count)
 
             HStack(spacing: 12) {
-                stepButton("minus") { count = max(1, count - 1) }
+                stepButton("minus") { count = stepDown(count) }
                 VStack(spacing: 1) {
                     Text("\(count)").mono(16, .semibold).foregroundColor(accent)
                     Text(lang.t(count == 1 ? "SINE WAVE" : "SINE WAVES"))
                         .mono(9, .semibold).tracking(1.2).foregroundColor(Theme.textDim)
                 }
                 .frame(width: 100)
-                stepButton("plus") { count = min(WaveTables.maxPartials, count + 1) }
+                stepButton("plus") { count = stepUp(count) }
             }
         }
     }
+
+    // One at a time while each new sine is individually audible, then bigger jumps to the full saw.
+    private func stepUp(_ c: Int) -> Int { min(WaveTables.maxPartials, c < 8 ? c + 1 : c + 4) }
+    private func stepDown(_ c: Int) -> Int { max(1, c <= 8 ? c - 1 : c - 4) }
 
     private func stepButton(_ icon: String, _ action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -92,6 +97,77 @@ struct AdditiveGraph: View {
                 .clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Detune graph (two copies of one note drifting apart, and the wave they make together)
+
+struct DetuneGraph: View {
+    @Binding var detune: Double      // 0…1, the same normalized value the engine uses
+    var accent: Color
+    @EnvironmentObject var lang: LangStore
+    var height: CGFloat = 190
+
+    private let baseCycles = 10.0
+    // Display spread is wider than the audible one so the drift is visible at small settings.
+    private var spread: Double { 0.01 + detune * 0.09 }
+
+    private func copyA(_ x: Double) -> Double { sin(2 * .pi * baseCycles * (1 - spread) * x) }
+    private func copyB(_ x: Double) -> Double { sin(2 * .pi * baseCycles * (1 + spread) * x) }
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width, h = geo.size.height, mid = h / 2
+            let amp = mid - 12
+            ZStack {
+                Rectangle().fill(Color.black.opacity(0.28))
+                Path { p in p.move(to: CGPoint(x: 0, y: mid)); p.addLine(to: CGPoint(x: w, y: mid)) }
+                    .stroke(Theme.hairline(0.10), lineWidth: 1)
+
+                // The two copies of the note, one slightly slower, one slightly faster.
+                ForEach(0..<2, id: \.self) { i in
+                    Path { p in
+                        var x: CGFloat = 0
+                        var first = true
+                        while x <= w {
+                            let ph = Double(x / w)
+                            let v = i == 0 ? copyA(ph) : copyB(ph)
+                            let pt = CGPoint(x: x, y: mid - CGFloat(v * 0.5) * amp)
+                            if first { p.move(to: pt); first = false } else { p.addLine(to: pt) }
+                            x += 2
+                        }
+                    }
+                    .stroke(accent.opacity(0.25), lineWidth: 1.2)
+                }
+
+                // Their sum: where the copies line up it swells, where they oppose it cancels.
+                Path { p in
+                    var x: CGFloat = 0
+                    var first = true
+                    while x <= w {
+                        let ph = Double(x / w)
+                        let pt = CGPoint(x: x, y: mid - CGFloat((copyA(ph) + copyB(ph)) * 0.5) * amp)
+                        if first { p.move(to: pt); first = false } else { p.addLine(to: pt) }
+                        x += 2
+                    }
+                }
+                .stroke(accent, style: StrokeStyle(lineWidth: 2.2, lineCap: .round, lineJoin: .round))
+            }
+            .overlay(alignment: .top) {
+                HStack {
+                    Text(lang.t("TWO COPIES OF ONE NOTE")).mono(10, .semibold).tracking(1.2)
+                        .foregroundColor(Theme.textDim)
+                    Spacer()
+                    Text(lang.t("bright line: what you hear")).mono(10)
+                        .foregroundColor(Theme.textFaint)
+                }
+                .padding(8)
+            }
+        }
+        .frame(height: height)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.hairline(), lineWidth: 1))
+        .animation(.easeInOut(duration: 0.15), value: detune)
     }
 }
 
@@ -115,23 +191,25 @@ struct FilterGraph: View {
     private func xFor(_ f: Double, _ w: CGFloat) -> CGFloat {
         CGFloat((log(f) - log(fMin)) / (log(fMax) - log(fMin))) * w
     }
+    // dB scale like an EQ display: -30 dB at the bottom, +18 dB at the top (0 dB sits at 62.5%).
     private func yFor(_ g: Double, _ h: CGFloat) -> CGFloat {
-        h - CGFloat(min(1.25, g) / 1.25) * (h - 12) - 6
+        let db = 20 * log10(max(g, 0.001))
+        let n = min(1, max(0, (db + 30) / 48))
+        return h - CGFloat(n) * (h - 12) - 6
     }
 
-    private func peak(_ f: Double) -> Double {
-        let d = log(f / fc)
-        return resonance * 1.9 * exp(-(d * d) / (2 * 0.11 * 0.11))
-    }
+    // True 2-pole magnitude response: resonance is the Q of the pole pair, so the peak grows
+    // out of the knee and blends smoothly into the rolloff (Ableton-style), not a bolted-on bump.
+    private var q: Double { 0.55 + resonance * 9.5 }
     private func gain(_ f: Double) -> Double {
         let x = f / fc
+        let x2 = x * x
+        let denom = sqrt((1 - x2) * (1 - x2) + x2 / (q * q))
         switch mode {
-        case 1: return min(1.25, pow(x, 2) / sqrt(1 + pow(x, 4)) + peak(f))     // highpass
-        case 2:                                                                  // bandpass
-            let d = log(x); return min(1.25, exp(-(d * d) / (2 * 0.2 * 0.2)) * (0.7 + resonance))
-        case 3:                                                                  // notch
-            let d = log(x); return min(1.25, 1 - exp(-(d * d) / (2 * 0.12 * 0.12)) * 0.95)
-        default: return min(1.25, 1 / sqrt(1 + pow(x, 4)) + peak(f))            // lowpass
+        case 1:  return min(10, x2 / denom)            // highpass
+        case 2:  return min(10, (x / q) / denom * q)   // bandpass (unity peak, Q sets width)
+        case 3:  return min(10, abs(1 - x2) / denom)   // notch
+        default: return min(10, 1 / denom)             // lowpass
         }
     }
 
@@ -166,13 +244,13 @@ struct FilterGraph: View {
                 }
                 .stroke(accent, style: StrokeStyle(lineWidth: 2, lineCap: .round))
 
-                // Cutoff handle. The dot sits at a fixed height on the cutoff line so it never
-                // rides the resonance peak (which made the curve look kinked).
+                // Cutoff handle rides the response curve at the cutoff, like an EQ node.
                 let cx = xFor(fc, w)
                 Path { p in p.move(to: CGPoint(x: cx, y: 0)); p.addLine(to: CGPoint(x: cx, y: h)) }
                     .stroke(Theme.hairline(0.25), lineWidth: 1)
                 Circle().fill(.white).frame(width: 14, height: 14)
-                    .position(x: min(w - 7, max(7, cx)), y: yFor(0.72, h))
+                    .position(x: min(w - 7, max(7, cx)),
+                              y: min(h - 7, max(7, yFor(gain(fc), h))))
             }
             .contentShape(Rectangle())
             .highPriorityGesture(interactive ? drag(w, h) : nil)
@@ -256,6 +334,7 @@ struct EnvelopeGraph: View {
     var delay: Double, attack: Double, hold: Double, decay: Double
     var sustain: Double, release: Double, curve: Double
     var playhead: Double        // seconds since note-on, negative if idle
+    var releaseAge: Double = -1 // seconds since note-off, negative while held
     var accent: Color
     @EnvironmentObject var lang: LangStore
     var height: CGFloat = 180
@@ -311,10 +390,17 @@ struct EnvelopeGraph: View {
                 }
                 .fill(accent.opacity(0.12))
 
+                // The dot travels every stage: rises through delay/attack/hold/decay, waits at
+                // the end of sustain while the key is held, then runs the release after note-off.
                 if playhead >= 0 {
-                    let t = min(playhead, dly + atk + hld + dcy + susW)
-                    Circle().fill(.white).frame(width: 12, height: 12)
-                        .position(x: xF(t), y: yF(level(t)))
+                    let sustainEnd = dly + atk + hld + dcy + susW
+                    let t = releaseAge >= 0
+                        ? min(total, sustainEnd + releaseAge)
+                        : min(playhead, sustainEnd)
+                    if releaseAge < 0 || releaseAge <= rel {
+                        Circle().fill(.white).frame(width: 12, height: 12)
+                            .position(x: xF(t), y: yF(level(t)))
+                    }
                 }
             }
         }
@@ -345,6 +431,15 @@ struct LFOGraph: View {
         }
     }
 
+    private var shapeName: String {
+        switch Int(min(1, max(0, shape)) * 3 + 0.5) {
+        case 1: return "Triangle"
+        case 2: return "Saw"
+        case 3: return "Square"
+        default: return "Sine"
+        }
+    }
+
     var body: some View {
         TimelineView(.animation) { ctx in
             GeometryReader { geo in
@@ -372,9 +467,15 @@ struct LFOGraph: View {
                     Circle().fill(.white).frame(width: 12, height: 12)
                         .position(x: hx, y: mid - CGFloat(shapeVal(head * cycles)) * amp)
                 }
-                .overlay(alignment: .topLeading) {
-                    Text("LFO → \(lang.t(dest.rawValue))").mono(11, .semibold)
-                        .foregroundColor(accent).padding(8)
+                .overlay(alignment: .top) {
+                    HStack {
+                        Text("LFO → \(lang.t(dest.rawValue))").mono(11, .semibold)
+                            .foregroundColor(accent)
+                        Spacer()
+                        Text("\(lang.t(shapeName)) · \(String(format: rateHz < 10 ? "%.1f" : "%.0f", rateHz)) Hz")
+                            .mono(11).foregroundColor(Theme.textMuted)
+                    }
+                    .padding(8)
                 }
             }
         }

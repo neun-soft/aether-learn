@@ -9,7 +9,7 @@ enum Route: Hashable {
 // Content and progress are separate models: content is static data shipped in the binary,
 // progress is per-user state persisted locally. Updating a lesson never wipes progress.
 
-enum LessonVisual { case none, scope, spectrum, additive, filter, envelope, lfo, equipment, output, match, beating }
+enum LessonVisual { case none, scope, spectrum, additive, detune, filter, envelope, lfo, equipment, output, match, beating }
 
 // Configures the frequency-explorer control for the frequency/pitch lessons.
 struct ToneConfig {
@@ -46,6 +46,7 @@ struct Exercise {
     var showSystemVolume: Bool = false                  // live phone-volume readout
     var showBassTest: Bool = false                      // sub-bass + kick test buttons
     var tip: String? = nil                              // an idea/tip callout
+    var controlsHint: String? = nil                     // one line above the knobs saying what they are
     var labels: [ParamID: String] = [:]                 // per-lesson knob label overrides
 }
 

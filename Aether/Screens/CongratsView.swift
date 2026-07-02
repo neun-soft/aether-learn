@@ -14,6 +14,10 @@ struct CongratsView: View {
         return Curriculum.course.modules[i + 1]
     }
 
+    private var courseDone: Bool {
+        nextModule == nil && Curriculum.course.allLessons.allSatisfy { progress.isDone($0.id) }
+    }
+
     var body: some View {
         let accent = module?.accent ?? Theme.tone
         ZStack {
@@ -21,24 +25,43 @@ struct CongratsView: View {
             VStack(spacing: 18) {
                 Spacer()
 
-                ZStack {
-                    Circle().fill(accent.opacity(0.15)).frame(width: 108, height: 108)
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.system(size: 56, weight: .semibold))
-                        .foregroundColor(accent)
+                if courseDone {
+                    ZStack {
+                        Circle().fill(accent.opacity(0.10)).frame(width: 168, height: 168)
+                        Circle().stroke(accent.opacity(0.35), lineWidth: 1.5).frame(width: 140, height: 140)
+                        Circle().fill(accent.opacity(0.16)).frame(width: 118, height: 118)
+                        Image(systemName: "trophy.fill")
+                            .font(.system(size: 54, weight: .semibold))
+                            .foregroundColor(accent)
+                    }
+                    Text(lang.t("COURSE COMPLETE"))
+                        .mono(12, .semibold).tracking(3).foregroundColor(accent)
+                    Text(lang.t("Introduction to\nSound Design"))
+                        .ui(32, .semibold).foregroundColor(Theme.textPrimary)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(lang.t("Waves, frequency, harmonics, filters, envelopes, and modulation. You now hold the vocabulary every synthesizer speaks. Go make some sounds."))
+                        .ui(15).foregroundColor(Theme.textMuted)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 32)
+                } else {
+                    ZStack {
+                        Circle().fill(accent.opacity(0.15)).frame(width: 108, height: 108)
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.system(size: 56, weight: .semibold))
+                            .foregroundColor(accent)
+                    }
+                    Text(lang.t("MODULE COMPLETE"))
+                        .mono(12, .semibold).tracking(2).foregroundColor(Theme.textDim)
+                    Text(lang.t(module?.title ?? ""))
+                        .ui(30, .semibold).foregroundColor(Theme.textPrimary)
+                    Text(lang.t("Nice work. You have the foundation for what comes next."))
+                        .ui(15).foregroundColor(Theme.textMuted)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 32)
                 }
-
-                Text(lang.t("MODULE COMPLETE"))
-                    .mono(12, .semibold).tracking(2).foregroundColor(Theme.textDim)
-                Text(lang.t(module?.title ?? ""))
-                    .ui(30, .semibold).foregroundColor(Theme.textPrimary)
-                Text(lang.t(nextModule == nil
-                     ? "You have finished the whole course. Go make some sounds."
-                     : "Nice work. You have the foundation for what comes next."))
-                    .ui(15).foregroundColor(Theme.textMuted)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, 32)
 
                 Spacer()
 

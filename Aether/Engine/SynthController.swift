@@ -28,6 +28,11 @@ final class SynthController: ObservableObject {
     @Published var noteAge: Double = -1
     private var noteStart: Date?
 
+    // Seconds since the current note was released (negative = still held or idle),
+    // so the envelope playhead can travel through the release stage.
+    @Published var releaseAge: Double = -1
+    private var releaseStart: Date?
+
     // Pure test tone (frequency lessons)
     @Published var toneOn = false
     @Published var toneHz: Double = 220
@@ -65,6 +70,7 @@ final class SynthController: ObservableObject {
             self.meter = self.engine.meter
             self.scope = self.engine.scopeSnapshot()
             self.noteAge = self.noteStart.map { Date().timeIntervalSince($0) } ?? -1
+            self.releaseAge = self.releaseStart.map { Date().timeIntervalSince($0) } ?? -1
             let peak = self.scope.map { abs($0) }.max() ?? 0
             self.ampHistory.append(peak)
             if self.ampHistory.count > 120 { self.ampHistory.removeFirst(self.ampHistory.count - 120) }
@@ -79,6 +85,7 @@ final class SynthController: ObservableObject {
         engine.toneOff(); toneOn = false
         engine.allOff()
         clearSim()
+        engine.shutdown()
     }
 
     // MARK: Parameters
@@ -104,25 +111,27 @@ final class SynthController: ObservableObject {
 
     // MARK: Notes + latch
 
-    func noteOn(_ midi: Int, velocity: Double = 0.85) { engine.noteOn(midi, velocity: velocity); noteStart = Date() }
-    func noteOff(_ midi: Int) { engine.noteOff(midi) }
-    func allOff() { engine.allOff(); noteStart = nil }
+    func noteOn(_ midi: Int, velocity: Double = 0.85) {
+        engine.noteOn(midi, velocity: velocity)
+        noteStart = Date(); releaseStart = nil
+    }
+    func noteOff(_ midi: Int) { engine.noteOff(midi); releaseStart = Date() }
+    func allOff() { engine.allOff(); noteStart = nil; releaseStart = nil }
 
     func toggleLatch(_ midi: Int) {
         if latchedNote == midi {
-            engine.noteOff(midi); latchedNote = nil; noteStart = nil
+            engine.noteOff(midi); latchedNote = nil; releaseStart = Date()
         } else {
             if let old = latchedNote { engine.noteOff(old) }
             latchedNote = midi
             engine.noteOn(midi)
-            noteStart = Date()
+            noteStart = Date(); releaseStart = nil
         }
     }
 
     func clearLatch() {
-        if let n = latchedNote { engine.noteOff(n) }
+        if let n = latchedNote { engine.noteOff(n); releaseStart = Date() }
         latchedNote = nil
-        noteStart = nil
     }
 
     // MARK: Test tone
@@ -172,7 +181,7 @@ final class SynthController: ObservableObject {
     #if os(iOS)
     private static func mapPort(_ p: AVAudioSessionPortDescription) -> OutputInfo {
         switch p.portType {
-        case .builtInSpeaker:   return OutputInfo(name: "iPhone speaker", low: 500, high: 12000)
+        case .builtInSpeaker:   return OutputInfo(name: "iPhone speaker", low: 250, high: 12000)
         case .builtInReceiver:  return OutputInfo(name: "Earpiece", low: 500, high: 8000)
         case .headphones:       return OutputInfo(name: "Wired headphones", low: 15, high: 22000)
         case .bluetoothA2DP:    return OutputInfo(name: p.portName, low: 55, high: 18000)
@@ -183,5 +192,10 @@ final class SynthController: ObservableObject {
     }
     #endif
 
-    deinit { NotificationCenter.default.removeObserver(self) }
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        displayTimer?.invalidate()
+        volObserver?.invalidate()
+        engine.shutdown()
+    }
 }

@@ -34,14 +34,19 @@ enum Curriculum {
                 id: "mpl1", title: "Not Every Speaker Plays Bass",
                 concept: "The gear you listen on can only reproduce part of the sound. Small speakers lose the bass.",
                 theory: [
-                    "How low a device can go depends on physical size. Low notes are slow vibrations, and making them audible means moving a lot of air. Only a big driver, a woofer or a subwoofer, can push that much air.",
-                    "A tiny phone speaker cannot move enough air for deep bass, so it rolls the low end away. Bigger drivers, in headphones, in studio monitors, or in a club rig with subs, reach lower and lower.",
-                    "Pick a device below and the chart highlights the range it can reproduce. Play a note and a line shows where it sits, so you can see when a low note falls below a small speaker's reach. You will hear the real difference for yourself in the next lesson."
+                    "How low a device can go depends on physical size. Low notes are slow vibrations, and making them audible in open air means moving a lot of it. Only a big driver, a woofer or a subwoofer, can push that much air.",
+                    "A tiny phone speaker cannot move enough air for deep bass, so it rolls the low end away. There is one exception to the size rule: sealed earbuds like AirPods sit inside your ear canal, where there is almost no air to move, so even a tiny driver can deliver deep bass. A tight seal on a tiny space beats a big driver in a big room.",
+                    "One more thing before you try it: a note that falls outside a device's range does not go silent. The chart shows the note's fundamental, its lowest sine. The harmonics above it still play, so you hear a thinner version of the note, the outline without the body.",
+                    "In the exercise, pick a device and the chart highlights the range it can reproduce. Play a note and a line shows where its fundamental sits. You will hear the real difference for yourself in the next lesson."
                 ],
-                takeaways: ["Low frequencies need to move a lot of air", "Only big drivers, woofers and subs, reproduce deep bass"],
+                takeaways: [
+                    "Deep bass in open air needs a big driver moving a lot of air",
+                    "Sealed earbuds are the exception: a tiny sealed space needs almost no air",
+                    "Out-of-range notes lose their body but their harmonics keep them audible"
+                ],
                 demo: nil,
                 exercise: Exercise(
-                    prompt: "Pick a device to highlight its range. Play a note and watch where it lands. A low note can fall below what a small speaker can reach.",
+                    prompt: "Pick a device and play a low note. When the marker falls below the device's range, the note loses its body — the harmonics are what you still hear.",
                     visibleParams: [],
                     basePatch: Patch([.oscWave: 0.4, .cutoff: 0.85, .ampSustain: 0.95, .ampRelease: 0.3]),
                     visual: .equipment,
@@ -103,7 +108,7 @@ enum Curriculum {
                 theory: [
                     "Sound is a vibration moving through a medium. Something vibrates, that moves the molecules of the medium, and the disturbance travels outward until it reaches your ears.",
                     "Underwater you can still hear, because water carries the vibration; however, sound travels differently than it does in air. In the vacuum of space there is nothing to carry it, so there is complete silence.",
-                    "The display shows that vibration. A flat line means the medium is still and there is silence. A wiggle means it is vibrating, and you hear a tone."
+                    "In the exercise you will see that vibration on a display. A flat line means the medium is still and there is silence. A wiggle means it is vibrating, and you hear a tone."
                 ],
                 takeaways: ["Sound is a vibration traveling through a medium", "No medium, like a vacuum, means no sound"],
                 demo: DemoScript(
@@ -124,7 +129,7 @@ enum Curriculum {
                 theory: [
                     "Frequency is how many times per second the medium vibrates. We measure it in hertz, written Hz. Ten vibrations per second is 10 Hz.",
                     "Slow vibrations sound 'low'. Fast vibrations sound 'high'. As you speed them up, the wiggling line packs together more tightly.",
-                    "Sweep the slider from slow to fast and listen to the sound climb."
+                    "In the exercise, sweep the slider from slow to fast and listen to the sound climb."
                 ],
                 takeaways: ["Frequency is vibrations per second, measured in Hz", "Slower is lower, faster is higher"],
                 demo: nil,
@@ -142,7 +147,7 @@ enum Curriculum {
                 theory: [
                     "When a vibration is steady and fast enough, your ear stops hearing separate vibrations and hears one clear musical note instead.",
                     "Every note has an exact frequency. For example, the note A above middle C vibrates 440 times per second, or 440 Hz. Double the frequency and you get the same note one octave higher.",
-                    "This is the big idea: musical notes are just specific frequencies. Sweep the slider and watch the note name land on each one."
+                    "This is the big idea: musical notes are just specific frequencies. In the exercise, sweep the slider and watch the note name land on each one."
                 ],
                 takeaways: ["A musical note is a specific frequency", "Doubling the frequency raises it one octave"],
                 demo: nil,
@@ -159,7 +164,7 @@ enum Curriculum {
                 concept: "Amplitude is how tall the wave is, the size of the pressure swing it makes.",
                 theory: [
                     "Amplitude is the height of the wave, which is how far the speaker cone is driven on each swing. A tall wave pushes the cone far out and pulls it far back, moving more air, which your ear hears as louder. A short wave barely nudges it. The flat centerline is the cone at rest, silence.",
-                    "The knob below sets the amplitude inside the app. Turn it up and the wave grows taller, turn it down and it shrinks. This is the app's own volume.",
+                    "In the exercise, a knob sets the amplitude inside the app. Turn it up and the wave grows taller, turn it down and it shrinks. This is the app's own volume.",
                     "There is a second volume as well: your phone's. It sits at the very end of the chain and turns the whole output up or down. Raise your phone's volume now with the side buttons, then shape the wave with the app knob.",
                     "Two controls, one chain. The app sets how tall the wave is, your phone sets how much of it reaches the speaker."
                 ],
@@ -191,7 +196,7 @@ enum Curriculum {
                     "Amplitude is the physical height of the wave. Loudness is what your ears make of it, how loud it truly seems.",
                     "Put another way: amplitude is a fact about the wave, loudness is the opinion your ears form about it. The very same wave can seem loud or quiet depending on its pitch.",
                     "Your ears are not equally sensitive to every pitch. Sounds in the middle range, roughly where the human voice sits, are easy to hear, while very low bass notes are much harder to pick up. That's why a bass note needs far more energy to sound just as loud as a voice-range note.",
-                    "See it for yourself. Sweep the tone below: the amplitude stays exactly the same the whole way, yet the low notes sound much quieter than the mids. Same wave height, different loudness.",
+                    "See it for yourself in the exercise. Sweep the tone: the amplitude stays exactly the same the whole way, yet the low notes sound much quieter than the mids. Same wave height, different loudness.",
                     "Interesting fact: in music mastering, loudness is not left vague. It is measured with a standard called LUFS, which is a model of how ears actually hear and gives loudness an exact number so tracks can be matched to a target. It is this same perceived loudness, turned into a precise measurement."
                 ],
                 takeaways: [
@@ -237,11 +242,11 @@ enum Curriculum {
                 concept: "The shape of the wave, its waveform, decides the character of the sound.",
                 theory: [
                     "Two sounds can share the same frequency and loudness and still sound completely different. The difference is the shape of the wave, called its waveform.",
-                    "First, read the display properly. Left to right is time, so you are watching the sound unfold. The flat centerline is the speaker at rest, silence.",
+                    "First, how to read the wave display you will use in the exercise. Left to right is time, so you are watching the sound unfold. The flat centerline is the speaker at rest, silence.",
                     "Up and down is the speaker cone. The height tells the cone how far to push out or pull back at each instant: above the line it pushes out, below it pulls in, on the line it sits still. The cone pushing out squeezes the air in front of it, and pulling back leaves it thinner. That squeeze and thin is the sound.",
                     "And as you saw with amplitude, a taller wiggle means the cone travels further, a bigger push, louder. The waveform is something different: not how tall the wave is, but the shape of one full push and pull, repeated over and over.",
                     "Each basic shape has a character. A sine is smooth and pure, good for sub bass and soft, flute-like tones. A triangle is a little brighter but still mellow. A saw is rich and buzzy, the backbone of strings, brass, and big supersaw leads. A square is hollow and woody, used for clarinet-like tones and classic chiptune sounds.",
-                    "Tap a key, try each shape, and watch the display. Sharper shapes sound brighter."
+                    "In the exercise, tap a key, try each shape, and watch the wave change. Sharper shapes sound brighter."
                 ],
                 takeaways: [
                     "Left to right is time, up and down is the speaker cone pushing out and pulling in",
@@ -268,7 +273,7 @@ enum Curriculum {
                 theory: [
                     "Here is the surprise. Every shape you just heard, the triangle, the saw, the square, can be built out of nothing but sine waves added together.",
                     "Start with one sine at the note's pitch. Add a second sine that vibrates twice as fast at half the strength, and the shape bends. Keep adding faster, quieter sines and the wiggles pile up, creeping closer and closer to a sharp saw edge.",
-                    "Below, each faint line is one sine. The bright line is their sum, and that sum is what the speaker actually plays. Add sines one at a time, hold a key, and hear the tone grow brighter with every sine."
+                    "In the exercise, each faint line is one sine. The bright line is their sum, and that sum is what the speaker actually plays. Add sines one at a time, hold a key, and hear the tone grow brighter with every sine."
                 ],
                 takeaways: [
                     "Complex waves are sums of simple sine waves",
@@ -288,9 +293,9 @@ enum Curriculum {
                 concept: "A bright shape is really many sine waves, at different frequencies, stacked up.",
                 theory: [
                     "You just built a wave out of sine waves by hand. Every sound the synth makes works the same way: each shape is secretly a stack of sine waves, and those hidden sine waves are called harmonics.",
-                    "Each bar below is one of those sine waves. The tall bar on the left is the fundamental, the main pitch you hear. Each bar to its right is a harmonic at a higher frequency, a whole-number multiple of the fundamental. How tall a bar is shows how strong that harmonic is.",
+                    "In the exercise, each bar is one of those sine waves. The tall bar on the left is the fundamental, the main pitch you hear. Each bar to its right is a harmonic at a higher frequency, a whole-number multiple of the fundamental. How tall a bar is shows how strong that harmonic is.",
                     "A pure sine has a single bar, only the fundamental, so it sounds plain. A saw or square stacks up many bars, which is why they sound bright and rich.",
-                    "Change the shape and watch the bars appear. More bars, and taller ones, means a brighter sound."
+                    "In the exercise, change the shape and watch the bars appear. More bars, and taller ones, means a brighter sound."
                 ],
                 takeaways: [
                     "Each bar is one sine wave hidden inside the sound",
@@ -318,7 +323,7 @@ enum Curriculum {
                     "Play two vibrations that are almost, but not quite, the same pitch. Because they run at slightly different speeds, they slowly drift in and out of step with each other.",
                     "When their pushes line up they add together and the sound swells louder. When they oppose they cancel and it drops quieter. That steady rise and fall of loudness is called beating.",
                     "Detune is the tool that creates it. It splits one note into two copies and pushes them slightly apart in pitch. The further apart, the faster they drift, so the faster the beating. With no detune the two copies sit exactly together and the sound stays flat.",
-                    "Hold a key and raise Detune. Watch the lower display, the loudness over time: it rises and falls. That pulse is the beating, and the top display shows the two waves combining."
+                    "In the exercise, hold a key and raise Detune. The lower display shows the volume over time: it rises and falls. That pulse is the beating, and the top display shows the two waves combining."
                 ],
                 takeaways: [
                     "Two close pitches drift in and out of step",
@@ -332,21 +337,22 @@ enum Curriculum {
                     notes: held(48, 7.5)
                 ),
                 exercise: Exercise(
-                    prompt: "Hold a key and raise Detune. Watch the loudness pulse below. More detune, faster beating.",
+                    prompt: "Hold a key and raise Detune. Watch the volume pulse below. More detune, faster beating.",
                     visibleParams: [.detune],
                     basePatch: Patch([.oscWave: 0.3, .cutoff: 0.9, .detune: 0.1, .ampSustain: 0.95, .ampRelease: 0.3]),
-                    visual: .beating
+                    visual: .beating,
+                    controlsHint: "DETUNE splits your note into two close pitches. It creates the drift you are watching."
                 )
             ),
             Lesson(
                 id: "m1l8", title: "Detune",
-                concept: "A little detune adds width. A lot is not wrong, it is a sound of its own.",
+                concept: "Detune splits your note into two copies and spreads them apart in pitch.",
                 theory: [
-                    "Beating is not just an oddity, it is a tool. A small amount of detune keeps a sound gently moving, which makes it feel wide and alive instead of flat and static.",
-                    "Push it far and it tips into sounding out of tune, but that is not a mistake. On a bright saw it becomes the huge supersaw lead of dance music, and pushed harder it becomes a wild, unstable effect. Out of tune is a color you can reach for on purpose.",
-                    "There is no single right amount. Move Detune around, from a subtle shimmer to a seasick wobble, and keep whatever sounds good to you."
+                    "Detune takes the one note you play and produces two copies of it: one pushed slightly up in pitch, one slightly down. The knob sets how far apart the copies sit.",
+                    "You already know what two close pitches do: they drift in and out of step, and the volume pulses. A small spread makes that drift slow, so the sound keeps gently moving. A large spread separates the copies enough that you begin to hear them as two different pitches.",
+                    "In the exercise, the display shows the two copies and the wave they add up to. Move Detune from zero upward and listen to how the character changes at each amount. On a bright saw, a wide spread is the basis of the supersaw lead you hear across dance music."
                 ],
-                takeaways: ["A little detune adds width and life", "Out of tune is not wrong, it is a creative tool"],
+                takeaways: ["Detune plays two copies of the note, spread apart in pitch", "The spread sets how fast they drift and how separate they sound"],
                 demo: DemoScript(
                     duration: 7,
                     startPatch: Patch([.oscWave: 0.62, .cutoff: 0.9, .detune: 0, .ampSustain: 0.9, .ampRelease: 0.3]),
@@ -354,11 +360,12 @@ enum Curriculum {
                     notes: held(48, 6.5)
                 ),
                 exercise: Exercise(
-                    prompt: "Move Detune anywhere from a subtle shimmer to a wild wobble. There is no wrong answer.",
+                    prompt: "Hold a key and move Detune. The faint lines are the two copies; the bright line is what you hear.",
                     visibleParams: [.detune, .oscWave],
                     basePatch: Patch([.oscWave: 0.62, .cutoff: 0.9, .detune: 0.15, .ampSustain: 0.9, .ampRelease: 0.3]),
-                    visual: .scope,
-                    tip: "Idea: automate Detune while a note plays for a rising, unstable sweep. Producers reach for it constantly on pads, supersaws, and effects. Trust your ears, not the tuning."
+                    visual: .detune,
+                    tip: "Producers automate Detune while a note plays, on pads, supersaws, and effects, for a rising, unstable sweep.",
+                    controlsHint: "DETUNE sets how far apart the two copies sit."
                 )
             )
         ]
@@ -374,7 +381,7 @@ enum Curriculum {
                 concept: "A low-pass filter removes the higher harmonics above a point you set.",
                 theory: [
                     "You know now that a bright shape is a stack of harmonics. Subtractive synthesis starts with all of them and carves some away.",
-                    "The low-pass filter keeps the low harmonics and removes the higher ones above its cutoff point. Sweep the cutoff down and the tone gets darker as those harmonics disappear from the display.",
+                    "The low-pass filter keeps the low harmonics and removes the higher ones above its cutoff point. In the exercise, sweep the cutoff down and the tone gets darker as those harmonics disappear.",
                     "A saw shape is used here because it has plenty of harmonics for the filter to remove."
                 ],
                 takeaways: ["Low-pass keeps the low harmonics and removes the high ones", "Sweeping cutoff is the classic filter sound"],
@@ -393,17 +400,16 @@ enum Curriculum {
             ),
             Lesson(
                 id: "m2l2", title: "Resonance",
-                concept: "Resonance lifts a narrow band right at the cutoff, adding a sharp peak that can ring and whistle.",
+                concept: "Resonance boosts the harmonics sitting right at the cutoff.",
                 theory: [
-                    "The cutoff decides where the filter starts removing sound. Resonance decides what happens right at that point.",
-                    "Turn it up and the filter boosts a thin slice of frequencies exactly at the cutoff, making them much louder than everything around them. On the graph you see it as a sharp spike rising right at the cutoff line.",
-                    "Another way to picture it: resonance makes the filter emphasize, or ring at, one frequency. A little gives a vocal, expressive edge, as if the sound is talking. A lot makes that spike so strong the filter almost plays a note of its own, a clear whistle sitting at the cutoff.",
-                    "Raise RES to grow the peak, then sweep CUT to slide that peak up and down through the sound. That sweeping whistle is the singing filter behind countless leads and basses."
+                    "You know the cutoff: harmonics above it are removed. Resonance adds one thing to that. It boosts the harmonics sitting right at the cutoff, making them louder than everything else in the sound.",
+                    "On the graph, that boost is a bump right where the filter curve bends. More resonance makes the bump taller and narrower.",
+                    "Push it far enough and the boosted harmonics stand out as a tone of their own, a whistle at the cutoff frequency. Sweep the cutoff and the whistle slides with it, through harmonic after harmonic. That sweep is a sound you will recognize from countless leads and basses."
                 ],
                 takeaways: [
-                    "Resonance is a loud, narrow peak right at the cutoff",
-                    "It makes the filter ring, adding a vocal edge or a whistle",
-                    "Sweeping the cutoff slides the peak, the classic filter sweep"
+                    "Resonance boosts a narrow band of harmonics at the cutoff",
+                    "High resonance makes that band ring out as its own tone",
+                    "Sweeping the cutoff slides the boosted band through the sound"
                 ],
                 demo: DemoScript(
                     duration: 7,
@@ -424,7 +430,7 @@ enum Curriculum {
                 theory: [
                     "The same filter can keep different parts of the sound. Low-pass keeps the low harmonics. High-pass keeps the high ones and thins the tone out. Band-pass keeps only a slice from the middle. Notch scoops the middle out.",
                     "Each has a job: high-pass to remove low mud, band-pass for telephone or wah tones, notch for a hollow, phaser-like sound.",
-                    "Step through TYPE and hear how the same note changes character."
+                    "In the exercise, step through TYPE and hear how the same note changes character."
                 ],
                 takeaways: ["The four types each keep a different band", "Filter choice shapes the whole feel"],
                 demo: DemoScript(
@@ -455,7 +461,7 @@ enum Curriculum {
                 theory: [
                     "So far a note has just switched on at full volume. Real sounds fade in and out instead. An envelope controls that change over the life of a note, and the first stage is attack.",
                     "Attack sets how long the sound takes to rise from silence to full volume. A fast attack is instant and percussive, like a pluck. A slow attack swells in gently, like a pad rising out of nowhere.",
-                    "Tap a key and raise ATTACK. Watch the first slope of the envelope get longer as the sound takes more time to arrive."
+                    "In the exercise, tap a key and raise ATTACK. Watch the first slope of the envelope get longer as the sound takes more time to arrive."
                 ],
                 takeaways: ["Attack is the fade-in time at the start of a note", "Fast attack is punchy, slow attack swells in"],
                 demo: DemoScript(
@@ -477,7 +483,7 @@ enum Curriculum {
                 theory: [
                     "Right after the attack reaches the top, decay pulls the volume down to a lower holding level called sustain.",
                     "A short decay drops quickly, giving a sharp, plucky start. A long decay eases down slowly. For decay to be audible the sustain sits below the peak, so there is somewhere to fall to.",
-                    "Tap a key and change DECAY. Watch the second slope of the envelope, the fall right after the peak."
+                    "In the exercise, tap a key and change DECAY. Watch the second slope of the envelope, the fall right after the peak."
                 ],
                 takeaways: ["Decay is the fall from the peak down to the sustain level", "Short decay is plucky, long decay eases down"],
                 demo: DemoScript(
@@ -499,7 +505,7 @@ enum Curriculum {
                 theory: [
                     "After the attack and decay, the sound settles at the sustain level and stays there for as long as the note is held.",
                     "Sustain is a level, not a time. High sustain holds strong, like an organ. Low sustain fades most of the way down, leaving a short plucky front and a quiet tail.",
-                    "Hold a key and change SUSTAIN. Watch the flat holding section of the envelope move up and down."
+                    "In the exercise, hold a key and change SUSTAIN. Watch the flat holding section of the envelope move up and down."
                 ],
                 takeaways: ["Sustain is the held level, not a length of time", "High sustain holds like an organ, low sustain gives a pluck"],
                 demo: DemoScript(
@@ -521,7 +527,7 @@ enum Curriculum {
                 theory: [
                     "When you lift your finger, the sound does not have to stop instantly. Release sets how long it takes to fade from the sustain level back to silence.",
                     "A short release cuts off cleanly. A long release lets the note ring out and blur into the next, which is how pads and ambient sounds breathe.",
-                    "Tap a key and let go, then change RELEASE. Watch the final slope of the envelope fall to nothing."
+                    "In the exercise, tap a key and let go, then change RELEASE. Watch the final slope of the envelope fall to nothing."
                 ],
                 takeaways: ["Release is the fade-out after you let go", "Long release lets notes ring out and overlap"],
                 demo: DemoScript(
@@ -541,11 +547,14 @@ enum Curriculum {
                 id: "m3l5", title: "Hold",
                 concept: "Hold keeps the sound pinned at full volume for a moment before decay begins.",
                 theory: [
-                    "Hold is an extra stage that sits between attack and decay. It keeps the sound at full volume for a set time before it starts to fall.",
-                    "This is the piece many simple synths skip. It creates a deliberate plateau at the top, great for punchy plucks and stabs that need a moment of full body first.",
-                    "Tap a key and raise HOLD. Watch a flat section appear at the very top of the envelope, before the fall."
+                    "Hold is an extra stage that sits between attack and decay. Once the attack reaches full volume, hold keeps it pinned there for a set time before the decay starts pulling it down.",
+                    "One thing to know before trying it: the envelope only runs while the key is down. If you let go during the hold plateau, the sound skips ahead to the release. So to hear hold do its job, keep the key pressed until the fall.",
+                    "In the exercise, press a key and keep it held. With HOLD at zero the volume falls right after the attack. Raise HOLD and a flat section appears at the top of the envelope: full volume, held, then the fall. Watch the dot ride the plateau."
                 ],
-                takeaways: ["Hold is a plateau at full volume before decay", "It adds punch and body to the start of a sound"],
+                takeaways: [
+                    "Hold pins the sound at full volume between attack and decay",
+                    "Keep the key down through the plateau to hear it, or the release takes over"
+                ],
                 demo: DemoScript(
                     duration: 8,
                     startPatch: Patch([.oscWave: 0.5, .cutoff: 0.85, .ampAttack: 0.03, .ampHold: 0, .ampDecay: 0.3, .ampSustain: 0.15, .ampRelease: 0.2]),
@@ -553,10 +562,11 @@ enum Curriculum {
                     notes: pulses(53, count: 8, every: 1, dur: 0.7)
                 ),
                 exercise: Exercise(
-                    prompt: "Tap a key and raise HOLD. A flat plateau appears at the top before the sound falls.",
+                    prompt: "Press a key and keep it held. The sound sits at full volume for the HOLD time, then falls.",
                     visibleParams: [.ampHold],
-                    basePatch: Patch([.oscWave: 0.5, .cutoff: 0.85, .ampAttack: 0.03, .ampHold: 0.4, .ampDecay: 0.3, .ampSustain: 0.15, .ampRelease: 0.2]),
-                    visual: .envelope, holdDefault: false
+                    basePatch: Patch([.oscWave: 0.5, .cutoff: 0.85, .ampAttack: 0.03, .ampHold: 0.4, .ampDecay: 0.25, .ampSustain: 0.15, .ampRelease: 0.2]),
+                    visual: .envelope, holdDefault: false,
+                    controlsHint: "HOLD is the length of the plateau at the top."
                 )
             ),
             Lesson(
@@ -564,8 +574,8 @@ enum Curriculum {
                 concept: "Delay makes the sound wait a moment before it even begins.",
                 theory: [
                     "Delay here is a pause at the very start of the note, not the echo effect that shares the name. When you press a note, the sound waits for a set time before the attack begins.",
-                    "It is useful for staggered, rhythmic sounds, or for layering, so one part comes in a beat after another.",
-                    "Tap a key and raise DELAY. Watch a flat gap appear at the start of the envelope, before the rise."
+                    "On its own it is a small tool. It becomes more useful later, when you make electronic music and combine it with other ideas: layered sounds that enter one after another, or paired with an LFO so a sound's movement starts late. File it away for now.",
+                    "In the exercise, tap a key and raise DELAY. A flat gap appears at the start of the envelope, before the rise."
                 ],
                 takeaways: ["Delay is a wait before the note begins", "Good for staggered, rhythmic entrances"],
                 demo: DemoScript(
@@ -587,7 +597,7 @@ enum Curriculum {
                 theory: [
                     "Now put them together. In order, a note can wait (delay), rise (attack), sit at the top (hold), fall (decay), hold steady (sustain), and fade out (release).",
                     "That full shape is called an envelope, and it turns one raw tone into a pluck, a pad, a stab, or a swell. The CURVE knob bends every slope from a straight line into a more natural curve.",
-                    "Play with all of them at once and design a shape you like. Watch the whole envelope move on the display as you go."
+                    "In the exercise, play with all of them at once and design a shape you like. Watch the whole envelope change as you go."
                 ],
                 takeaways: [
                     "The full envelope is delay, attack, hold, decay, sustain, release",
@@ -599,7 +609,8 @@ enum Curriculum {
                     prompt: "Shape the whole envelope. Try a slow pad, a punchy pluck, or a delayed stab.",
                     visibleParams: [.ampDelay, .ampAttack, .ampHold, .ampDecay, .ampSustain, .ampRelease, .ampCurve],
                     basePatch: Patch([.oscWave: 0.5, .cutoff: 0.85, .ampAttack: 0.06, .ampDecay: 0.3, .ampSustain: 0.6, .ampRelease: 0.35]),
-                    visual: .envelope, holdDefault: false
+                    visual: .envelope, holdDefault: false,
+                    controlsHint: "One knob per stage, in note order: delay, attack, hold, decay, sustain, release. Curve bends the slopes."
                 )
             )
         ]
@@ -615,7 +626,7 @@ enum Curriculum {
                 concept: "A slow, looping shape you point at a knob to make it move on its own.",
                 theory: [
                     "A wave that repeats fast enough makes a tone. Slow that same looping shape right down and it is too slow to hear as a pitch. Instead of making sound, it can move another control up and down, over and over.",
-                    "That slow looping shape is called an LFO. Here it is pointed at the volume, so the sound gets louder and quieter by itself, over and over, with no help from you. RATE sets how fast it loops, DEPTH sets how far it moves, and SHAPE sets the wave it traces.",
+                    "That slow looping shape is called an LFO. In the exercise it is pointed at the volume, so the sound gets louder and quieter by itself, over and over, with no help from you. RATE sets how fast it loops, DEPTH sets how far it moves, and SHAPE sets the wave it traces.",
                     "Change the DEST to send the same LFO somewhere else, like the pitch or the filter. Pointing a source at a destination like this is called routing, and the same idea repeats across the whole synth."
                 ],
                 takeaways: ["An LFO is a shape too slow to hear, used to move other controls", "Rate, depth, shape, and destination describe any modulation"],
@@ -641,10 +652,10 @@ enum Curriculum {
                 concept: "An LFO pointed at pitch, the same waver singers and guitarists add by hand.",
                 theory: [
                     "Point a gentle LFO at pitch and the note wavers slightly higher and lower, over and over. That is vibrato.",
-                    "It works best on a clean, sustained tone, which is what you have here, so the pitch movement is easy to hear. Keep the depth small and the rate musical: too much depth sounds seasick, too fast sounds like a warble.",
-                    "Vibrato is the clearest example of modulation you already know from real instruments and singers."
+                    "Any rate of pitch movement counts as vibrato; the technique has no strict boundary. What changes is how it reads. Singers and players naturally sit around five to seven wavers per second with a small depth. Much slower and the pitch reads as drifting; much faster and it turns into a buzzing warble; deeper and it reads as a pitch wobble rather than a waver.",
+                    "In the exercise you have a clean, sustained tone, so the pitch movement is easy to hear. Dial RATE into that five-to-seven range and it will read as vibrato immediately."
                 ],
-                takeaways: ["An LFO on pitch is vibrato", "It reads clearest on a clean, held tone"],
+                takeaways: ["An LFO on pitch is vibrato, at any rate", "Around 5–7 Hz with small depth it reads like a singer's vibrato"],
                 demo: DemoScript(
                     duration: 6,
                     startPatch: Patch([.oscWave: 0.12, .cutoff: 0.9, .detune: 0, .lfoDepth: 0, .lfoRate: 0.7, .ampSustain: 0.95]),
@@ -653,7 +664,7 @@ enum Curriculum {
                     notes: held(60, 5.5)
                 ),
                 exercise: Exercise(
-                    prompt: "Hold a key and dial in a natural vibrato with a small DEPTH and a musical RATE.",
+                    prompt: "Hold a key and dial in a vibrato: small DEPTH, RATE around 5–7 Hz.",
                     visibleParams: [.lfoRate, .lfoDepth],
                     basePatch: Patch([.oscWave: 0.12, .cutoff: 0.9, .detune: 0, .lfoDepth: 0.25, .lfoRate: 0.7, .ampSustain: 0.95]),
                     visual: .lfo,
@@ -662,13 +673,13 @@ enum Curriculum {
             ),
             Lesson(
                 id: "m4l3", title: "Tremolo",
-                concept: "An LFO pointed at loudness, a steady pulsing of the volume.",
+                concept: "An LFO pointed at amplitude, a steady pulsing of the volume.",
                 theory: [
-                    "Send the same LFO to loudness instead and the volume rises and falls over and over. That is tremolo.",
+                    "Send the same LFO to amplitude instead and the volume rises and falls over and over. That is tremolo. Note the word: the LFO moves the amplitude, the physical wave height. The pulsing loudness is what your ears make of it, the same distinction you met back in the loudness lesson.",
                     "A slow tremolo breathes. A fast one chops the sound into a rhythm. A square LFO shape turns it into a hard on and off gate.",
                     "It is the same LFO, pointed at a new place. The pattern of modulation repeats across the whole synth."
                 ],
-                takeaways: ["An LFO on loudness is tremolo", "Shape and rate turn it from breathing to chopping"],
+                takeaways: ["An LFO on amplitude is tremolo", "Shape and rate turn it from breathing to chopping"],
                 demo: DemoScript(
                     duration: 6,
                     startPatch: Patch([.oscWave: 0.3, .cutoff: 0.85, .lfoDepth: 0, .lfoRate: 0.45, .ampSustain: 0.95]),
@@ -694,11 +705,11 @@ enum Curriculum {
                 ],
                 takeaways: ["An LFO on cutoff is the classic wobble", "Depth, resonance, and rate shape the growl"],
                 demo: DemoScript(
-                    duration: 7,
-                    startPatch: Patch([.oscWave: 0.72, .cutoff: 0.45, .resonance: 0.4, .lfoDepth: 0.7, .lfoRate: 0.3, .ampSustain: 0.95]),
+                    duration: 8,
+                    startPatch: Patch([.oscWave: 0.72, .cutoff: 0.45, .resonance: 0.4, .lfoDepth: 0.7, .lfoRate: 0.5, .ampSustain: 0.95]),
                     routing: Routing(source: .lfo, dest: .cutoff),
-                    lanes: [lane(.lfoRate, [(0.5, 0.2), (6.5, 0.55)])],
-                    notes: held(36, 6.5)
+                    lanes: [lane(.lfoRate, [(0.5, 0.5), (7.5, 0.8)])],
+                    notes: held(36, 7.5)
                 ),
                 exercise: Exercise(
                     prompt: "Hold a low key and design a wobble bass with RATE, DEPTH, and SHAPE.",

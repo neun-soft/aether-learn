@@ -32,13 +32,13 @@ struct LKnob: View {
             }
             .frame(width: size, height: size)
             .contentShape(Rectangle())
-            .highPriorityGesture(drag)
+            .highPriorityGesture(interactive ? drag : nil)
 
             Text(label)
                 .ui(11, .medium)
                 .foregroundColor(Theme.textMuted)
         }
-        .opacity(interactive ? 1 : 0.9)
+        .opacity(interactive ? 1 : 0.6)
     }
 
     private var drag: some Gesture {

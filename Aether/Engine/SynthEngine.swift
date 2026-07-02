@@ -76,6 +76,7 @@ final class SynthEngine {
     private var noteCounter = 0
     private var ctrl = 0
     private var lfoV = 0.0
+    private var lfoS = 0.0    // smoothed LFO, kills the click when saw/square shapes jump
     private var started = false
 
     // Live scope: a ring of recent output samples for the waveform display. Raw pointer so the
@@ -115,7 +116,7 @@ final class SynthEngine {
     func start() {
         guard !started else { return }
         started = true
-        setupNode()
+        if srcNode == nil { setupNode() }
         #if os(iOS)
         let session = AVAudioSession.sharedInstance()
         try? session.setCategory(.playback, mode: .default)
@@ -127,6 +128,15 @@ final class SynthEngine {
 
     func stop() {
         for v in voices { v.kill() }
+    }
+
+    /// Fully stop the audio engine. Must run before the owner deallocates: the render block
+    /// captures self unowned and writes into the scope buffer, so rendering past deinit is a
+    /// use-after-free (the intermittent crash when leaving a lesson).
+    func shutdown() {
+        guard started else { return }
+        started = false
+        engine.stop()
     }
 
     // MARK: UI-facing setters (thread-safe)
@@ -195,11 +205,12 @@ final class SynthEngine {
                 }
                 let rateHz = 0.05 * pow(2.0, current.v(.lfoRate) * 8.6)
                 lfoV = lfo.render(hz: rateHz, shape: current.v(.lfoShape) * 3.0)
+                lfoS += (lfoV - lfoS) * 0.35   // ~2 ms slew at block rate; edges stay audibly sharp
             }
             ctrl = (ctrl + 1) & 31
 
             var mix = 0.0
-            for v in voices where v.active { mix += v.render(current, lfoValue: lfoV) }
+            for v in voices where v.active { mix += v.render(current, lfoValue: lfoS) }
             mix = mix * 0.4 + kick.render()
 
             let drive = current.v(.drive)
@@ -222,7 +233,7 @@ final class SynthEngine {
             if current.simLow > 25 { out = simHP.process(out, cutoffHz: current.simLow, res: 0, mode: .highpass) }
             if current.simHigh < 20000 { out = simLP.process(out, cutoffHz: current.simHigh, res: 0, mode: .lowpass) }
 
-            out = max(-1, min(1, out))
+            out = tanh(out)   // soft limit: chords saturate gently instead of hard-clipping
             scope[scopeW] = Float(out)
             scopeW = (scopeW + 1) % scopeSize
 
