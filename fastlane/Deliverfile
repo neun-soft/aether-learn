@@ -7,5 +7,6 @@ force(true)                       # no HTML preview prompt in CI
 precheck_include_in_app_purchases(false)
 submit_for_review(false)          # keep manual submission until content is final
 
-# Screenshots are opt-in until you generate them (see fastlane/screenshots/).
-skip_screenshots(true)
+# 6.7" screenshots live in fastlane/screenshots/en-US (Apple scales this set to
+# the other iPhone sizes). Regenerate with: swift tool/make-screenshots.swift fastlane/screenshots/en-US
+skip_screenshots(false)
