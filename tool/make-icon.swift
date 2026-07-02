@@ -1,6 +1,9 @@
 import AppKit
 import CoreGraphics
 
+// Aether Learn icon — matches the Aether Jam family: dark navy->black background
+// with a lifted center, and a bold glyph filled with the signature vertical
+// gold -> lavender -> blue gradient. Learn's glyph is a sine wave (vs Jam's "A").
 let size = 1024
 let S = CGFloat(size)
 
@@ -12,38 +15,36 @@ func col(_ hex: String, _ a: CGFloat = 1) -> CGColor {
 let ctx = CGContext(data: nil, width: size, height: size, bitsPerComponent: 8, bytesPerRow: 0,
                     space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
 
-// Vibrant diagonal gradient — a colored icon pops on the home screen far better
-// than a thin line on near-black. Blue -> indigo -> purple (app accent family).
+// Background: diagonal navy (top-left) -> near-black (bottom-right), sampled from
+// the Jam icon (#20293b -> #050b19).
 let bg = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
-                    colors: [col("5ba0ff"), col("6f7bf0"), col("a066f0")] as CFArray,
-                    locations: [0, 0.55, 1])!
+                    colors: [col("20293b"), col("0b1220"), col("050b19")] as CFArray, locations: [0, 0.6, 1])!
 ctx.drawLinearGradient(bg, start: CGPoint(x: 0, y: S), end: CGPoint(x: S, y: 0), options: [])
+// Soft center lift (#383c51) behind the glyph.
+let lift = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                      colors: [col("383c51", 0.55), col("383c51", 0)] as CFArray, locations: [0, 1])!
+ctx.drawRadialGradient(lift, startCenter: CGPoint(x: S/2, y: S*0.54), startRadius: 0,
+                       endCenter: CGPoint(x: S/2, y: S*0.54), endRadius: S*0.5, options: [])
 
-// Soft top-light for depth.
-let light = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
-                       colors: [col("ffffff", 0.16), col("ffffff", 0)] as CFArray, locations: [0, 1])!
-ctx.drawRadialGradient(light, startCenter: CGPoint(x: S*0.32, y: S*0.72), startRadius: 0,
-                       endCenter: CGPoint(x: S*0.32, y: S*0.72), endRadius: S*0.7, options: [])
-
-// Thin center axis — the "zero line" a wave crosses. Sits just inside the wave
-// span so it reads as a baseline, not a line poking past the ends.
-ctx.setStrokeColor(col("ffffff", 0.22)); ctx.setLineWidth(5); ctx.setLineCap(.round)
-ctx.move(to: CGPoint(x: 250, y: S/2)); ctx.addLine(to: CGPoint(x: S-250, y: S/2)); ctx.strokePath()
-
-// One clean, elegant sine wave in white — 1.5 relaxed cycles, calm amplitude.
-let left: CGFloat = 170, right = S-170, mid = S/2, amp: CGFloat = 158
+// Bold sine wave path — 1.5 relaxed cycles, rounded terminals like the Jam "A".
+let left: CGFloat = 175, right = S-175, mid = S/2, amp: CGFloat = 168
 let path = CGMutablePath(); var first = true; var x = left
 while x <= right {
     let t = (x-left)/(right-left)
     let y = mid + sin(t * 2 * .pi * 1.5) * amp
     if first { path.move(to: CGPoint(x:x,y:y)); first=false } else { path.addLine(to: CGPoint(x:x,y:y)) }
-    x += 1.0
+    x += 0.75
 }
-// Soft shadow beneath the wave for lift.
+
+// Fill the stroked wave with the family's vertical gold -> lavender -> blue gradient:
+// crests (top) gold, troughs (bottom) blue, lavender through the middle.
 ctx.saveGState()
-ctx.setShadow(offset: CGSize(width: 0, height: -10), blur: 30, color: col("2a1f5a", 0.5))
-ctx.addPath(path); ctx.setStrokeColor(col("ffffff")); ctx.setLineWidth(72)
-ctx.setLineCap(.round); ctx.setLineJoin(.round); ctx.strokePath()
+ctx.addPath(path); ctx.setLineWidth(84); ctx.setLineCap(.round); ctx.setLineJoin(.round)
+ctx.replacePathWithStrokedPath(); ctx.clip()
+let waveGrad = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                          colors: [col("f1d3a0"), col("d2c0ff"), col("7dbeff")] as CFArray, locations: [0, 0.5, 1])!
+ctx.drawLinearGradient(waveGrad, start: CGPoint(x: 0, y: mid+amp), end: CGPoint(x: 0, y: mid-amp),
+                       options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
 ctx.restoreGState()
 
 let cg = ctx.makeImage()!
