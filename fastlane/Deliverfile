@@ -1,0 +1,11 @@
+# Defaults for upload_to_app_store (deliver). Auth comes from the API key set
+# in the Fastfile, so no apple_id is needed here.
+
+# Skip binary upload in the metadata-only path; the release lane builds + uploads
+# the ipa itself, so deliver should only push metadata/screenshots.
+force(true)                       # no HTML preview prompt in CI
+precheck_include_in_app_purchases(false)
+submit_for_review(false)          # keep manual submission until content is final
+
+# Screenshots are opt-in until you generate them (see fastlane/screenshots/).
+skip_screenshots(true)

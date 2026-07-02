@@ -1,0 +1,128 @@
+default_platform(:ios)
+
+# ---------------------------------------------------------------------------
+# AetherLearn — release automation
+#
+# Auth:     App Store Connect API key (see fastlane/.env.example)
+# Signing:  Automatic (Xcode-managed), matching CODE_SIGN_STYLE in project.yml.
+#           build_app runs xcodebuild with -allowProvisioningUpdates so the
+#           distribution profile is created/refreshed on demand.
+# Project:  Generated from project.yml by XcodeGen. Every lane regenerates the
+#           .xcodeproj first so a stale/absent project never blocks a build,
+#           and version bumps edit project.yml (the source of truth), not the
+#           throwaway .pbxproj.
+# ---------------------------------------------------------------------------
+
+SCHEME       = "AetherLearn"
+PROJECT      = "AetherLearn.xcodeproj"
+PROJECT_YML  = "project.yml"
+OUTPUT_DIR   = "build/fastlane"
+TEAM_ID      = "7LAGLNXS6L"
+
+platform :ios do
+  before_all do
+    ensure_git_status_clean(show_uncommitted_changes: true) unless ENV["SKIP_GIT_CHECK"]
+    regenerate_project
+  end
+
+  desc "Build and upload a beta to TestFlight"
+  lane :beta do
+    api_key = load_api_key
+    # Unique build number per upload (timestamp), then regenerate the project.
+    set_yml_value("CURRENT_PROJECT_VERSION", Time.now.strftime("%Y%m%d%H%M"))
+    regenerate_project
+    build(export_method: "app-store")
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true,
+      distribute_external: false
+    )
+    tag_release(prefix: "beta")
+  end
+
+  desc "Build and submit a release to the App Store"
+  lane :release do
+    api_key = load_api_key
+    build(export_method: "app-store")
+    upload_to_app_store(
+      api_key: api_key,
+      submit_for_review: false,        # flip to true once metadata/screenshots are final
+      automatic_release: false,
+      force: true,                      # skip the HTML preview prompt
+      precheck_include_in_app_purchases: false,
+      skip_screenshots: true,           # add screenshots under fastlane/screenshots to enable
+      run_precheck_before_submit: true
+    )
+    tag_release(prefix: "release")
+  end
+
+  desc "Bump the marketing version (major|minor|patch). Usage: fastlane bump type:minor"
+  lane :bump do |options|
+    type = options[:type] || "patch"
+    new_version = next_marketing_version(type)
+    set_yml_value("MARKETING_VERSION", new_version)
+    regenerate_project
+    UI.success("Marketing version is now #{new_version}")
+  end
+
+  # -- helpers ---------------------------------------------------------------
+
+  desc "Regenerate the Xcode project from project.yml"
+  private_lane :regenerate_project do
+    sh("cd .. && xcodegen generate")
+  end
+
+  private_lane :build do |options|
+    build_app(
+      scheme: SCHEME,
+      project: PROJECT,
+      output_directory: OUTPUT_DIR,
+      clean: true,
+      export_method: options[:export_method],
+      xcargs: "-allowProvisioningUpdates",
+      export_options: {
+        signingStyle: "automatic",
+        teamID: TEAM_ID
+      }
+    )
+  end
+
+  # App Store Connect API key from environment (see fastlane/.env.example).
+  private_lane :load_api_key do
+    unless ENV["ASC_KEY_ID"] && ENV["ASC_ISSUER_ID"] && ENV["ASC_KEY_PATH"]
+      UI.user_error!("Missing App Store Connect API key env vars. Copy fastlane/.env.example to fastlane/.env and fill it in.")
+    end
+    app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_PATH"],
+      in_house: false
+    )
+  end
+
+  private_lane :tag_release do |options|
+    add_git_tag(tag: "#{options[:prefix]}/#{Time.now.strftime('%Y%m%d%H%M')}") unless ENV["SKIP_GIT_CHECK"]
+  end
+end
+
+# Compute the next MARKETING_VERSION from project.yml by semver component.
+# Plain helper (no lane calls) so it is safe to invoke from anywhere.
+def next_marketing_version(type)
+  yml = File.read("../#{PROJECT_YML}")
+  current = yml[/MARKETING_VERSION:\s*"?([0-9]+\.[0-9]+\.?[0-9]*)"?/, 1] || "1.0.0"
+  parts = current.split(".").map(&:to_i)
+  parts << 0 while parts.length < 3
+  case type
+  when "major" then [parts[0] + 1, 0, 0].join(".")
+  when "minor" then [parts[0], parts[1] + 1, 0].join(".")
+  else              [parts[0], parts[1], parts[2] + 1].join(".")
+  end
+end
+
+# Replace a `KEY: "value"` (or `KEY: value`) line in project.yml.
+def set_yml_value(key, value)
+  path = "../#{PROJECT_YML}"
+  yml = File.read(path)
+  yml = yml.gsub(/(#{key}:\s*)"?[^"\n]*"?/, "\\1\"#{value}\"")
+  File.write(path, yml)
+end

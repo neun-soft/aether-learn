@@ -36,6 +36,9 @@ targets:
       properties:
         CFBundleDisplayName: Aether Learn
         UILaunchScreen: {}
+        # No custom/non-exempt encryption, so uploads skip the export-compliance
+        # prompt that would otherwise stall every TestFlight build.
+        ITSAppUsesNonExemptEncryption: false
         UIAppFonts:
           - SpaceGrotesk.ttf
           - JetBrainsMono.ttf

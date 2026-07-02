@@ -1,0 +1,15 @@
+Aether Learn teaches you how sound and synthesizers actually work, one hands-on lesson at a time. No jargon, no prerequisites. Every concept comes with a real synth engine you play with your finger, so you hear the idea the moment you read it.
+
+Start from the very beginning: what sound is, how frequency becomes pitch, and why a wave's shape decides its character. Then build up through the tools real producers use every day.
+
+WHAT YOU LEARN
+- Sound and frequency: vibration, pitch, amplitude, and the difference between loudness you measure and loudness you hear
+- Waveforms and harmonics: watch a bright wave get built from pure sine waves, one at a time, until it forms a full saw
+- Subtractive synthesis: shape tone with a low-pass filter, resonance, and the classic filter sweep
+- Envelopes: attack, hold, decay, sustain, release, and delay, shaping how a note lives over time
+- Modulation: LFOs, vibrato, tremolo, and the rhythmic filter wobble at the heart of bass music
+
+HOW IT WORKS
+Each lesson has three steps. Learn the idea in plain language, watch a short demo that moves the controls for you, then play with a real, audio-reactive instrument built into the app. You see the waveform, the harmonics, the filter curve, and the envelope respond in real time as you turn the knobs.
+
+Built for curiosity. Whether you have never touched a synth or you want to finally understand the gear you already own, Aether Learn gets you from zero to making sounds you understand.

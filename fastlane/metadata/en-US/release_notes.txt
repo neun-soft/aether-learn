@@ -1,0 +1,1 @@
+First release. The complete introductory course to sound design: sound and frequency, waveforms and harmonics, subtractive filters, envelopes, and modulation, each taught with a real synth engine you play as you learn.

@@ -5,3 +5,14 @@ build-device/
 xcuserdata/
 DerivedData/
 .gstack/
+
+# fastlane
+fastlane/.env
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+*.p8
+*.mobileprovision
+*.ipa
+*.dSYM.zip
