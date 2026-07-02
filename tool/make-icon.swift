@@ -12,52 +12,38 @@ func col(_ hex: String, _ a: CGFloat = 1) -> CGColor {
 let ctx = CGContext(data: nil, width: size, height: size, bitsPerComponent: 8, bytesPerRow: 0,
                     space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
 
-// Background: radial-ish deep gradient, slightly lifted center.
+// Vibrant diagonal gradient — a colored icon pops on the home screen far better
+// than a thin line on near-black. Blue -> indigo -> purple (app accent family).
 let bg = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
-                    colors: [col("232a3d"), col("0b0e15")] as CFArray, locations: [0, 1])!
-ctx.drawRadialGradient(bg, startCenter: CGPoint(x: S/2, y: S*0.58), startRadius: 0,
-                       endCenter: CGPoint(x: S/2, y: S/2), endRadius: S*0.72, options: [.drawsAfterEndLocation])
+                    colors: [col("5ba0ff"), col("6f7bf0"), col("a066f0")] as CFArray,
+                    locations: [0, 0.55, 1])!
+ctx.drawLinearGradient(bg, start: CGPoint(x: 0, y: S), end: CGPoint(x: S, y: 0), options: [])
 
-// Subtle baseline grid ticks.
-ctx.setStrokeColor(col("38415a", 0.5)); ctx.setLineWidth(2)
-for i in 1..<6 { let x = S*CGFloat(i)/6; ctx.move(to: CGPoint(x:x,y:S*0.32)); ctx.addLine(to: CGPoint(x:x,y:S*0.68)); ctx.strokePath() }
+// Soft top-light for depth.
+let light = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                       colors: [col("ffffff", 0.16), col("ffffff", 0)] as CFArray, locations: [0, 1])!
+ctx.drawRadialGradient(light, startCenter: CGPoint(x: S*0.32, y: S*0.72), startRadius: 0,
+                       endCenter: CGPoint(x: S*0.32, y: S*0.72), endRadius: S*0.7, options: [])
 
-// Morphing waveform: sine on the left blending to a saw on the right.
-let left: CGFloat = 130, right = S-130, mid = S/2, amp: CGFloat = 220
-func wave(_ t: CGFloat) -> CGFloat {
-    let phase = t * 3.0                       // 3 cycles across
-    let ph = phase - floor(phase)
-    let sine = sin(phase * 2 * .pi)
-    let saw = 1 - 2*ph                         // falling saw
-    let m = t                                  // morph amount 0->1 across width
-    return sine*(1-m) + saw*m
+// Thin center axis — the "zero line" a wave crosses. Sits just inside the wave
+// span so it reads as a baseline, not a line poking past the ends.
+ctx.setStrokeColor(col("ffffff", 0.22)); ctx.setLineWidth(5); ctx.setLineCap(.round)
+ctx.move(to: CGPoint(x: 250, y: S/2)); ctx.addLine(to: CGPoint(x: S-250, y: S/2)); ctx.strokePath()
+
+// One clean, elegant sine wave in white — 1.5 relaxed cycles, calm amplitude.
+let left: CGFloat = 170, right = S-170, mid = S/2, amp: CGFloat = 158
+let path = CGMutablePath(); var first = true; var x = left
+while x <= right {
+    let t = (x-left)/(right-left)
+    let y = mid + sin(t * 2 * .pi * 1.5) * amp
+    if first { path.move(to: CGPoint(x:x,y:y)); first=false } else { path.addLine(to: CGPoint(x:x,y:y)) }
+    x += 1.0
 }
-func buildPath() -> CGPath {
-    let p = CGMutablePath(); var first = true; var x = left
-    while x <= right {
-        let t = (x-left)/(right-left)
-        let y = mid + wave(t)*amp
-        if first { p.move(to: CGPoint(x:x,y:y)); first=false } else { p.addLine(to: CGPoint(x:x,y:y)) }
-        x += 1.5
-    }
-    return p
-}
-let path = buildPath()
-
-// Glow underlay.
+// Soft shadow beneath the wave for lift.
 ctx.saveGState()
-ctx.setShadow(offset: .zero, blur: 55, color: col("6aa4ff", 0.7))
-ctx.setStrokeColor(col("6aa4ff")); ctx.setLineWidth(40); ctx.setLineCap(.round); ctx.setLineJoin(.round)
-ctx.addPath(path); ctx.strokePath()
-ctx.restoreGState()
-
-// Gradient stroke (blue -> purple) by clipping to the stroked path.
-ctx.saveGState()
-ctx.addPath(path); ctx.setLineWidth(38); ctx.setLineCap(.round); ctx.setLineJoin(.round)
-ctx.replacePathWithStrokedPath(); ctx.clip()
-let strokeGrad = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(),
-                            colors: [col("5b9dff"), col("8db4ff"), col("c79bff")] as CFArray, locations: [0,0.5,1])!
-ctx.drawLinearGradient(strokeGrad, start: CGPoint(x:left,y:mid), end: CGPoint(x:right,y:mid), options: [.drawsBeforeStartLocation, .drawsAfterEndLocation])
+ctx.setShadow(offset: CGSize(width: 0, height: -10), blur: 30, color: col("2a1f5a", 0.5))
+ctx.addPath(path); ctx.setStrokeColor(col("ffffff")); ctx.setLineWidth(72)
+ctx.setLineCap(.round); ctx.setLineJoin(.round); ctx.strokePath()
 ctx.restoreGState()
 
 let cg = ctx.makeImage()!
