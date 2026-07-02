@@ -1,0 +1,7 @@
+build/
+build-device/
+*.xcodeproj
+.DS_Store
+xcuserdata/
+DerivedData/
+.gstack/
