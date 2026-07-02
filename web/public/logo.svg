@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Aether Learn">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="34%" r="78%">
+      <stop offset="0" stop-color="#222a3a"/>
+      <stop offset="60%" stop-color="#141826"/>
+      <stop offset="100%" stop-color="#0b0e16"/>
+    </radialGradient>
+    <linearGradient id="wave" x1="32" y1="19" x2="32" y2="45" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e8c07d"/>
+      <stop offset="0.5" stop-color="#c79bff"/>
+      <stop offset="1" stop-color="#5b9dff"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <path d="M14 32 C17 19 23 19 26 32 C29 45 35 45 38 32 C41 19 47 19 50 32"
+        fill="none" stroke="url(#wave)" stroke-width="6.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
