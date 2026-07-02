@@ -1,66 +1,67 @@
-# Submitting Aether Learn — finish steps
+# Aether Learn — submission status & finish sheet
 
-Everything automatable is done and committed: metadata, screenshots, icon,
-credentials, and the fastlane lanes with submission info. What's left needs your
-Apple login and the App Store Connect web UI (fastlane can't do these headlessly
-for a brand-new app). This is the same flow Aether Jam and Alivio used.
+App Store Connect app ID **6786776504** · bundle `app.neun.aether.learn` · team 7LAGLNXS6L
 
-## The one blocker: the app record doesn't exist yet
+## Done (automated)
 
-`app.neun.aether.learn` is not in App Store Connect. Creating it registers a new
-bundle ID in the Developer Portal, which requires an interactive Apple ID login
-with 2FA. Two ways:
+- ✅ App record created in App Store Connect + Developer Portal.
+- ✅ Signed release binary built and **uploaded** (build 1.0). Processing on Apple's
+  side takes 5–30 min; it'll appear under TestFlight / the version's "Build" picker.
+- ✅ All 6 screenshots (6.7") uploaded to the 1.0 version.
+- ✅ App name set: **Aether Learn**.
 
-**A. fastlane (terminal):** set your Apple ID, then run the setup lane:
+## Blocked (fastlane bug — do these in the ASC web UI)
+
+The first-version text metadata upload hits fastlane deliver bug #20538 (ASC returns
+"No data" on a brand-new app's version localization). This clears itself once the
+app has its first submitted version, so `fastlane release` / `fastlane metadata`
+will work for every future update. For THIS first version, paste the fields below.
+
+Open App Store Connect → Apps → Aether Learn → iOS App 1.0.
+
+### 1. Version fields (paste)
+
+**Subtitle**
 ```
-cd app/ios   # (this repo)
-# add your Apple Developer email to fastlane/Appfile:  apple_id("you@example.com")
+Learn synthesis by ear
+```
+**Promotional Text**
+```
+Learn how synthesizers really work by playing a real one built into every lesson. From what sound is to filters, envelopes, and modulation.
+```
+**Keywords**
+```
+synth,synthesizer,sound design,music theory,waveform,filter,LFO,ear training,producer
+```
+**Description** — copy from `fastlane/metadata/en-US/description.txt`.
+
+**Support URL** `https://aether-jam.neunsoft.com/support`
+**Marketing URL** `https://neunsoft.com`
+**Copyright** `2026 Neun`
+
+### 2. App-level settings (required before you can submit)
+
+- **Privacy Policy URL** (App Information): `https://neunsoft.com/privacy`
+- **Category**: Primary **Music**, Secondary **Education**.
+- **Pricing and Availability**: **Free**, all territories.
+- **App Privacy**: **Data Not Collected** (no accounts, analytics, or network calls).
+- **Age Rating**: run the questionnaire, all "None" → **4+**.
+
+### 3. Attach build + submit
+
+- Under the 1.0 version, **Build → +**, pick the processed build (1.0).
+- Export compliance: **No** (uses no non-exempt encryption).
+- **Add for Review → Submit**.
+
+## Retry path (optional)
+
+The metadata bug is usually eventual-consistency. If you'd rather not paste, wait
+~1 hour after app creation and run:
+```
+cd /Users/diego/Development/neun/aether/learn
 set -a; . fastlane/.env; set +a
-fastlane setup          # runs produce; enter your Apple ID password + 2FA once
+fastlane metadata      # text + screenshots
+fastlane release       # rebuild, upload, submit for review
 ```
-
-**B. Web UI (what Jam/Alivio did):** App Store Connect → My Apps → + → New App.
-- Platform: iOS · Name: **Aether Learn** · Language: **English (U.S.)**
-- Bundle ID: **app.neun.aether.learn** (register it in the Developer Portal first
-  if it's not in the dropdown) · SKU: **aetherlearn-1**
-
-## Then one command does the rest
-
-```
-set -a; . fastlane/.env; set +a
-fastlane release
-```
-This builds, uploads the binary, pushes all metadata + screenshots, sets the
-export-compliance/IDFA/third-party answers, and submits for review. It does NOT
-auto-release (you press "Release this version" after approval).
-
-## ASC web-UI items fastlane can't set (do once, before review passes)
-
-App Store Connect blocks a first submission until these are filled:
-
-- [ ] **Pricing and Availability** → Price: **Free**, all territories.
-- [ ] **App Privacy** → **Data Not Collected** (Aether Learn has no accounts,
-      analytics, or network calls — same as Jam/Alivio).
-- [ ] **Age Rating** → answer the questionnaire; all "None" → **4+**.
-
-`fastlane release` will upload and attempt to submit; if these aren't set yet,
-ASC holds the submission and flags them — fill them and re-run, or hit Submit in
-the UI. Once they're set the first time, future updates submit hands-off.
-
-## What's already filled (for reference)
-
-| Field | Value |
-|---|---|
-| Name | Aether Learn |
-| Subtitle | Learn synthesis by ear |
-| Category | Music (primary) / Education (secondary) |
-| Keywords | synth, synthesizer, sound design, music theory, waveform, filter, LFO, ear training, producer |
-| Support URL | https://aether-jam.neunsoft.com/support |
-| Marketing URL | https://neunsoft.com |
-| Privacy URL | https://neunsoft.com/privacy |
-| Copyright | 2026 Neun |
-| Screenshots | 6× 6.7" in fastlane/screenshots/en-US |
-| Version / build | 1.0 / timestamp per upload |
-
-The URLs are family/company stopgaps (Learn's own `aether-learn.neunsoft.com`
-has no TLS cert yet). Swap them in ASC anytime once those pages are live.
+If `fastlane metadata` still says "No data", the paste sheet above is the reliable
+path. Once the first version is submitted, fastlane handles all future releases.
