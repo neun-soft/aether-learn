@@ -39,6 +39,22 @@ Report whether the app record exists in App Store Connect
 
 Create the app record in App Store Connect if it doesn't exist yet
 
+### ios push_build
+
+```sh
+[bundle exec] fastlane ios push_build
+```
+
+Upload the already-built IPA to App Store Connect (no rebuild)
+
+### ios screens
+
+```sh
+[bundle exec] fastlane ios screens
+```
+
+Upload only the screenshots (no binary, no text metadata)
+
 ### ios metadata
 
 ```sh

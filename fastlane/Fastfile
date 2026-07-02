@@ -65,6 +65,29 @@ platform :ios do
     )
   end
 
+  desc "Upload the already-built IPA to App Store Connect (no rebuild)"
+  lane :push_build do
+    api_key = load_api_key
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: "build/fastlane/AetherLearn.ipa",
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Upload only the screenshots (no binary, no text metadata)"
+  lane :screens do
+    api_key = load_api_key
+    upload_to_app_store(
+      api_key: api_key,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: false,
+      overwrite_screenshots: true,
+      force: true
+    )
+  end
+
   desc "Push text metadata + screenshots only (no build)"
   lane :metadata do
     api_key = load_api_key
@@ -80,7 +103,7 @@ platform :ios do
   desc "Build and submit a release to the App Store"
   lane :release do
     api_key = load_api_key
-    build(export_method: "app-store")
+    build(export_method: "app-store", api_key: api_key)
     upload_to_app_store(
       api_key: api_key,
       submit_for_review: true,
@@ -115,6 +138,14 @@ platform :ios do
   end
 
   private_lane :build do |options|
+    # Create/download the App Store distribution profile via the API key (sigh
+    # authenticates with it), then export with manual signing referencing that
+    # profile — so the export xcodebuild never needs an interactive Xcode account.
+    get_provisioning_profile(
+      app_identifier: "app.neun.aether.learn",
+      api_key: options[:api_key],
+      readonly: false
+    )
     build_app(
       scheme: SCHEME,
       project: PROJECT,
@@ -123,8 +154,11 @@ platform :ios do
       export_method: options[:export_method],
       xcargs: "-allowProvisioningUpdates",
       export_options: {
-        signingStyle: "automatic",
-        teamID: TEAM_ID
+        signingStyle: "manual",
+        teamID: TEAM_ID,
+        provisioningProfiles: {
+          "app.neun.aether.learn" => ENV["sigh_app.neun.aether.learn_appstore"]
+        }
       }
     )
   end
