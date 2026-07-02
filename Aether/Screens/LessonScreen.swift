@@ -18,6 +18,8 @@ struct LessonScreen: View {
     @State private var showCover = true
     @State private var octaveShift = 0
     @State private var additiveCount = 1
+    @State private var scrollMaxY: CGFloat = 0   // content bottom in the scroll's space
+    @State private var hintBounce = false
 
     enum Phase: String, CaseIterable { case theory = "Learn", demo = "Watch", play = "Play" }
 
@@ -288,6 +290,7 @@ struct LessonScreen: View {
 
     private var playView: some View {
         VStack(spacing: 14) {
+            GeometryReader { outer in
             ScrollView {
                 VStack(spacing: 16) {
                     Text(lang.t(lesson.exercise.prompt))
@@ -342,6 +345,20 @@ struct LessonScreen: View {
                     if let tip = lesson.exercise.tip { ideaTip(lang.t(tip)) }
                 }
                 .padding(.horizontal, 20)
+                .background(
+                    GeometryReader { g in
+                        Color.clear.preference(
+                            key: ScrollMaxYKey.self,
+                            value: g.frame(in: .named("playScroll")).maxY)
+                    }
+                )
+            }
+            .coordinateSpace(name: "playScroll")
+            .onPreferenceChange(ScrollMaxYKey.self) { scrollMaxY = $0 }
+            .overlay(alignment: .bottom) {
+                // Only when content runs past the fold, and it fades out at the bottom.
+                scrollHint(visible: scrollMaxY > outer.size.height + 16)
+            }
             }
 
             if lesson.exercise.showKeyboard {
@@ -359,6 +376,30 @@ struct LessonScreen: View {
             }
 
             bottomBar
+        }
+    }
+
+    // "More below" affordance: a soft fade with a bouncing chevron, shown only
+    // when the scroll content extends past the visible area (e.g. the full
+    // envelope's knob grid). Non-interactive so it never blocks scrolling.
+    @ViewBuilder private func scrollHint(visible: Bool) -> some View {
+        if visible {
+            Image(systemName: "chevron.down")
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(accent)
+                .frame(width: 34, height: 34)
+                .background(Theme.panel)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(Theme.hairline(), lineWidth: 1))
+                .shadow(color: .black.opacity(0.35), radius: 8, y: 3)
+                .padding(.bottom, 10)
+                .offset(y: hintBounce ? 3 : -3)
+                .allowsHitTesting(false)
+                .onAppear {
+                    withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) {
+                        hintBounce = true
+                    }
+                }
         }
     }
 
@@ -624,5 +665,14 @@ struct RoutingPicker: View {
                 }
             }
         }
+    }
+}
+
+// Reports the scroll content's bottom edge (in the scroll view's coordinate
+// space) so the Play screen can show a "more below" hint until you reach it.
+private struct ScrollMaxYKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
 }
