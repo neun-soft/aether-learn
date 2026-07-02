@@ -104,8 +104,8 @@ enum Curriculum {
                 id: "m1l1", title: "What Sound Is",
                 concept: "Sound is a vibration traveling through a medium like air or water. No medium, no sound.",
                 theory: [
-                    "Sound is a vibration moving through a medium. Something vibrates, that shakes the molecules of the air or water around it, and the disturbance travels outward until it reaches your ears.",
-                    "The medium is what matters. Underwater you still hear, because water carries the vibration. In the vacuum of space there is nothing to carry it, so there is complete silence.",
+                    "Sound is a vibration moving through a medium. Something vibrates, that moves the molecules of the medium, and the disturbance travels outward until it reaches your ears.",
+                    "Underwater you can still hear, because water carries the vibration; however, sound travels differently than it does in air. In the vacuum of space there is nothing to carry it, so there is complete silence.",
                     "The display shows that vibration. A flat line means the medium is still and there is silence. A wiggle means it is vibrating, and you hear a tone."
                 ],
                 takeaways: ["Sound is a vibration traveling through a medium", "No medium, like a vacuum, means no sound"],
@@ -123,10 +123,10 @@ enum Curriculum {
             ),
             Lesson(
                 id: "m1l2", title: "Frequency",
-                concept: "How many times per second the medium vibrates. Slow is low, fast is high.",
+                concept: "How many times per second the medium vibrates. Slow means low frequency, fast means a high frequency.",
                 theory: [
                     "Frequency is how many times per second the medium vibrates. We measure it in hertz, written Hz. Ten vibrations per second is 10 Hz.",
-                    "Slow vibrations sound low. Fast vibrations sound high. As you speed them up, the wiggling line packs together more tightly.",
+                    "Slow vibrations sound 'low'. Fast vibrations sound 'high'. As you speed them up, the wiggling line packs together more tightly.",
                     "Sweep the slider from slow to fast and listen to the sound climb."
                 ],
                 takeaways: ["Frequency is vibrations per second, measured in Hz", "Slower is lower, faster is higher"],
@@ -144,7 +144,7 @@ enum Curriculum {
                 concept: "A steady, fast enough vibration is what we hear as a musical note.",
                 theory: [
                     "When a vibration is steady and fast enough, your ear stops hearing separate vibrations and hears one clear musical note instead.",
-                    "Every note has an exact frequency. The note A above middle C vibrates 440 times per second, or 440 Hz. Double the frequency and you get the same note one octave higher.",
+                    "Every note has an exact frequency. For example, the note A above middle C vibrates 440 times per second, or 440 Hz. Double the frequency and you get the same note one octave higher.",
                     "This is the big idea: musical notes are just specific frequencies. Sweep the slider and watch the note name land on each one."
                 ],
                 takeaways: ["A musical note is a specific frequency", "Doubling the frequency raises it one octave"],
@@ -161,7 +161,7 @@ enum Curriculum {
                 id: "m1l4", title: "Amplitude",
                 concept: "Amplitude is how tall the wave is, the size of the pressure swing it makes.",
                 theory: [
-                    "Amplitude is the height of the wave, which is how far the speaker cone is driven on each swing. A tall wave pushes the cone far out and pulls it far back, moving a lot of air, which your ear hears as loud. A short wave barely nudges it, quiet. The flat centerline is the cone at rest, silence.",
+                    "Amplitude is the height of the wave, which is how far the speaker cone is driven on each swing. A tall wave pushes the cone far out and pulls it far back, moving more air, which your ear hears as louder. A short wave barely nudges it. The flat centerline is the cone at rest, silence.",
                     "The knob below sets the amplitude inside the app. Turn it up and the wave grows taller, turn it down and it shrinks. This is the app's own volume.",
                     "There is a second volume as well: your phone's. It sits at the very end of the chain and turns the whole output up or down. Raise your phone's volume now with the side buttons, then shape the wave with the app knob.",
                     "Two controls, one chain. The app sets how tall the wave is, your phone sets how much of it reaches the speaker."
@@ -183,7 +183,7 @@ enum Curriculum {
                     basePatch: Patch([.oscWave: 0, .cutoff: 0.95, .ampSustain: 0.7, .ampRelease: 0.3]),
                     visual: .scope,
                     showSystemVolume: true,
-                    tip: "On screen this height is really just a number, roughly between minus one and plus one. It is not real loudness yet. It travels out through a converter, an amplifier, and a speaker, and each stage scales it, which is why the same wave is quiet on a phone and huge on a club system.",
+                    tip: "On screen this height is really just a number, roughly between minus one and plus one. It travels out through a converter, an amplifier, and a speaker, and each stage scales it, which is why the same wave is quiet on a phone and huge on a club system.",
                     labels: [.ampSustain: "Amplitude"]
                 )
             ),
@@ -193,9 +193,9 @@ enum Curriculum {
                 theory: [
                     "Amplitude is the physical height of the wave. Loudness is what your ears make of it, how loud it truly seems.",
                     "Put another way: amplitude is a fact about the wave, loudness is the opinion your ears form about it. The very same wave can seem loud or quiet depending on its pitch.",
-                    "The reason is that your ears are not equally sensitive to every frequency. They pick up mid frequencies easily and deep bass poorly, so a low note has to move a lot more air to feel as loud as a mid one.",
+                    "Your ears are not equally sensitive to every pitch. Sounds in the middle range, roughly where the human voice sits, are easy to hear, while very low bass notes are much harder to pick up. That's why a bass note needs far more energy to sound just as loud as a voice-range note.",
                     "See it for yourself. Sweep the tone below: the amplitude stays exactly the same the whole way, yet the low notes sound much quieter than the mids. Same wave height, different loudness.",
-                    "One heads-up for later: in music mastering, loudness is not left vague. It is measured with a standard called LUFS, which models how ears actually hear and gives loudness an exact number so tracks can be matched to a target. It is this same perceived loudness, turned into a precise measurement."
+                    "Interesting fact: in music mastering, loudness is not left vague. It is measured with a standard called LUFS, which is a model of how ears actually hear and gives loudness an exact number so tracks can be matched to a target. It is this same perceived loudness, turned into a precise measurement."
                 ],
                 takeaways: [
                     "Loudness is the strength of a sound as you perceive it",
@@ -215,7 +215,7 @@ enum Curriculum {
                 id: "m1l4c", title: "Amplitude vs Loudness",
                 concept: "Putting it together: amplitude and volume are physical, loudness is what you perceive.",
                 theory: [
-                    "Amplitude is the height of the wave. Volume is the control that scales it. Both are physical and can be measured.",
+                    "Amplitude is the size of the wave, how far it swings from its resting point. Volume is a control that scales that amplitude up or down on a given device. Amplitude is a physical property you can measure; volume is just a setting that changes it.",
                     "Loudness is how loud that ends up seeming to a listener, and it shifts with frequency, and even with how long a sound lasts.",
                     "This is why, to make bass feel as loud as the mids, you need far more amplitude down low. It is the reason sub-heavy club systems exist, and why engineers watch loudness, not just the height of the wave.",
                     "Play a low key, then a high key, at the same Amplitude. The high one sounds louder even though the wave is the same height. That gap is loudness."
