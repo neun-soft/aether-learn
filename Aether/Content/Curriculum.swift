@@ -503,7 +503,7 @@ enum Curriculum {
                 theory: [
                     "An envelope is a shape that unfolds over the life of a single note. It begins the instant you press a key, travels a set path, and finishes when you let go. By itself it makes no sound; it is a contour, a set of instructions for how something should change over time.",
                     "What it does depends on where you point it. Point an envelope at pitch and the note bends up or down as it plays. Point it at the filter and the tone brightens or darkens over time. Point it at volume and the loudness rises and falls. That last one is what this whole module is about: the amplitude envelope, the shape of a note's loudness from silence, up, and back to silence.",
-                    "Every note you have played so far snapped on at full volume and stayed there. Real sounds are not like that: a pluck jumps loud and fades, a pad swells in slowly. The amplitude envelope draws that. In the exercise, tap a key to start the note and tap again to release it, and watch the line, which is the note's volume over time. The lessons ahead shape each part of it."
+                    "Every note you have played so far snapped on at full volume and stayed there. Real sounds are not like that: a pluck jumps loud and fades, a pad swells in slowly. The amplitude envelope draws that. In the exercise, press and hold a key to start the note, then let go to release it, and watch the line, which is the note's volume over time. The lessons ahead shape each part of it."
                 ],
                 takeaways: [
                     "An envelope is a shape over time; what it does depends on where you point it",
@@ -511,10 +511,11 @@ enum Curriculum {
                 ],
                 demo: nil,
                 exercise: Exercise(
-                    prompt: "Tap a key to start the note, tap again to release. The line is its volume over time.",
+                    prompt: "Press and hold a key, then let go. The line is the note's volume over time.",
                     visibleParams: [],
                     basePatch: Patch([.oscWave: 0.4, .cutoff: 0.85, .ampAttack: 0.25, .ampDecay: 0.3, .ampSustain: 0.6, .ampRelease: 0.5]),
-                    visual: .envelope
+                    visual: .envelope,
+                    holdDefault: false
                 )
             ),
             Lesson(
