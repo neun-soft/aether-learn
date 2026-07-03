@@ -80,7 +80,7 @@ struct BeeView: View {
         // Wings: two long translucent wings hinged at the upper back, fanning up
         // and out and beating together. Drawn before the body so their roots tuck
         // behind it. wing (-1…1) sweeps them up on the upbeat.
-        let hinge = CGPoint(x: cx + 16, y: cy - bodyH * 0.34)
+        let hinge = CGPoint(x: cx - 6, y: cy - bodyH * 0.34)
         let flap = wing * 0.5
         // right wing (extends up-right)
         do {
@@ -125,78 +125,116 @@ struct BeeView: View {
 
 // MARK: - The Door (low-pass filter cutoff)
 //
-// Closing a door on a room muffles the sound: the highs are shut out first while
-// the bass leaks through. The door's opening tracks the cutoff — wide open is
-// bright, nearly shut is dark.
+// Seen from outside: a doorway into a room where a speaker plays music. Drag the
+// door open or closed. Open lets the bright highs through; closing it muffles the
+// sound. The open amount is the filter cutoff.
 
 struct DoorView: View {
-    @Binding var cutoff: Double          // 0…1, same value the filter uses
+    @Binding var cutoff: Double          // door open amount = cutoff
     var accent: Color
-    var height: CGFloat = 190
+    var height: CGFloat = 300
 
     var body: some View {
-        TimelineView(.animation) { tl in
-            Canvas { ctx, size in
-                let t = tl.date.timeIntervalSinceReferenceDate
-                draw(ctx, size, t: t)
-            }
+        GeometryReader { geo in
+            Canvas { ctx, size in draw(ctx, size) }
+                .contentShape(Rectangle())
+                .gesture(DragGesture(minimumDistance: 0).onChanged { g in
+                    cutoff = min(1, max(0, Double(g.location.x / geo.size.width)))
+                })
         }
         .frame(height: height)
         .background(Color.black.opacity(0.28))
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.hairline(), lineWidth: 1))
         .overlay(alignment: .topLeading) {
-            Text(cutoff > 0.66 ? "door open · bright"
-                 : cutoff > 0.33 ? "half closed · muffled" : "shut · dark")
+            Text(cutoff > 0.66 ? "open · bright"
+                 : cutoff > 0.33 ? "half open · muffled" : "shut · dark")
                 .mono(11, .semibold).foregroundColor(accent).padding(10)
         }
-        .animation(.easeOut(duration: 0.15), value: cutoff)
+        .overlay(alignment: .bottom) {
+            Text("drag the door").mono(10).foregroundColor(Theme.textFaint).padding(.bottom, 8)
+        }
+        .animation(.easeOut(duration: 0.12), value: cutoff)
     }
 
-    private func draw(_ ctx: GraphicsContext, _ size: CGSize, t: Double) {
+    private func draw(_ ctx: GraphicsContext, _ size: CGSize) {
         let w = size.width, h = size.height
-        // Speaker on the left, inside the room.
-        let spk = CGRect(x: 34, y: h/2 - 26, width: 26, height: 52)
-        ctx.fill(Path(roundedRect: spk, cornerRadius: 5), with: .color(Theme.inset))
-        ctx.stroke(Path(roundedRect: spk, cornerRadius: 5), with: .color(Theme.hairline(0.4)), lineWidth: 1)
-        ctx.fill(Path(ellipseIn: CGRect(x: spk.midX - 8, y: spk.midY - 8, width: 16, height: 16)),
-                 with: .color(accent.opacity(0.8)))
+        let open = cutoff
 
-        // Sound rings travelling right. More rings, and brighter, when the door is open
-        // (highs get through); nearly gone when shut (only muffled lows leak).
-        let bright = cutoff
-        let doorX = w * 0.66
-        for i in 0..<5 {
-            let phase = (t * 0.7 + Double(i) * 0.22).truncatingRemainder(dividingBy: 1)
-            let x = spk.maxX + CGFloat(phase) * (w - spk.maxX - 30)
-            let past = x > doorX
-            // Rings past the door are attenuated by how closed it is.
-            let alpha = (past ? 0.15 + 0.55 * bright : 0.55) * (1 - phase * 0.5)
-            let r = 10 + CGFloat(phase) * 40
-            ctx.stroke(Path(ellipseIn: CGRect(x: x - r/2, y: h/2 - r/2, width: r/2, height: r)),
-                       with: .color(accent.opacity(max(0, alpha))), lineWidth: 2)
+        // The doorway opening in the wall.
+        let dw = w * 0.46, dh = h * 0.80
+        let doorway = CGRect(x: (w - dw) / 2, y: (h - dh) / 2, width: dw, height: dh)
+        let frame = Path(roundedRect: doorway, cornerRadius: 10)
+
+        // Room seen through the doorway: warmer than the wall, with a floor,
+        // a table, a speaker, and music notes when the door is open.
+        ctx.drawLayer { room in
+            room.clip(to: frame)
+            room.fill(frame, with: .color(Color(red: 0.12, green: 0.13, blue: 0.18)))
+            // floor
+            let floorTop = doorway.minY + dh * 0.62
+            room.fill(Path { p in
+                p.move(to: CGPoint(x: doorway.minX, y: doorway.maxY))
+                p.addLine(to: CGPoint(x: doorway.maxX, y: doorway.maxY))
+                p.addLine(to: CGPoint(x: doorway.maxX - dw * 0.12, y: floorTop))
+                p.addLine(to: CGPoint(x: doorway.minX + dw * 0.12, y: floorTop))
+                p.closeSubpath()
+            }, with: .color(Color(red: 0.16, green: 0.17, blue: 0.23)))
+
+            // table (top + two legs)
+            let tCx = doorway.midX, tY = floorTop + dh * 0.06
+            let topRect = CGRect(x: tCx - dw * 0.28, y: tY, width: dw * 0.56, height: dh * 0.05)
+            room.fill(Path(roundedRect: topRect, cornerRadius: 3), with: .color(Theme.panel))
+            for lx in [tCx - dw * 0.22, tCx + dw * 0.22 - dw * 0.04] {
+                room.fill(Path(CGRect(x: lx, y: topRect.maxY, width: dw * 0.04, height: dh * 0.16)),
+                          with: .color(Theme.panelAlt))
+            }
+            // speaker on the table
+            let spk = CGRect(x: tCx - dw * 0.09, y: topRect.minY - dh * 0.16, width: dw * 0.18, height: dh * 0.16)
+            room.fill(Path(roundedRect: spk, cornerRadius: 4), with: .color(Theme.inset))
+            room.stroke(Path(roundedRect: spk, cornerRadius: 4), with: .color(Theme.hairline(0.4)), lineWidth: 1)
+            room.fill(Path(ellipseIn: CGRect(x: spk.midX - dw * 0.05, y: spk.midY - dw * 0.05,
+                                             width: dw * 0.1, height: dw * 0.1)),
+                      with: .color(accent.opacity(0.85)))
+            // music notes drifting up, fading as the door closes
+            for (i, note) in ["♪", "♫", "♪"].enumerated() {
+                let nx = spk.midX + CGFloat(i - 1) * dw * 0.16
+                let ny = spk.minY - dh * (0.06 + Double(i) * 0.05)
+                room.draw(Text(note).font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(accent.opacity(0.25 + 0.6 * open)),
+                          at: CGPoint(x: nx, y: ny))
+            }
         }
 
-        // Doorframe on the right, and the swinging door.
-        ctx.stroke(Path { p in
-            p.move(to: CGPoint(x: doorX, y: 18)); p.addLine(to: CGPoint(x: doorX, y: h - 18))
-        }, with: .color(Theme.hairline(0.5)), lineWidth: 2)
-
-        // Door hinged at the top of the frame, swinging shut as cutoff drops.
-        let openAngle = (0.08 + cutoff * 0.82) * Double.pi / 2   // ~90° open → ~5° shut
-        var d = ctx
-        d.translateBy(x: doorX, y: h/2)
-        d.rotate(by: .radians(-.pi / 2 + openAngle))            // 0 = flat/open toward viewer
-        let doorLen = h * 0.62
-        let doorRect = CGRect(x: -6, y: -doorLen/2, width: 12, height: doorLen)
-        d.fill(Path(roundedRect: doorRect, cornerRadius: 3),
-               with: .linearGradient(
+        // The door panel, hinged at the left of the frame. Its width shrinks as it
+        // opens, revealing the room on the right.
+        let doorW = doorway.width * (1 - open * 0.9)
+        if doorW > 3 {
+            let panel = CGRect(x: doorway.minX, y: doorway.minY, width: doorW, height: doorway.height)
+            let pPath = Path(roundedRect: panel, cornerRadius: 8)
+            ctx.fill(pPath, with: .linearGradient(
                 Gradient(colors: [Theme.panel, Theme.panelAlt]),
-                startPoint: CGPoint(x: -6, y: 0), endPoint: CGPoint(x: 6, y: 0)))
-        d.stroke(Path(roundedRect: doorRect, cornerRadius: 3), with: .color(accent.opacity(0.5)), lineWidth: 1.5)
-        // handle
-        d.fill(Path(ellipseIn: CGRect(x: -3, y: doorLen/2 - 16, width: 6, height: 6)),
-               with: .color(accent))
+                startPoint: CGPoint(x: panel.minX, y: 0), endPoint: CGPoint(x: panel.maxX, y: 0)))
+            // recessed inner rectangles for a paneled-door look
+            let inset = min(doorW * 0.18, 22)
+            if doorW > inset * 2 + 6 {
+                for half in [0.0, 1.0] {
+                    let ir = CGRect(x: panel.minX + inset, y: panel.minY + inset + CGFloat(half) * panel.height / 2,
+                                    width: panel.width - inset * 2, height: panel.height / 2 - inset * 1.5)
+                    ctx.stroke(Path(roundedRect: ir, cornerRadius: 4), with: .color(.black.opacity(0.25)), lineWidth: 1.5)
+                }
+            }
+            // leading edge highlight + handle
+            ctx.stroke(Path { p in
+                p.move(to: CGPoint(x: panel.maxX - 1, y: panel.minY + 6))
+                p.addLine(to: CGPoint(x: panel.maxX - 1, y: panel.maxY - 6))
+            }, with: .color(accent.opacity(0.5)), lineWidth: 2)
+            ctx.fill(Path(ellipseIn: CGRect(x: panel.maxX - 12, y: panel.midY - 4, width: 7, height: 7)),
+                     with: .color(accent))
+        }
+
+        // Frame outline over everything.
+        ctx.stroke(frame, with: .color(Theme.hairline(0.6)), lineWidth: 2)
     }
 }
 

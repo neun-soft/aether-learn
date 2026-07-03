@@ -403,24 +403,19 @@ enum Curriculum {
                 theory: [
                     "You have heard a filter a hundred times without knowing it. Stand outside a room with music playing and slowly close the door. The bright, crisp highs fade first, while the bass thumps straight through the wall.",
                     "That is exactly what a low-pass filter does. 'Low-pass' means it lets the low frequencies pass and holds the higher ones back. The more you close it, the lower it reaches, and the darker and more muffled the sound becomes.",
-                    "In the exercise, hold a note and turn CUT. The door swings shut as you lower it, and you hear the highs disappear, leaving just the low, muffled body of the sound."
+                    "In the exercise, music is playing on a speaker in the room. Drag the door: swing it open and the bright highs pour out; ease it shut and they fade, leaving just the low, muffled body of the sound."
                 ],
                 takeaways: [
                     "A low-pass filter passes the lows and holds back the highs",
                     "Closing it is like shutting a door: the highs go first"
                 ],
-                demo: DemoScript(
-                    duration: 6,
-                    startPatch: Patch([.oscWave: 0.66, .cutoff: 0.9, .resonance: 0.1, .ampSustain: 0.95]),
-                    lanes: [lane(.cutoff, [(0.5, 0.9), (3, 0.12), (5.5, 0.9)])],
-                    notes: held(45, 5.5)
-                ),
+                demo: nil,
                 exercise: Exercise(
-                    prompt: "Hold a note and turn CUT. Closing the door shuts out the highs.",
-                    visibleParams: [.cutoff],
-                    basePatch: Patch([.oscWave: 0.66, .cutoff: 0.8, .resonance: 0.1, .ampSustain: 0.95]),
+                    prompt: "Music is playing inside. Drag the door open and closed — open lets the highs through, shut muffles them.",
+                    visibleParams: [],
+                    basePatch: Patch([.oscWave: 0.66, .cutoff: 0.85, .resonance: 0.08, .ampAttack: 0.05, .ampSustain: 0.9, .ampRelease: 0.4]),
                     visual: .door,
-                    controlsHint: "CUT closes the door — lower it to shut out the highs."
+                    showKeyboard: false
                 )
             ),
             Lesson(
@@ -503,16 +498,16 @@ enum Curriculum {
         id: "m3", title: "The Shape", subtitle: "Envelopes over time", accent: Theme.shape,
         lessons: [
             Lesson(
-                id: "m3l0", title: "The Amplitude Envelope",
-                concept: "An envelope shapes a note's volume over its life: how it starts, holds, and ends.",
+                id: "m3l0", title: "The Envelope",
+                concept: "An envelope is a shape that plays out over a note's life. Point it at volume and it becomes the amplitude envelope.",
                 theory: [
-                    "Every note you have played so far snapped on at full volume and stayed there until you let go. Real sounds are not like that. A plucked string jumps loud then fades; a bowed note swells in slowly. What changes is the volume, moment to moment.",
-                    "The control that draws that change over time is called an envelope. It is a shape for the note's amplitude, its volume: up from silence when you press a key, and back down to silence when you release. Everything in this module is that one shape, split into stages you can set.",
-                    "In the exercise, tap a key to start the note and tap again to release it. Watch the line rise and fall. That line is the volume of the note over time, and the lessons ahead let you bend each part of it."
+                    "An envelope is a shape that unfolds over the life of a single note. It begins the instant you press a key, travels a set path, and finishes when you let go. By itself it makes no sound; it is a contour, a set of instructions for how something should change over time.",
+                    "What it does depends on where you point it. Point an envelope at pitch and the note bends up or down as it plays. Point it at the filter and the tone brightens or darkens over time. Point it at volume and the loudness rises and falls. That last one is what this whole module is about: the amplitude envelope, the shape of a note's loudness from silence, up, and back to silence.",
+                    "Every note you have played so far snapped on at full volume and stayed there. Real sounds are not like that: a pluck jumps loud and fades, a pad swells in slowly. The amplitude envelope draws that. In the exercise, tap a key to start the note and tap again to release it, and watch the line, which is the note's volume over time. The lessons ahead shape each part of it."
                 ],
                 takeaways: [
-                    "An envelope is the shape of a note's volume over time",
-                    "The stages ahead each control one part of that shape"
+                    "An envelope is a shape over time; what it does depends on where you point it",
+                    "Pointed at volume it is the amplitude envelope, this module's subject"
                 ],
                 demo: nil,
                 exercise: Exercise(

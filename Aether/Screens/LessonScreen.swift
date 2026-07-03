@@ -73,8 +73,8 @@ struct LessonScreen: View {
         }
         .onDisappear { demo.stop(); synth.stop() }
         .onChange(of: phase) { _, new in
-            demo.stop(); synth.clearLatch(); synth.stopTone()
-            if new == .play { loadExercise() }
+            demo.stop(); synth.clearLatch(); synth.stopTone(); synth.allOff()
+            if new == .play { loadExercise(); startAutoMusicIfNeeded() }
         }
     }
 
@@ -108,6 +108,13 @@ struct LessonScreen: View {
         .overlay(alignment: .top) { Divider().overlay(Theme.hairline()) }
     }
 
+    // The door lesson has no keyboard: a chord plays "in the room", held, and the
+    // door (cutoff) shapes it. Kept alive while on the Play screen.
+    private func startAutoMusicIfNeeded() {
+        guard lesson.exercise.visual == .door else { return }
+        for n in [48, 55, 60, 64] { synth.noteOn(n) }
+    }
+
     private func loadExercise() {
         synth.apply(lesson.exercise.basePatch)
         synth.setRouting(lesson.exercise.initialRouting)
@@ -134,7 +141,7 @@ struct LessonScreen: View {
             if Shot.play {
                 if phase == .demo, let script = lesson.demo {
                     demo.play(script, on: synth)
-                } else {
+                } else if lesson.exercise.showKeyboard {
                     holdMode = true
                     synth.toggleLatch(lesson.exercise.keyboardRoot + Shot.noteOffset)
                 }

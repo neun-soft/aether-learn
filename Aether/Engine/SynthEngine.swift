@@ -89,6 +89,7 @@ final class SynthEngine {
     private var tonePhase = 0.0
     private var toneGain = 0.0
     private var flutterPhase = 0.0    // slow wingbeat flutter for the bee buzz
+    private var noiseSeed: UInt32 = 0x9E3779B9   // fast PRNG for the bee's noisy edge
 
     init() {
         scope = UnsafeMutablePointer<Float>.allocate(capacity: scopeSize)
@@ -231,14 +232,17 @@ final class SynthEngine {
                 if tonePhase >= 1 { tonePhase -= 1 }
                 let toneSample: Double
                 if current.toneBuzz {
-                    // Buzzy, bee-like: a few stacked harmonics with a slow amplitude flutter,
-                    // like wingbeats. Sounds like a bee when toneHz sits around 150–250.
-                    var s = 0.0
-                    for k in 1...4 { s += sin(2.0 * .pi * Double(k) * tonePhase) / Double(k) }
-                    flutterPhase += 24.0 / sr
+                    // Rough, insect-like: an edgy saw with a deep wingbeat flutter and a
+                    // little noise, so it reads as flapping rather than a clean synth tone.
+                    let saw = 2.0 * tonePhase - 1.0
+                    var s = saw * 0.7 + sin(2.0 * .pi * tonePhase) * 0.12
+                    flutterPhase += 15.0 / sr
                     if flutterPhase >= 1 { flutterPhase -= 1 }
-                    let flutter = 0.8 + 0.2 * sin(2.0 * .pi * flutterPhase)
-                    toneSample = s * 0.5 * flutter
+                    let wingbeat = 0.4 + 0.6 * (0.5 + 0.5 * sin(2.0 * .pi * flutterPhase))
+                    noiseSeed = noiseSeed &* 1664525 &+ 1013904223
+                    let noise = Double(Int32(bitPattern: noiseSeed)) / Double(Int32.max)
+                    s = (s + noise * 0.16) * wingbeat
+                    toneSample = s * 0.55
                 } else {
                     toneSample = sin(2.0 * .pi * tonePhase)
                 }
