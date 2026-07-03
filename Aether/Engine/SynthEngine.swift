@@ -88,6 +88,7 @@ final class SynthEngine {
     // Pure test tone for the frequency lessons (a clean sine, no filter or envelope).
     private var tonePhase = 0.0
     private var toneGain = 0.0
+    private var flutterPhase = 0.0    // slow wingbeat flutter for the bee buzz
 
     init() {
         scope = UnsafeMutablePointer<Float>.allocate(capacity: scopeSize)
@@ -153,7 +154,9 @@ final class SynthEngine {
         lock.sync { pending.base[id.index] = min(1, max(0, v)) }
     }
 
-    func setTone(hz: Double, on: Bool) { lock.sync { pending.toneHz = hz; pending.toneOn = on } }
+    func setTone(hz: Double, on: Bool, buzz: Bool = false) {
+        lock.sync { pending.toneHz = hz; pending.toneOn = on; pending.toneBuzz = buzz }
+    }
     func setToneHz(_ hz: Double) { lock.sync { pending.toneHz = hz } }
     func toneOff() { lock.sync { pending.toneOn = false } }
 
@@ -226,7 +229,20 @@ final class SynthEngine {
             if toneGain > 0.0001 {
                 tonePhase += current.toneHz / sr
                 if tonePhase >= 1 { tonePhase -= 1 }
-                out += sin(2.0 * .pi * tonePhase) * 0.28 * toneGain
+                let toneSample: Double
+                if current.toneBuzz {
+                    // Buzzy, bee-like: a few stacked harmonics with a slow amplitude flutter,
+                    // like wingbeats. Sounds like a bee when toneHz sits around 150–250.
+                    var s = 0.0
+                    for k in 1...4 { s += sin(2.0 * .pi * Double(k) * tonePhase) / Double(k) }
+                    flutterPhase += 24.0 / sr
+                    if flutterPhase >= 1 { flutterPhase -= 1 }
+                    let flutter = 0.8 + 0.2 * sin(2.0 * .pi * flutterPhase)
+                    toneSample = s * 0.5 * flutter
+                } else {
+                    toneSample = sin(2.0 * .pi * tonePhase)
+                }
+                out += toneSample * 0.28 * toneGain
             }
 
             // Playback-gear simulation: roll off the lows and/or highs the device can't reproduce.

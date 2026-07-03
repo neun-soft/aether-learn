@@ -136,18 +136,29 @@ final class SynthController: ObservableObject {
 
     // MARK: Test tone
 
+    @Published var toneBuzz = false     // bee lesson: buzzy timbre instead of a pure sine
+
     func setToneHz(_ hz: Double) {
         toneHz = hz
-        engine.setTone(hz: hz, on: toneOn)
+        engine.setTone(hz: hz, on: toneOn, buzz: toneBuzz)
     }
 
     func toggleTone() {
         toneOn.toggle()
-        engine.setTone(hz: toneHz, on: toneOn)
+        toneBuzz = false
+        engine.setTone(hz: toneHz, on: toneOn, buzz: false)
+    }
+
+    // Bee lesson: same test tone, buzzy timbre.
+    func toggleBeeBuzz() {
+        toneOn.toggle()
+        toneBuzz = toneOn
+        engine.setTone(hz: toneHz, on: toneOn, buzz: toneBuzz)
     }
 
     func stopTone() {
         toneOn = false
+        toneBuzz = false
         engine.toneOff()
     }
 

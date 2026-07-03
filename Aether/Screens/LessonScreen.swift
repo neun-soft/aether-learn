@@ -18,6 +18,7 @@ struct LessonScreen: View {
     @State private var showCover = true
     @State private var octaveShift = 0
     @State private var additiveCount = 1
+    @State private var beeNorm: Double = 0.4     // bee lesson flap speed
     @State private var scrollMaxY: CGFloat = 0   // content bottom in the scroll's space
     @State private var hintBounce = false
 
@@ -474,6 +475,11 @@ struct LessonScreen: View {
                         accent: accent, interactive: interactive)
         case .detune:
             DetuneGraph(detune: synth.binding(.detune), accent: accent)
+        case .bee:
+            BeeView(norm: $beeNorm, buzzing: synth.toneOn, accent: accent,
+                    onHz: { synth.setToneHz($0) }, onToggle: { synth.toggleBeeBuzz() })
+        case .door:
+            DoorView(cutoff: synth.binding(.cutoff), accent: accent)
         case .envelope:
             EnvelopeGraph(delay: synth.patch[.ampDelay], attack: synth.patch[.ampAttack],
                           hold: synth.patch[.ampHold], decay: synth.patch[.ampDecay],

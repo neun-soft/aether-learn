@@ -142,6 +142,27 @@ enum Curriculum {
                 )
             ),
             Lesson(
+                id: "m1l2b", title: "The Bee",
+                concept: "A vibration is just something moving back and forth, fast. Speed it up and the pitch rises.",
+                theory: [
+                    "A speaker makes sound the same way a bee does: by moving something back and forth, fast. The bee beats its wings; a speaker pushes its cone out and pulls it back in. Each beat, each push, shoves the air and sends a vibration on its way.",
+                    "How fast it moves is the frequency. A bee beats its wings around two hundred times a second, which is why you hear one steady buzz at a pitch, not separate flaps. Beat slower and the pitch drops; beat faster and it climbs.",
+                    "In the exercise, drag the flap speed. Watch the wings beat faster and hear the buzz rise with them. It is the same idea behind every note a synth plays: something vibrating, and how fast it vibrates is the pitch."
+                ],
+                takeaways: [
+                    "A vibration is something moving back and forth, fast",
+                    "How fast it moves is the frequency, and that is the pitch"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Drag the flap speed. Faster wings, faster vibration, higher buzz.",
+                    visibleParams: [],
+                    basePatch: Patch(),
+                    visual: .bee,
+                    showKeyboard: false
+                )
+            ),
+            Lesson(
                 id: "m1l3", title: "Frequency Becomes Pitch",
                 concept: "A steady, fast enough vibration is what we hear as a musical note.",
                 theory: [
@@ -377,6 +398,32 @@ enum Curriculum {
         id: "m2", title: "Subtractive", subtitle: "Shaping tone with filters", accent: Theme.filter,
         lessons: [
             Lesson(
+                id: "m2l0", title: "Filters in the Real World",
+                concept: "A low-pass filter is like closing a door on a room: it shuts out the highs first.",
+                theory: [
+                    "You have heard a filter a hundred times without knowing it. Stand outside a room with music playing and slowly close the door. The bright, crisp highs fade first, while the bass thumps straight through the wall.",
+                    "That is exactly what a low-pass filter does. 'Low-pass' means it lets the low frequencies pass and holds the higher ones back. The more you close it, the lower it reaches, and the darker and more muffled the sound becomes.",
+                    "In the exercise, hold a note and turn CUT. The door swings shut as you lower it, and you hear the highs disappear, leaving just the low, muffled body of the sound."
+                ],
+                takeaways: [
+                    "A low-pass filter passes the lows and holds back the highs",
+                    "Closing it is like shutting a door: the highs go first"
+                ],
+                demo: DemoScript(
+                    duration: 6,
+                    startPatch: Patch([.oscWave: 0.66, .cutoff: 0.9, .resonance: 0.1, .ampSustain: 0.95]),
+                    lanes: [lane(.cutoff, [(0.5, 0.9), (3, 0.12), (5.5, 0.9)])],
+                    notes: held(45, 5.5)
+                ),
+                exercise: Exercise(
+                    prompt: "Hold a note and turn CUT. Closing the door shuts out the highs.",
+                    visibleParams: [.cutoff],
+                    basePatch: Patch([.oscWave: 0.66, .cutoff: 0.8, .resonance: 0.1, .ampSustain: 0.95]),
+                    visual: .door,
+                    controlsHint: "CUT closes the door — lower it to shut out the highs."
+                )
+            ),
+            Lesson(
                 id: "m2l1", title: "Cutoff",
                 concept: "A low-pass filter removes the higher harmonics above a point you set.",
                 theory: [
@@ -455,6 +502,26 @@ enum Curriculum {
     static let shape = Module(
         id: "m3", title: "The Shape", subtitle: "Envelopes over time", accent: Theme.shape,
         lessons: [
+            Lesson(
+                id: "m3l0", title: "The Amplitude Envelope",
+                concept: "An envelope shapes a note's volume over its life: how it starts, holds, and ends.",
+                theory: [
+                    "Every note you have played so far snapped on at full volume and stayed there until you let go. Real sounds are not like that. A plucked string jumps loud then fades; a bowed note swells in slowly. What changes is the volume, moment to moment.",
+                    "The control that draws that change over time is called an envelope. It is a shape for the note's amplitude, its volume: up from silence when you press a key, and back down to silence when you release. Everything in this module is that one shape, split into stages you can set.",
+                    "In the exercise, tap a key to start the note and tap again to release it. Watch the line rise and fall. That line is the volume of the note over time, and the lessons ahead let you bend each part of it."
+                ],
+                takeaways: [
+                    "An envelope is the shape of a note's volume over time",
+                    "The stages ahead each control one part of that shape"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Tap a key to start the note, tap again to release. The line is its volume over time.",
+                    visibleParams: [],
+                    basePatch: Patch([.oscWave: 0.4, .cutoff: 0.85, .ampAttack: 0.25, .ampDecay: 0.3, .ampSustain: 0.6, .ampRelease: 0.5]),
+                    visual: .envelope
+                )
+            ),
             Lesson(
                 id: "m3l1", title: "Attack",
                 concept: "Attack is how long a sound takes to fade in when a note starts.",
