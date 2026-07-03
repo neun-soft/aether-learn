@@ -24,8 +24,9 @@ struct BeeView: View {
             TimelineView(.animation) { tl in
                 Canvas { ctx, size in
                     let t = tl.date.timeIntervalSinceReferenceDate
-                    let wing = sin(t * flapHz * 2 * .pi)          // -1…1
-                    drawBee(ctx, size, wing: wing)
+                    // Wings only beat while it's buzzing; otherwise they rest.
+                    let wing = buzzing ? sin(t * flapHz * 2 * .pi) : 0
+                    drawBee(ctx, size, wing: wing, moving: buzzing)
                 }
                 .frame(height: 180)
                 .frame(maxWidth: .infinity)
@@ -64,12 +65,12 @@ struct BeeView: View {
         .onAppear { onUpdate(flap(norm)) }
     }
 
-    private func drawBee(_ ctx: GraphicsContext, _ size: CGSize, wing: Double) {
+    private func drawBee(_ ctx: GraphicsContext, _ size: CGSize, wing: Double, moving: Bool) {
         let cx = size.width / 2, cy = size.height * 0.60
         let bodyW = 92.0, bodyH = 60.0
 
-        // Motion shimmer behind the bee when flapping fast.
-        if norm > 0.55 {
+        // Motion shimmer behind the bee only while flapping fast.
+        if moving && norm > 0.55 {
             for i in 1...3 {
                 let off = Double(i) * 10
                 let rect = CGRect(x: cx - bodyW/2 - off, y: cy - bodyH/2, width: bodyW, height: bodyH)
