@@ -12,10 +12,12 @@ struct RenderSnapshot {
     var simHigh: Double         // playback simulation: master low-pass cutoff (>=20000 = off)
     var additiveCount: Int      // >0 = play a partial-sum saw with this many sines (additive lesson)
     var toneBuzz: Bool          // test tone plays as a buzzy, bee-like timbre (the bee lesson)
+    var toneFlutterHz: Double   // wingbeat amplitude-modulation rate, matched to the visible flap
 
     static let empty = RenderSnapshot(
         base: ParamID.allCases.map { $0.spec.def }, routingSource: 0, routingDest: 0,
-        toneHz: 220, toneOn: false, simLow: 0, simHigh: 22000, additiveCount: 0, toneBuzz: false)
+        toneHz: 220, toneOn: false, simLow: 0, simHigh: 22000, additiveCount: 0, toneBuzz: false,
+        toneFlutterHz: 6)
 
     @inline(__always) func v(_ id: ParamID) -> Double { base[id.index] }
 }

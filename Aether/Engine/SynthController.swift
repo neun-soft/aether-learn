@@ -137,6 +137,7 @@ final class SynthController: ObservableObject {
     // MARK: Test tone
 
     @Published var toneBuzz = false     // bee lesson: buzzy timbre instead of a pure sine
+    private var beeFlutterHz: Double = 6
 
     func setToneHz(_ hz: Double) {
         toneHz = hz
@@ -149,11 +150,16 @@ final class SynthController: ObservableObject {
         engine.setTone(hz: toneHz, on: toneOn, buzz: false)
     }
 
-    // Bee lesson: same test tone, buzzy timbre.
+    // Bee lesson: buzzy tone with the wingbeat flutter matched to the flap rate.
+    func setBee(hz: Double, flapHz: Double) {
+        toneHz = hz; beeFlutterHz = flapHz
+        engine.setBee(hz: hz, on: toneOn, flutterHz: flapHz)
+    }
+
     func toggleBeeBuzz() {
         toneOn.toggle()
         toneBuzz = toneOn
-        engine.setTone(hz: toneHz, on: toneOn, buzz: toneBuzz)
+        engine.setBee(hz: toneHz, on: toneOn, flutterHz: beeFlutterHz)
     }
 
     func stopTone() {

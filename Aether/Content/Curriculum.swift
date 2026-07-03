@@ -411,9 +411,9 @@ enum Curriculum {
                 ],
                 demo: nil,
                 exercise: Exercise(
-                    prompt: "Music is playing inside. Drag the door open and closed — open lets the highs through, shut muffles them.",
+                    prompt: "A beat is playing inside. Drag the door open and closed — open lets the highs through, shut muffles them.",
                     visibleParams: [],
-                    basePatch: Patch([.oscWave: 0.66, .cutoff: 0.85, .resonance: 0.08, .ampAttack: 0.05, .ampSustain: 0.9, .ampRelease: 0.4]),
+                    basePatch: Patch([.oscWave: 0.6, .cutoff: 0.85, .resonance: 0.08, .ampAttack: 0.004, .ampDecay: 0.14, .ampSustain: 0.15, .ampRelease: 0.1]),
                     visual: .door,
                     showKeyboard: false
                 )

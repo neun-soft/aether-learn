@@ -19,6 +19,9 @@ struct LessonScreen: View {
     @State private var octaveShift = 0
     @State private var additiveCount = 1
     @State private var beeNorm: Double = 0.4     // bee lesson flap speed
+    @State private var grooveTimer: Timer?       // door lesson: looping beat behind the door
+    @State private var grooveStep = 0
+    @State private var grooveNotes: [Int] = []
     @State private var scrollMaxY: CGFloat = 0   // content bottom in the scroll's space
     @State private var hintBounce = false
 
@@ -71,9 +74,9 @@ struct LessonScreen: View {
             applyShotIfNeeded()
             #endif
         }
-        .onDisappear { demo.stop(); synth.stop() }
+        .onDisappear { demo.stop(); stopGroove(); synth.stop() }
         .onChange(of: phase) { _, new in
-            demo.stop(); synth.clearLatch(); synth.stopTone(); synth.allOff()
+            demo.stop(); synth.clearLatch(); synth.stopTone(); stopGroove()
             if new == .play { loadExercise(); startAutoMusicIfNeeded() }
         }
     }
@@ -108,11 +111,32 @@ struct LessonScreen: View {
         .overlay(alignment: .top) { Divider().overlay(Theme.hairline()) }
     }
 
-    // The door lesson has no keyboard: a chord plays "in the room", held, and the
-    // door (cutoff) shapes it. Kept alive while on the Play screen.
+    // The door lesson has no keyboard: a looping groove plays "in the room", and the
+    // door (cutoff) shapes it. The kick bypasses the filter so it thumps through even
+    // when the door is shut; the hi-hat and chord highs are what get muffled.
     private func startAutoMusicIfNeeded() {
         guard lesson.exercise.visual == .door else { return }
-        for n in [48, 55, 60, 64] { synth.noteOn(n) }
+        grooveStep = 0; grooveNotes = []
+        grooveTimer?.invalidate()
+        grooveTimer = Timer.scheduledTimer(withTimeInterval: 0.16, repeats: true) { _ in grooveTick() }
+    }
+
+    private func grooveTick() {
+        for n in grooveNotes { synth.noteOff(n) }   // release the previous step's stabs
+        grooveNotes = []
+        let s = grooveStep % 8
+        if s % 2 == 0 { synth.triggerKick() }        // four on the floor, thumps through
+        let bass = [0: 36, 3: 36, 4: 43, 6: 41]      // C2, C2, G2, F2
+        if let b = bass[s] { synth.noteOn(b); grooveNotes.append(b) }
+        if s == 0 || s == 4 { for n in [60, 64, 67] { synth.noteOn(n); grooveNotes.append(n) } }
+        if s % 2 == 1 { synth.noteOn(88); grooveNotes.append(88) }   // bright hat, first to muffle
+        grooveStep += 1
+    }
+
+    private func stopGroove() {
+        grooveTimer?.invalidate(); grooveTimer = nil
+        for n in grooveNotes { synth.noteOff(n) }; grooveNotes = []
+        synth.allOff()
     }
 
     private func loadExercise() {
@@ -484,7 +508,8 @@ struct LessonScreen: View {
             DetuneGraph(detune: synth.binding(.detune), accent: accent)
         case .bee:
             BeeView(norm: $beeNorm, buzzing: synth.toneOn, accent: accent,
-                    onHz: { synth.setToneHz($0) }, onToggle: { synth.toggleBeeBuzz() })
+                    onUpdate: { hz, flapHz in synth.setBee(hz: hz, flapHz: flapHz) },
+                    onToggle: { synth.toggleBeeBuzz() })
         case .door:
             DoorView(cutoff: synth.binding(.cutoff), accent: accent)
         case .envelope:

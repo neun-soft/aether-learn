@@ -158,6 +158,13 @@ final class SynthEngine {
     func setTone(hz: Double, on: Bool, buzz: Bool = false) {
         lock.sync { pending.toneHz = hz; pending.toneOn = on; pending.toneBuzz = buzz }
     }
+    // Bee: buzzy tone whose wingbeat flutter matches the visible flap rate.
+    func setBee(hz: Double, on: Bool, flutterHz: Double) {
+        lock.sync {
+            pending.toneHz = hz; pending.toneOn = on; pending.toneBuzz = on
+            pending.toneFlutterHz = flutterHz
+        }
+    }
     func setToneHz(_ hz: Double) { lock.sync { pending.toneHz = hz } }
     func toneOff() { lock.sync { pending.toneOn = false } }
 
@@ -232,17 +239,18 @@ final class SynthEngine {
                 if tonePhase >= 1 { tonePhase -= 1 }
                 let toneSample: Double
                 if current.toneBuzz {
-                    // Rough, insect-like: an edgy saw with a deep wingbeat flutter and a
-                    // little noise, so it reads as flapping rather than a clean synth tone.
+                    // Light, insect-like: a thin saw with a touch of noise, pulsed by a
+                    // wingbeat flutter set to the visible flap rate, so each flap you see
+                    // is a pulse you hear. Kept airy, not heavy.
                     let saw = 2.0 * tonePhase - 1.0
-                    var s = saw * 0.7 + sin(2.0 * .pi * tonePhase) * 0.12
-                    flutterPhase += 15.0 / sr
+                    var s = saw * 0.42 + sin(2.0 * .pi * tonePhase) * 0.18
+                    flutterPhase += current.toneFlutterHz / sr
                     if flutterPhase >= 1 { flutterPhase -= 1 }
-                    let wingbeat = 0.4 + 0.6 * (0.5 + 0.5 * sin(2.0 * .pi * flutterPhase))
+                    let wingbeat = 0.35 + 0.65 * (0.5 + 0.5 * sin(2.0 * .pi * flutterPhase))
                     noiseSeed = noiseSeed &* 1664525 &+ 1013904223
                     let noise = Double(Int32(bitPattern: noiseSeed)) / Double(Int32.max)
-                    s = (s + noise * 0.16) * wingbeat
-                    toneSample = s * 0.55
+                    s = (s + noise * 0.1) * wingbeat
+                    toneSample = s * 0.4
                 } else {
                     toneSample = sin(2.0 * .pi * tonePhase)
                 }
