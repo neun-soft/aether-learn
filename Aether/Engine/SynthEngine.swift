@@ -88,8 +88,10 @@ final class SynthEngine {
     // Pure test tone for the frequency lessons (a clean sine, no filter or envelope).
     private var tonePhase = 0.0
     private var toneGain = 0.0
-    private var flutterPhase = 0.0    // slow wingbeat flutter for the bee buzz
-    private var noiseSeed: UInt32 = 0x9E3779B9   // fast PRNG for the bee's noisy edge
+    private var flutterPhase = 0.0    // wingbeat/puff phase for the bee
+    private var puffEnv = 0.0         // per-flap air-puff envelope
+    private var beeLP = 0.0           // one-pole softening of the puff noise
+    private var noiseSeed: UInt32 = 0x9E3779B9   // fast PRNG for the bee's air noise
 
     init() {
         scope = UnsafeMutablePointer<Float>.allocate(capacity: scopeSize)
@@ -158,12 +160,9 @@ final class SynthEngine {
     func setTone(hz: Double, on: Bool, buzz: Bool = false) {
         lock.sync { pending.toneHz = hz; pending.toneOn = on; pending.toneBuzz = buzz }
     }
-    // Bee: buzzy tone whose wingbeat flutter matches the visible flap rate.
-    func setBee(hz: Double, on: Bool, flutterHz: Double) {
-        lock.sync {
-            pending.toneHz = hz; pending.toneOn = on; pending.toneBuzz = on
-            pending.toneFlutterHz = flutterHz
-        }
+    // Bee: a train of air-puffs at the flap rate (3 Hz separate flaps → ~220 Hz buzz).
+    func setBee(on: Bool, flapRate: Double) {
+        lock.sync { pending.toneOn = on; pending.toneBuzz = on; pending.toneFlutterHz = flapRate }
     }
     func setToneHz(_ hz: Double) { lock.sync { pending.toneHz = hz } }
     func toneOff() { lock.sync { pending.toneOn = false } }
@@ -235,23 +234,21 @@ final class SynthEngine {
             let toneTarget = current.toneOn ? 1.0 : 0.0
             toneGain += (toneTarget - toneGain) * 0.002
             if toneGain > 0.0001 {
-                tonePhase += current.toneHz / sr
-                if tonePhase >= 1 { tonePhase -= 1 }
                 let toneSample: Double
                 if current.toneBuzz {
-                    // Light, insect-like: a thin saw with a touch of noise, pulsed by a
-                    // wingbeat flutter set to the visible flap rate, so each flap you see
-                    // is a pulse you hear. Kept airy, not heavy.
-                    let saw = 2.0 * tonePhase - 1.0
-                    var s = saw * 0.42 + sin(2.0 * .pi * tonePhase) * 0.18
+                    // Each wingbeat is one short, soft puff of moving air (a quick "fff").
+                    // At a slow flap rate you hear separate puffs; speed them up and they
+                    // fuse into a buzzy bee tone — the flap rate becomes the pitch.
                     flutterPhase += current.toneFlutterHz / sr
-                    if flutterPhase >= 1 { flutterPhase -= 1 }
-                    let wingbeat = 0.35 + 0.65 * (0.5 + 0.5 * sin(2.0 * .pi * flutterPhase))
+                    if flutterPhase >= 1 { flutterPhase -= 1; puffEnv = 1.0 }
+                    puffEnv *= 0.9977                       // ~9 ms per puff
                     noiseSeed = noiseSeed &* 1664525 &+ 1013904223
-                    let noise = Double(Int32(bitPattern: noiseSeed)) / Double(Int32.max)
-                    s = (s + noise * 0.1) * wingbeat
-                    toneSample = s * 0.4
+                    let n = Double(Int32(bitPattern: noiseSeed)) / Double(Int32.max)
+                    beeLP += (n - beeLP) * 0.45             // soften the hiss into airy 'fff'
+                    toneSample = beeLP * puffEnv * 0.5
                 } else {
+                    tonePhase += current.toneHz / sr
+                    if tonePhase >= 1 { tonePhase -= 1 }
                     toneSample = sin(2.0 * .pi * tonePhase)
                 }
                 out += toneSample * 0.28 * toneGain

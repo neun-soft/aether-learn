@@ -508,7 +508,7 @@ struct LessonScreen: View {
             DetuneGraph(detune: synth.binding(.detune), accent: accent)
         case .bee:
             BeeView(norm: $beeNorm, buzzing: synth.toneOn, accent: accent,
-                    onUpdate: { hz, flapHz in synth.setBee(hz: hz, flapHz: flapHz) },
+                    onUpdate: { flapRate in synth.setBee(flapRate: flapRate) },
                     onToggle: { synth.toggleBeeBuzz() })
         case .door:
             DoorView(cutoff: synth.binding(.cutoff), accent: accent)

@@ -150,16 +150,16 @@ final class SynthController: ObservableObject {
         engine.setTone(hz: toneHz, on: toneOn, buzz: false)
     }
 
-    // Bee lesson: buzzy tone with the wingbeat flutter matched to the flap rate.
-    func setBee(hz: Double, flapHz: Double) {
-        toneHz = hz; beeFlutterHz = flapHz
-        engine.setBee(hz: hz, on: toneOn, flutterHz: flapHz)
+    // Bee lesson: a puff-per-flap whose rate spans separate flaps up to a buzz.
+    func setBee(flapRate: Double) {
+        beeFlutterHz = flapRate
+        engine.setBee(on: toneOn, flapRate: flapRate)
     }
 
     func toggleBeeBuzz() {
         toneOn.toggle()
         toneBuzz = toneOn
-        engine.setBee(hz: toneHz, on: toneOn, flutterHz: beeFlutterHz)
+        engine.setBee(on: toneOn, flapRate: beeFlutterHz)
     }
 
     func stopTone() {

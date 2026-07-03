@@ -10,15 +10,14 @@ struct BeeView: View {
     @Binding var norm: Double            // 0…1 flap speed
     var buzzing: Bool
     var accent: Color
-    var onUpdate: (Double, Double) -> Void   // (pitch Hz, flap Hz) as the slider moves
+    var onUpdate: (Double) -> Void           // flap rate (Hz) as the slider moves
     var onToggle: () -> Void                 // start/stop the buzz
 
-    // Map the slider to a light, bee-ish pitch range (a real honeybee buzzes ~230 Hz).
-    private func hz(_ n: Double) -> Double { 90.0 * pow(440.0 / 90.0, n) }
-    // Visible wingbeat, also fed to the audio flutter so what you see matches what
-    // you hear: slow flaps you can count, a blur at the top.
-    private func flap(_ n: Double) -> Double { 2.0 + n * 15.0 }
-    private var flapHz: Double { flap(norm) }
+    // One flap = one puff of air. The rate spans separate, countable flaps up to a
+    // real bee buzz (~230 Hz), where the flaps fuse into a pitch.
+    private func flap(_ n: Double) -> Double { 3.0 * pow(220.0 / 3.0, n) }
+    // Cap the on-screen flapping so fast rates read as a blur, not 60 fps aliasing.
+    private var flapHz: Double { min(flap(norm), 16) }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -34,7 +33,7 @@ struct BeeView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.hairline(), lineWidth: 1))
                 .overlay(alignment: .topLeading) {
-                    Text(buzzing ? "\(Int(hz(norm))) Hz" : "tap to buzz")
+                    Text(buzzing ? "\(Int(flap(norm))) flaps/sec" : "tap to buzz")
                         .mono(11, .semibold).foregroundColor(buzzing ? accent : Theme.textDim)
                         .padding(10)
                 }
@@ -54,7 +53,7 @@ struct BeeView: View {
 
             VStack(spacing: 6) {
                 Text("FLAP SPEED").mono(10, .semibold).tracking(1.5).foregroundColor(Theme.textDim)
-                AnalogySlider(value: $norm, accent: accent) { n in onUpdate(hz(n), flap(n)) }
+                AnalogySlider(value: $norm, accent: accent) { n in onUpdate(flap(n)) }
                 HStack {
                     Text("slow · low").mono(9).foregroundColor(Theme.textFaint)
                     Spacer()
@@ -62,7 +61,7 @@ struct BeeView: View {
                 }
             }
         }
-        .onAppear { onUpdate(hz(norm), flap(norm)) }
+        .onAppear { onUpdate(flap(norm)) }
     }
 
     private func drawBee(_ ctx: GraphicsContext, _ size: CGSize, wing: Double) {
