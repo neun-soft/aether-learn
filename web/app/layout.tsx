@@ -21,7 +21,7 @@ const SITE_URL = "https://aether-learn.neunsoft.com";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Aether Learn — Learn synthesis by ear",
+    default: "Aether Learn: Learn synthesis by ear",
     template: "%s · Aether Learn",
   },
   description:
@@ -46,13 +46,13 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: "Aether Learn",
-    title: "Aether Learn — Learn synthesis by ear",
+    title: "Aether Learn: Learn synthesis by ear",
     description:
       "Understand every sound you make. A hands-on course in synthesis, with a real synth engine built into every lesson.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aether Learn — Learn synthesis by ear",
+    title: "Aether Learn: Learn synthesis by ear",
     description:
       "Understand every sound you make. A hands-on course in synthesis, with a real synth engine built into every lesson.",
   },

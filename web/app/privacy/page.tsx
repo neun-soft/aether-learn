@@ -5,7 +5,7 @@ import { Nav, Footer, CONTACT_EMAIL } from "../components";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "Aether Learn collects no data. No accounts, no analytics, no network calls — everything stays on your device.",
+    "Aether Learn collects no data. No accounts, no analytics, no network calls. Everything stays on your device.",
 };
 
 export default function Privacy() {
@@ -59,7 +59,7 @@ export default function Privacy() {
         <p>
           Aether Learn does not integrate any third-party services, accounts, or
           login providers. Audio playback is handled entirely on-device by iOS,
-          and any permissions you grant are used only to make the app work —
+          and any permissions you grant are used only to make the app work,
           never to collect data.
         </p>
 

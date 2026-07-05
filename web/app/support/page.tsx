@@ -5,7 +5,7 @@ import { Nav, Footer, CONTACT_EMAIL } from "../components";
 export const metadata: Metadata = {
   title: "Support",
   description:
-    "Get help with Aether Learn — answers to common questions and how to reach us.",
+    "Get help with Aether Learn: answers to common questions and how to reach us.",
 };
 
 export default function Support() {
@@ -29,7 +29,7 @@ export default function Support() {
 
         <h2 style={{ fontSize: 17 }}>Do I need to know music theory?</h2>
         <p>
-          No. Aether Learn starts at the very beginning — what sound is — and
+          No. Aether Learn starts at the very beginning, from what sound is, and
           builds up from there. No notation, no prerequisites, just headphones
           and curiosity.
         </p>
@@ -42,7 +42,7 @@ export default function Support() {
 
         <h2 style={{ fontSize: 17 }}>Does it work offline?</h2>
         <p>
-          Yes — entirely. The app makes no network calls, so every lesson and the
+          Yes, entirely. The app makes no network calls, so every lesson and the
           built-in synth work with no connection.
         </p>
 

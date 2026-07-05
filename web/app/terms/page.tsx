@@ -4,7 +4,7 @@ import { Nav, Footer, CONTACT_EMAIL } from "../components";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "The terms governing your use of the Aether Learn app by Neun.",
+  description: "The terms governing your use of the Aether Learn app by Neunsoft.",
 };
 
 export default function Terms() {
@@ -21,7 +21,7 @@ export default function Terms() {
         <p className="lead">
           These Terms of Service (&ldquo;Terms&rdquo;) govern your use of the
           Aether Learn mobile application (&ldquo;Aether Learn,&rdquo; or
-          &ldquo;the app&rdquo;), provided by Neun (&ldquo;we,&rdquo;
+          &ldquo;the app&rdquo;), provided by Neunsoft (&ldquo;we,&rdquo;
           &ldquo;us,&rdquo; or &ldquo;our&rdquo;). By downloading or using the
           app, you agree to these Terms.
         </p>
@@ -30,9 +30,8 @@ export default function Terms() {
         <p>
           We grant you a personal, non-exclusive, non-transferable, revocable
           license to download and use Aether Learn on Apple devices you own or
-          control, for your personal, non-commercial and commercial learning
-          purposes, in accordance with these Terms and Apple&apos;s App Store
-          Terms of Service.
+          control, for your own learning, in accordance with these Terms and
+          Apple&apos;s App Store Terms of Service.
         </p>
 
         <h2>2. Educational content</h2>
@@ -59,7 +58,7 @@ export default function Terms() {
         <h2>4. Intellectual property</h2>
         <p>
           The app, including its design, code, lessons, sounds, presets, and
-          branding, is owned by Neun and protected by intellectual property laws.
+          branding, is owned by Neunsoft and protected by intellectual property laws.
           These Terms do not grant you any rights to our trademarks or branding.
         </p>
 
@@ -81,7 +80,7 @@ export default function Terms() {
 
         <h2>7. Limitation of liability</h2>
         <p>
-          To the maximum extent permitted by law, Neun shall not be liable for
+          To the maximum extent permitted by law, Neunsoft shall not be liable for
           any indirect, incidental, special, consequential, or punitive damages
           arising out of or related to your use of the app.
         </p>

@@ -15,10 +15,9 @@ export default function Home() {
             work.
           </h1>
           <p className="lede">
-            Aether Learn teaches you sound from the ground up — one hands-on
-            lesson at a time. No jargon, no prerequisites. Every idea comes with
-            a real synth engine you play with your finger, so you hear it the
-            moment you read it.
+            Aether Learn teaches you sound from the ground up, one hands-on
+            lesson at a time. Every idea comes with a real synth engine you play
+            with your finger, so you hear it the moment you read it.
           </p>
           <div className="cta-row">
             <span className="btn btn-primary" aria-disabled="true">
@@ -27,9 +26,6 @@ export default function Home() {
             <a href="#learn" className="btn btn-ghost">
               What you&apos;ll learn
             </a>
-          </div>
-          <div className="hero-meta">
-            iPhone · iOS 17+ · No account, no sign-up, nothing collected
           </div>
         </div>
         <div className="phone-wrap">
@@ -89,7 +85,7 @@ export default function Home() {
               <h3>Start at the very beginning</h3>
               <p>
                 What sound is, how frequency becomes pitch, and why a wave&apos;s
-                shape decides its character. No prior music theory needed — just
+                shape decides its character. No prior music theory needed, just
                 curiosity and headphones.
               </p>
             </article>
@@ -99,7 +95,7 @@ export default function Home() {
               <h3>See a wave built from sines</h3>
               <p>
                 Add pure sine waves one at a time and watch them stack into a
-                bright saw — then hear the tone sharpen with every one. The idea
+                bright saw, and hear the tone sharpen with every one. The idea
                 behind every sound, made visible.
               </p>
             </article>
@@ -118,7 +114,7 @@ export default function Home() {
               <div className="dot shape">▲</div>
               <h3>Sculpt sound over time</h3>
               <p>
-                Attack, hold, decay, sustain, release, and delay — the envelope
+                Attack, hold, decay, sustain, release, and delay: the envelope
                 that turns one raw tone into a pluck, a pad, or a stab. Watch the
                 playhead ride the shape you draw.
               </p>
@@ -153,7 +149,7 @@ export default function Home() {
             <div className="kicker">A look inside</div>
             <h2>A real synth, in every lesson.</h2>
             <p>
-              A deep, dim interface that keeps the focus on sound — with a color
+              A deep, dim interface that keeps the focus on sound, with a color
               for every module and a live instrument on every screen.
             </p>
           </div>
@@ -181,8 +177,8 @@ export default function Home() {
           <div className="cta-band">
             <h2>Go from zero to making sounds you understand.</h2>
             <p>
-              Aether Learn is a one-time download. No subscription, no sign-up —
-              just the whole introductory course to sound design.
+              Aether Learn is a one-time download: the whole introductory course
+              to sound design. No subscription, no sign-up.
             </p>
             <span className="btn btn-primary" aria-disabled="true">
               Coming soon to the App Store

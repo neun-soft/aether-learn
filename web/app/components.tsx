@@ -58,7 +58,7 @@ export function Footer() {
         </div>
       </div>
       <div className="container" style={{ marginTop: 28 }}>
-        <small>© {new Date().getFullYear()} Neun. All rights reserved.</small>
+        <small>© {new Date().getFullYear()} Neunsoft. All rights reserved.</small>
       </div>
     </footer>
   );
