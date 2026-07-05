@@ -71,6 +71,14 @@ Push text metadata + screenshots only (no build)
 
 Build and submit a release to the App Store
 
+### ios submit
+
+```sh
+[bundle exec] fastlane ios submit
+```
+
+Attach the already-uploaded build and submit for review (no rebuild)
+
 ### ios bump
 
 ```sh
