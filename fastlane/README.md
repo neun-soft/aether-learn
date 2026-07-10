@@ -61,7 +61,7 @@ Upload only the screenshots (no binary, no text metadata)
 [bundle exec] fastlane ios metadata
 ```
 
-Push text metadata + screenshots only (no build)
+Push text metadata only (no build, no screenshots)
 
 ### ios release
 
@@ -78,6 +78,22 @@ Build and submit a release to the App Store
 ```
 
 Attach the already-uploaded build and submit for review (no rebuild)
+
+### ios pull_from_review
+
+```sh
+[bundle exec] fastlane ios pull_from_review
+```
+
+TEMP: cancel the in-progress review submission (unlock editing)
+
+### ios shots_audit
+
+```sh
+[bundle exec] fastlane ios shots_audit
+```
+
+TEMP: audit screenshots on App Store Connect
 
 ### ios bump
 

@@ -79,15 +79,74 @@ struct Course: Identifiable {
 
 // MARK: - Progress (persisted)
 
+// What the module-complete screen should do after the user rates it.
+enum RatingOutcome {
+    case none            // acknowledge quietly (a thumbs up that didn't hit the threshold)
+    case requestReview   // 3rd happy module and we've never been thumbed down → ask for an App Store review
+    case askFeedback     // a thumbs down → ask how we can do better, and never ask for a review again
+}
+
 final class ProgressStore: ObservableObject {
     @Published private(set) var completed: Set<String> = []
     @Published var lastLessonID: String?
 
+    // Rating / review-gating state (persisted).
+    // The current up/down per module — kept editable so a mis-tap can be corrected. All
+    // gating is derived from this, so switching a thumbs down back to up truly undoes it.
+    @Published private(set) var moduleRatings: [String: Bool] = [:] // true = up, false = down
+    @Published private(set) var didAskForReview: Bool = false        // we only ever ask once
+
     private let key = "aetherlearn.progress.v1"
+    private let feedbackKey = "aetherlearn.feedback.v1"
 
     init() { load() }
 
+    // MARK: Feedback (stored locally until we have an endpoint to POST it to)
+
+    /// Append a piece of "what can we do better?" feedback. Kept as a flat list of
+    /// { module, text, ts } so it's trivial to upload once the endpoint exists.
+    func recordFeedback(moduleID: String, text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        var list = storedFeedback()
+        list.append(["module": moduleID, "text": trimmed, "ts": Date().timeIntervalSince1970])
+        if let data = try? JSONSerialization.data(withJSONObject: list) {
+            UserDefaults.standard.set(data, forKey: feedbackKey)
+        }
+    }
+
+    /// All feedback collected so far, oldest first. Read this when wiring up the upload.
+    func storedFeedback() -> [[String: Any]] {
+        guard let data = UserDefaults.standard.data(forKey: feedbackKey),
+              let list = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]
+        else { return [] }
+        return list
+    }
+
     func isDone(_ lessonID: String) -> Bool { completed.contains(lessonID) }
+
+    // The user's current choice for a module (nil = not rated yet).
+    func ratingFor(_ moduleID: String) -> Bool? { moduleRatings[moduleID] }
+
+    var thumbsUpCount: Int { moduleRatings.values.filter { $0 }.count }
+    var didThumbDown: Bool { moduleRatings.values.contains(false) }
+
+    /// Set (or change) a thumbs up/down for a module and decide what to show next.
+    @discardableResult
+    func setRating(_ moduleID: String, thumbsUp: Bool) -> RatingOutcome {
+        guard moduleRatings[moduleID] != thumbsUp else { return .none } // no change
+        moduleRatings[moduleID] = thumbsUp
+        save()
+
+        if !thumbsUp {
+            // Any standing thumbs down is enough to stop asking for a review.
+            return .askFeedback
+        }
+
+        let shouldAsk = thumbsUpCount >= 3 && !didThumbDown && !didAskForReview
+        if shouldAsk { didAskForReview = true; save() }
+        return shouldAsk ? .requestReview : .none
+    }
 
     func markDone(_ lessonID: String) {
         completed.insert(lessonID)
@@ -108,7 +167,12 @@ final class ProgressStore: ObservableObject {
     }
 
     private func save() {
-        let payload = ["completed": Array(completed), "last": lastLessonID.map { [$0] } ?? []]
+        let payload: [String: Any] = [
+            "completed": Array(completed),
+            "last": lastLessonID.map { [$0] } ?? [],
+            "ratings": moduleRatings,
+            "reviewAsked": didAskForReview,
+        ]
         if let data = try? JSONSerialization.data(withJSONObject: payload) {
             UserDefaults.standard.set(data, forKey: key)
         }
@@ -116,9 +180,12 @@ final class ProgressStore: ObservableObject {
 
     private func load() {
         guard let data = UserDefaults.standard.data(forKey: key),
-              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: [String]]
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { return }
-        completed = Set(obj["completed"] ?? [])
-        lastLessonID = obj["last"]?.first
+        // Reads the older [String: [String]] shape too — the extra keys just default.
+        completed = Set(obj["completed"] as? [String] ?? [])
+        lastLessonID = (obj["last"] as? [String])?.first
+        moduleRatings = obj["ratings"] as? [String: Bool] ?? [:]
+        didAskForReview = obj["reviewAsked"] as? Bool ?? false
     }
 }

@@ -35,13 +35,13 @@ synth,synthesizer,sound design,music theory,waveform,filter,LFO,ear training,pro
 ```
 **Description** — copy from `fastlane/metadata/en-US/description.txt`.
 
-**Support URL** `https://aether-jam.neunsoft.com/support`
-**Marketing URL** `https://neunsoft.com`
+**Support URL** `https://aether.neunsoft.com/support`
+**Marketing URL** `https://aether.neunsoft.com/learn`
 **Copyright** `2026 Neun`
 
 ### 2. App-level settings (required before you can submit)
 
-- **Privacy Policy URL** (App Information): `https://neunsoft.com/privacy`
+- **Privacy Policy URL** (App Information): `https://aether.neunsoft.com/privacy`
 - **Category**: Primary **Music**, Secondary **Education**.
 - **Pricing and Availability**: **Free**, all territories.
 - **App Privacy**: **Data Not Collected** (no accounts, analytics, or network calls).

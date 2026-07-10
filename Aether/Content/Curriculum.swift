@@ -382,7 +382,7 @@ enum Curriculum {
                 ),
                 exercise: Exercise(
                     prompt: "Hold a key and move Detune. The faint lines are the two copies; the bright line is what you hear.",
-                    visibleParams: [.detune, .oscWave],
+                    visibleParams: [.detune],
                     basePatch: Patch([.oscWave: 0.62, .cutoff: 0.9, .detune: 0.15, .ampSustain: 0.9, .ampRelease: 0.3]),
                     visual: .detune,
                     tip: "Producers automate Detune while a note plays, on pads, supersaws, and effects, for a rising, unstable sweep.",

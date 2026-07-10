@@ -7,6 +7,10 @@ struct CongratsView: View {
     @EnvironmentObject var progress: ProgressStore
     @EnvironmentObject var lang: LangStore
 
+    @State private var showReview = false
+    @State private var showFeedback = false
+    @State private var showShare = false
+
     private var module: Module? { Curriculum.course.modules.first { $0.id == moduleID } }
     private var nextModule: Module? {
         guard let i = Curriculum.course.modules.firstIndex(where: { $0.id == moduleID }),
@@ -65,6 +69,15 @@ struct CongratsView: View {
 
                 Spacer()
 
+                RatingPrompt(accent: accent, selection: progress.ratingFor(moduleID)) { thumbsUp in
+                    switch progress.setRating(moduleID, thumbsUp: thumbsUp) {
+                    case .requestReview: showReview = true
+                    case .askFeedback: showFeedback = true
+                    case .none: break
+                    }
+                }
+                .padding(.bottom, 6)
+
                 VStack(spacing: 12) {
                     if let next = nextModule {
                         Button {
@@ -80,10 +93,20 @@ struct CongratsView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    Button { showShare = true } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "square.and.arrow.up")
+                            Text(lang.t("Share on socials"))
+                        }
+                        .font(AppFont.ui(15, .semibold)).foregroundColor(Theme.textPrimary)
+                        .frame(maxWidth: .infinity).padding(.vertical, 14).panel(14)
+                    }
+                    .buttonStyle(.plain)
+
                     Button { path.wrappedValue = [] } label: {
                         Text(lang.t("Back to catalog"))
-                            .font(AppFont.ui(15, .semibold)).foregroundColor(Theme.textPrimary)
-                            .frame(maxWidth: .infinity).padding(.vertical, 14).panel(14)
+                            .font(AppFont.ui(15, .semibold)).foregroundColor(Theme.textMuted)
+                            .frame(maxWidth: .infinity).padding(.vertical, 12)
                     }
                     .buttonStyle(.plain)
                 }
@@ -92,5 +115,20 @@ struct CongratsView: View {
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarTitleDisplayMode(.inline)
+        .fullScreenCover(isPresented: $showReview) {
+            ReviewRequestView(accent: module?.accent ?? Theme.tone) { showReview = false }
+                .environmentObject(lang)
+        }
+        .fullScreenCover(isPresented: $showFeedback) {
+            FeedbackView(accent: module?.accent ?? Theme.tone, moduleID: moduleID) { showFeedback = false }
+                .environmentObject(lang)
+                .environmentObject(progress)
+        }
+        .fullScreenCover(isPresented: $showShare) {
+            if let m = module {
+                StoryShareView(module: m) { showShare = false }
+                    .environmentObject(lang)
+            }
+        }
     }
 }

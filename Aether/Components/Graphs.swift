@@ -109,65 +109,85 @@ struct DetuneGraph: View {
     var height: CGFloat = 190
 
     private let baseCycles = 10.0
-    // Display spread is wider than the audible one so the drift is visible at small settings.
-    private var spread: Double { 0.01 + detune * 0.09 }
 
-    private func copyA(_ x: Double) -> Double { sin(2 * .pi * baseCycles * (1 - spread) * x) }
-    private func copyB(_ x: Double) -> Double { sin(2 * .pi * baseCycles * (1 + spread) * x) }
+    // The two copies differ in pitch, so the phase between them grows steadily —
+    // that growth *is* the beating. We hold the carrier still and let the copies
+    // slide past each other, so the sum swells and cancels in place (what you
+    // hear) instead of the whole shape drifting sideways.
+    private let maxBeatHz = 1.4
+
+    // Accumulated phase between the copies, integrated over time so that turning
+    // the knob changes the beat *rate* without ever jumping the wave.
+    @State private var phase: Double = 0
+    @State private var lastTick: Date?
+
+    private var beatHz: Double { detune * maxBeatHz }
+
+    private func copy(_ u: Double, shift: Double) -> Double {
+        sin(2 * .pi * baseCycles * u + shift)
+    }
+
+    private func wave(_ w: CGFloat, _ mid: CGFloat, _ amp: CGFloat,
+                      _ value: (Double) -> Double) -> Path {
+        Path { p in
+            var x: CGFloat = 0
+            var first = true
+            while x <= w {
+                let pt = CGPoint(x: x, y: mid - CGFloat(value(Double(x / w))) * amp)
+                if first { p.move(to: pt); first = false } else { p.addLine(to: pt) }
+                x += 2
+            }
+        }
+    }
+
+    private func advance(to now: Date) {
+        let dt = min(lastTick.map { now.timeIntervalSince($0) } ?? 0, 1.0 / 30)
+        lastTick = now
+        if beatHz > 0.001 {
+            phase = (phase + 2 * .pi * beatHz * dt).truncatingRemainder(dividingBy: 4 * .pi)
+        } else {
+            // At zero detune the copies sit exactly together: ease them back into step.
+            phase -= phase * min(1, dt * 6)
+        }
+    }
 
     var body: some View {
-        GeometryReader { geo in
-            let w = geo.size.width, h = geo.size.height, mid = h / 2
-            let amp = mid - 12
-            ZStack {
-                Rectangle().fill(Color.black.opacity(0.28))
-                Path { p in p.move(to: CGPoint(x: 0, y: mid)); p.addLine(to: CGPoint(x: w, y: mid)) }
-                    .stroke(Theme.hairline(0.10), lineWidth: 1)
+        TimelineView(.animation) { ctx in
+            GeometryReader { geo in
+                let w = geo.size.width, h = geo.size.height, mid = h / 2
+                let amp = mid - 12
+                let half = phase / 2      // one copy leads by half, the other lags by half
+                ZStack {
+                    Rectangle().fill(Color.black.opacity(0.28))
+                    Path { p in p.move(to: CGPoint(x: 0, y: mid)); p.addLine(to: CGPoint(x: w, y: mid)) }
+                        .stroke(Theme.hairline(0.10), lineWidth: 1)
 
-                // The two copies of the note, one slightly slower, one slightly faster.
-                ForEach(0..<2, id: \.self) { i in
-                    Path { p in
-                        var x: CGFloat = 0
-                        var first = true
-                        while x <= w {
-                            let ph = Double(x / w)
-                            let v = i == 0 ? copyA(ph) : copyB(ph)
-                            let pt = CGPoint(x: x, y: mid - CGFloat(v * 0.5) * amp)
-                            if first { p.move(to: pt); first = false } else { p.addLine(to: pt) }
-                            x += 2
-                        }
-                    }
-                    .stroke(accent.opacity(0.25), lineWidth: 1.2)
-                }
+                    // The two copies of the note, drifting in and out of step.
+                    wave(w, mid, amp) { copy($0, shift: -half) * 0.5 }
+                        .stroke(accent.opacity(0.25), lineWidth: 1.2)
+                    wave(w, mid, amp) { copy($0, shift: half) * 0.5 }
+                        .stroke(accent.opacity(0.25), lineWidth: 1.2)
 
-                // Their sum: where the copies line up it swells, where they oppose it cancels.
-                Path { p in
-                    var x: CGFloat = 0
-                    var first = true
-                    while x <= w {
-                        let ph = Double(x / w)
-                        let pt = CGPoint(x: x, y: mid - CGFloat((copyA(ph) + copyB(ph)) * 0.5) * amp)
-                        if first { p.move(to: pt); first = false } else { p.addLine(to: pt) }
-                        x += 2
+                    // Their sum. In step it swells to full height; opposed it cancels to nothing.
+                    wave(w, mid, amp) { (copy($0, shift: -half) + copy($0, shift: half)) * 0.5 }
+                        .stroke(accent, style: StrokeStyle(lineWidth: 2.2, lineCap: .round, lineJoin: .round))
+                }
+                .overlay(alignment: .top) {
+                    HStack {
+                        Text(lang.t("TWO COPIES OF ONE NOTE")).mono(10, .semibold).tracking(1.2)
+                            .foregroundColor(Theme.textDim)
+                        Spacer()
+                        Text(lang.t("bright line: what you hear")).mono(10)
+                            .foregroundColor(Theme.textFaint)
                     }
+                    .padding(8)
                 }
-                .stroke(accent, style: StrokeStyle(lineWidth: 2.2, lineCap: .round, lineJoin: .round))
             }
-            .overlay(alignment: .top) {
-                HStack {
-                    Text(lang.t("TWO COPIES OF ONE NOTE")).mono(10, .semibold).tracking(1.2)
-                        .foregroundColor(Theme.textDim)
-                    Spacer()
-                    Text(lang.t("bright line: what you hear")).mono(10)
-                        .foregroundColor(Theme.textFaint)
-                }
-                .padding(8)
-            }
+            .onChange(of: ctx.date) { _, now in advance(to: now) }
         }
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.hairline(), lineWidth: 1))
-        .animation(.easeInOut(duration: 0.15), value: detune)
     }
 }
 

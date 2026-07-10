@@ -88,12 +88,14 @@ platform :ios do
     )
   end
 
-  desc "Push text metadata + screenshots only (no build)"
+  desc "Push text metadata only (no build, no screenshots)"
   lane :metadata do
     api_key = load_api_key
     upload_to_app_store(
       api_key: api_key,
       skip_binary_upload: true,
+      skip_screenshots: true,          # metadata-only; reordering screenshots
+                                       # fails while the app is in review
       skip_app_version_update: false,
       run_precheck_before_submit: false,
       force: true
@@ -103,6 +105,9 @@ platform :ios do
   desc "Build and submit a release to the App Store"
   lane :release do
     api_key = load_api_key
+    # Unique build number per upload — Apple rejects a duplicate.
+    set_yml_value("CURRENT_PROJECT_VERSION", Time.now.strftime("%Y%m%d%H%M"))
+    regenerate_project
     build(export_method: "app-store", api_key: api_key)
     upload_to_app_store(
       api_key: api_key,
@@ -111,6 +116,9 @@ platform :ios do
       force: true,                      # skip the HTML preview prompt
       precheck_include_in_app_purchases: false,
       skip_screenshots: false,          # uploads fastlane/screenshots/en-US
+      overwrite_screenshots: true,      # replace, don't append — otherwise each
+                                        # release stacks duplicates until the
+                                        # 10-per-set cap silently truncates them
       run_precheck_before_submit: true,
       submission_information: {
         export_compliance_uses_encryption: false,
@@ -141,6 +149,44 @@ platform :ios do
         content_rights_contains_third_party_content: false
       }
     )
+  end
+
+  desc "TEMP: cancel the in-progress review submission (unlock editing)"
+  lane :pull_from_review do
+    load_api_key
+    require "spaceship"
+    app = Spaceship::ConnectAPI::App.find("app.neun.aether.learn")
+    subs = Spaceship::ConnectAPI.get_review_submissions(
+      filter: { app: app.id },
+      includes: "items"
+    )
+    subs.to_a.each do |sub|
+      UI.message("REVIEW_SUBMISSION #{sub.id} state=#{sub.state} canceled=#{sub.canceled}")
+      next unless %w[READY_FOR_REVIEW WAITING_FOR_REVIEW IN_REVIEW UNRESOLVED_ISSUES].include?(sub.state)
+      begin
+        Spaceship::ConnectAPI.patch_review_submission(review_submission_id: sub.id, attributes: { canceled: true })
+        UI.success("Canceled review submission #{sub.id}")
+      rescue => e
+        UI.important("cancel failed: #{e.message[0, 140]}")
+      end
+    end
+  end
+
+  desc "TEMP: audit screenshots on App Store Connect"
+  lane :shots_audit do
+    load_api_key
+    require "spaceship"
+    app = Spaceship::ConnectAPI::App.find("app.neun.aether.learn")
+    version = app.get_edit_app_store_version(platform: "IOS")
+    localizations = version.get_app_store_version_localizations
+    localizations.each do |loc|
+      sets = loc.get_app_screenshot_sets(includes: "appScreenshots")
+      sets.each do |s|
+        shots = s.app_screenshots || []
+        UI.message("[#{loc.locale}] SET #{s.screenshot_display_type} : #{shots.size} screenshots")
+        shots.each { |sc| UI.message("   - #{sc.file_name}") }
+      end
+    end
   end
 
   desc "Bump the marketing version (major|minor|patch). Usage: fastlane bump type:minor"

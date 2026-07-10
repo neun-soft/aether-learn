@@ -1,1 +1,1 @@
-First release. The complete introductory course to sound design: sound and frequency, waveforms and harmonics, subtractive filters, envelopes, and modulation, each taught with a real synth engine you play as you learn.
+Clearer Detune lesson: the two copies of your note now drift in and out of step on screen, so you can see the beating you hear. Share a finished module as an image. Small fixes throughout.
