@@ -64,11 +64,11 @@ struct Keyboard: View {
 
         var body: some View {
             let lit = held || latched == midi
-            let fill: Color = lit ? accent : (white ? Color(hex: "d7dce6") : Color(hex: "1a1e28"))
+            let fill: Color = lit ? accent : (white ? Theme.keyWhite : Theme.keyBlack)
             return RoundedRectangle(cornerRadius: white ? 7 : 5)
                 .fill(fill)
                 .overlay(RoundedRectangle(cornerRadius: white ? 7 : 5)
-                    .stroke(Color.black.opacity(white ? 0.25 : 0.5), lineWidth: 1))
+                    .stroke(Color.black.opacity(white ? 0.18 : 0.5), lineWidth: 1))
                 .contentShape(Rectangle())
                 .gesture(
                     DragGesture(minimumDistance: 0)

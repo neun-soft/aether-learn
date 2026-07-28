@@ -27,7 +27,7 @@ struct WaveScope: View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
             ZStack {
-                Rectangle().fill(Color.black.opacity(0.25))
+                Rectangle().fill(Theme.plot)
                 Path { p in p.move(to: CGPoint(x: 0, y: h / 2)); p.addLine(to: CGPoint(x: w, y: h / 2)) }
                     .stroke(Theme.hairline(0.10), lineWidth: 1)
                 Path { p in
@@ -72,7 +72,7 @@ struct BeatScope: View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
             ZStack {
-                Rectangle().fill(Color.black.opacity(0.25))
+                Rectangle().fill(Theme.plot)
                 Path { p in
                     let n = history.count
                     guard n > 1 else { return }
@@ -124,7 +124,7 @@ struct HarmonicBars: View {
         GeometryReader { geo in
             let slot: CGFloat = geo.size.width / CGFloat(count)
             ZStack {
-                Rectangle().fill(Color.black.opacity(0.25))
+                Rectangle().fill(Theme.plot)
                 HStack(alignment: .bottom, spacing: 0) {
                     ForEach(0..<count, id: \.self) { i in
                         bar(index: i, slot: slot, fullHeight: geo.size.height)
@@ -173,7 +173,7 @@ struct SpectrumBars: View {
             let n = max(1, spectrum.count)
             let slot = geo.size.width / CGFloat(n)
             ZStack {
-                Rectangle().fill(Color.black.opacity(0.25))
+                Rectangle().fill(Theme.plot)
                 HStack(alignment: .bottom, spacing: 0) {
                     ForEach(0..<spectrum.count, id: \.self) { i in
                         RoundedRectangle(cornerRadius: 1.5)
@@ -366,7 +366,7 @@ struct FrequencyExplorer: View {
             ZStack(alignment: .leading) {
                 Capsule().fill(Theme.hairline(0.10)).frame(height: 6)
                 Capsule().fill(accent).frame(width: max(0, w * norm), height: 6)
-                Circle().fill(.white).frame(width: 22, height: 22)
+                Circle().fill(Theme.handle).frame(width: 22, height: 22)
                     .offset(x: max(0, min(w - 22, w * norm - 11)))
             }
             .frame(height: 22)

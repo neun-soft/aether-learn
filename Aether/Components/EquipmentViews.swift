@@ -49,7 +49,10 @@ struct FrequencyRangeChart: View {
                         .offset(x: x(g.low, w))
                         .frame(maxHeight: .infinity, alignment: .center)
                     if let m = markerHz {
+                        // The copy calls this "the white line", so it stays white in both
+                        // themes; on the light bed it needs a shadow to be findable.
                         Rectangle().fill(.white).frame(width: 1.5)
+                            .shadow(color: Theme.dropShadow, radius: 1)
                             .offset(x: x(m, w))
                     }
                 }

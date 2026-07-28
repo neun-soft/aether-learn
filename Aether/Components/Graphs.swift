@@ -30,7 +30,7 @@ struct AdditiveGraph: View {
                 let amp = mid - 12
                 let norm = sumPeak
                 ZStack {
-                    Rectangle().fill(Color.black.opacity(0.28))
+                    Rectangle().fill(Theme.plot)
                     Path { p in p.move(to: CGPoint(x: 0, y: mid)); p.addLine(to: CGPoint(x: w, y: mid)) }
                         .stroke(Theme.hairline(0.10), lineWidth: 1)
 
@@ -158,7 +158,7 @@ struct DetuneGraph: View {
                 let amp = mid - 12
                 let half = phase / 2      // one copy leads by half, the other lags by half
                 ZStack {
-                    Rectangle().fill(Color.black.opacity(0.28))
+                    Rectangle().fill(Theme.plot)
                     Path { p in p.move(to: CGPoint(x: 0, y: mid)); p.addLine(to: CGPoint(x: w, y: mid)) }
                         .stroke(Theme.hairline(0.10), lineWidth: 1)
 
@@ -237,7 +237,7 @@ struct FilterGraph: View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
             ZStack {
-                Rectangle().fill(Color.black.opacity(0.28))
+                Rectangle().fill(Theme.plot)
 
                 // Live spectrum of the actual output, positioned by frequency.
                 ForEach(0..<spectrum.count, id: \.self) { b in
@@ -268,7 +268,7 @@ struct FilterGraph: View {
                 let cx = xFor(fc, w)
                 Path { p in p.move(to: CGPoint(x: cx, y: 0)); p.addLine(to: CGPoint(x: cx, y: h)) }
                     .stroke(Theme.hairline(0.25), lineWidth: 1)
-                Circle().fill(.white).frame(width: 14, height: 14)
+                Circle().fill(Theme.handle).frame(width: 14, height: 14)
                     .position(x: min(w - 7, max(7, cx)),
                               y: min(h - 7, max(7, yFor(gain(fc), h))))
             }
@@ -387,7 +387,7 @@ struct EnvelopeGraph: View {
             let xF = { (t: Double) in CGFloat(t / total) * w }
             let yF = { (v: Double) in h - CGFloat(v) * (h - 16) - 8 }
             ZStack {
-                Rectangle().fill(Color.black.opacity(0.28))
+                Rectangle().fill(Theme.plot)
 
                 Path { p in
                     var x: CGFloat = 0
@@ -418,7 +418,7 @@ struct EnvelopeGraph: View {
                         ? min(total, sustainEnd + releaseAge)
                         : min(playhead, sustainEnd)
                     if releaseAge < 0 || releaseAge <= rel {
-                        Circle().fill(.white).frame(width: 12, height: 12)
+                        Circle().fill(Theme.handle).frame(width: 12, height: 12)
                             .position(x: xF(t), y: yF(level(t)))
                     }
                 }
@@ -468,7 +468,7 @@ struct LFOGraph: View {
                 let rateHz = 0.05 * pow(2.0, rate * 8.6)
                 let head = (ctx.date.timeIntervalSince1970 * rateHz / cycles).truncatingRemainder(dividingBy: 1)
                 ZStack {
-                    Rectangle().fill(Color.black.opacity(0.28))
+                    Rectangle().fill(Theme.plot)
                     Path { p in p.move(to: CGPoint(x: 0, y: mid)); p.addLine(to: CGPoint(x: w, y: mid)) }
                         .stroke(Theme.hairline(0.10), lineWidth: 1)
                     Path { p in
@@ -484,7 +484,7 @@ struct LFOGraph: View {
                     .stroke(accent, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
 
                     let hx = CGFloat(head) * w
-                    Circle().fill(.white).frame(width: 12, height: 12)
+                    Circle().fill(Theme.handle).frame(width: 12, height: 12)
                         .position(x: hx, y: mid - CGFloat(shapeVal(head * cycles)) * amp)
                 }
                 .overlay(alignment: .top) {

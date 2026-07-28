@@ -6,10 +6,19 @@ struct CongratsView: View {
 
     @EnvironmentObject var progress: ProgressStore
     @EnvironmentObject var lang: LangStore
+    @EnvironmentObject var store: Store
 
     @State private var showReview = false
     @State private var showFeedback = false
     @State private var showShare = false
+    @State private var showPaywall = false
+
+    /// True on the free module's completion screen for someone who hasn't paid: the next
+    /// module exists, but it's behind the unlock. This is the moment we ask.
+    private var nextIsLocked: Bool {
+        guard let next = nextModule else { return false }
+        return !store.isUnlocked && !Curriculum.isFree(moduleID: next.id)
+    }
 
     private var module: Module? { Curriculum.course.modules.first { $0.id == moduleID } }
     private var nextModule: Module? {
@@ -79,7 +88,28 @@ struct CongratsView: View {
                 .padding(.bottom, 6)
 
                 VStack(spacing: 12) {
-                    if let next = nextModule {
+                    if nextIsLocked {
+                        // The free module is done. Ask here, at the high point, rather than
+                        // interrupting a lesson.
+                        VStack(spacing: 6) {
+                            Button { showPaywall = true } label: {
+                                HStack(spacing: 8) {
+                                    Text(lang.t("Unlock the full course"))
+                                    if let price = store.displayPrice {
+                                        Text("·").foregroundColor(.black.opacity(0.45))
+                                        Text(price)
+                                    }
+                                }
+                                .font(AppFont.ui(15, .semibold)).foregroundColor(.black)
+                                .frame(maxWidth: .infinity).padding(.vertical, 14)
+                                .background(Theme.tone).clipShape(RoundedRectangle(cornerRadius: 14))
+                            }
+                            .buttonStyle(.plain)
+
+                            Text(lang.t("\(Curriculum.paidModuleCount) modules, \(Curriculum.paidLessonCount) lessons to go. One-time purchase."))
+                                .ui(12).foregroundColor(Theme.textDim)
+                        }
+                    } else if let next = nextModule {
                         Button {
                             path.wrappedValue = [.lesson(Curriculum.indexOf(next.lessons[0].id))]
                         } label: {
@@ -129,6 +159,16 @@ struct CongratsView: View {
                 StoryShareView(module: m) { showShare = false }
                     .environmentObject(lang)
             }
+        }
+        // The paywall closes itself the moment the purchase lands. Navigating from
+        // `onDismiss` — rather than racing the dismissal — means the push always sticks.
+        .sheet(isPresented: $showPaywall, onDismiss: {
+            guard store.isUnlocked, let next = nextModule else { return }
+            path.wrappedValue = [.lesson(Curriculum.indexOf(next.lessons[0].id))]
+        }) {
+            PaywallView { showPaywall = false }
+                .environmentObject(store)
+                .environmentObject(lang)
         }
     }
 }

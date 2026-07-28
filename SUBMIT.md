@@ -43,7 +43,15 @@ synth,synthesizer,sound design,music theory,waveform,filter,LFO,ear training,pro
 
 - **Privacy Policy URL** (App Information): `https://aether.neunsoft.com/privacy`
 - **Category**: Primary **Music**, Secondary **Education**.
-- **Pricing and Availability**: **Free**, all territories.
+- **Pricing and Availability**: **Free**, all territories. (Was $1.99 paid-to-download through
+  build `202607101457`. From the freemium release on, the app is free and revenue comes from the
+  in-app unlock below. Anyone who downloaded it while it was paid keeps the full course — see
+  `Store.firstFreemiumBuild`.)
+- **In-App Purchase**: `app.neun.aether.learn.fullcourse` — **Non-Consumable**, **$4.99**,
+  "Full Course". Unlocks every module after *Sound & Frequency*, which stays free. The product ID
+  must match `Store.fullCourseID` exactly, and a first IAP is reviewed **attached to a build**, so
+  submit it together with the version. Requires the **Paid Apps agreement** (banking + tax) to be
+  active, or `Product.products` returns empty and no one can buy anything.
 - **App Privacy**: **Data Not Collected** (no accounts, analytics, or network calls).
 - **Age Rating**: run the questionnaire, all "None" → **4+**.
 

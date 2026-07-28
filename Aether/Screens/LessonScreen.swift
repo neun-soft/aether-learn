@@ -423,7 +423,7 @@ struct LessonScreen: View {
                 .background(Theme.panel)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(Theme.hairline(), lineWidth: 1))
-                .shadow(color: .black.opacity(0.35), radius: 8, y: 3)
+                .shadow(color: Theme.dropShadow, radius: 8, y: 3)
                 .padding(.bottom, 10)
                 .offset(y: hintBounce ? 3 : -3)
                 .allowsHitTesting(false)

@@ -30,7 +30,7 @@ struct BeeView: View {
                 }
                 .frame(height: 180)
                 .frame(maxWidth: .infinity)
-                .background(Color.black.opacity(0.28))
+                .background(Theme.plot)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.hairline(), lineWidth: 1))
                 .overlay(alignment: .topLeading) {
@@ -87,8 +87,8 @@ struct BeeView: View {
             var w = ctx
             w.translateBy(x: hinge.x, y: hinge.y)
             w.rotate(by: .radians(angle))
-            w.fill(Path(ellipseIn: r), with: .color(.white.opacity(alpha)))
-            w.stroke(Path(ellipseIn: r), with: .color(.white.opacity(alpha + 0.22)), lineWidth: 1.2)
+            w.fill(Path(ellipseIn: r), with: .color(Theme.wash(alpha)))
+            w.stroke(Path(ellipseIn: r), with: .color(Theme.wash(alpha + 0.22)), lineWidth: 1.2)
         }
         // hindwings (smaller, splayed more to the sides, behind)
         drawWing(-0.30 - flap2, CGRect(x: 4, y: -11, width: 62, height: 26), 0.20)
@@ -143,7 +143,7 @@ struct DoorView: View {
                 })
         }
         .frame(height: height)
-        .background(Color.black.opacity(0.28))
+        .background(Theme.plot)
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.hairline(), lineWidth: 1))
         .overlay(alignment: .topLeading) {
@@ -281,7 +281,7 @@ struct AnalogySlider: View {
             ZStack(alignment: .leading) {
                 Capsule().fill(Theme.hairline(0.1)).frame(height: 6)
                 Capsule().fill(accent).frame(width: max(6, w * value), height: 6)
-                Circle().fill(.white).frame(width: 22, height: 22)
+                Circle().fill(Theme.handle).frame(width: 22, height: 22)
                     .shadow(color: .black.opacity(0.3), radius: 3, y: 1)
                     .offset(x: max(0, min(w - 22, w * value - 11)))
             }

@@ -18,7 +18,7 @@ struct LKnob: View {
             ZStack {
                 Circle()
                     .trim(from: 0, to: sweep)
-                    .stroke(Color.white.opacity(0.08),
+                    .stroke(Theme.hairlineStrong,
                             style: StrokeStyle(lineWidth: 5, lineCap: .round))
                     .rotationEffect(.degrees(135))
                 Circle()

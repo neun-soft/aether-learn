@@ -18,11 +18,39 @@ enum Curriculum {
         course.modules.flatMap { m in m.lessons.map { (lesson: $0, module: m) } }
     static func indexOf(_ lessonID: String) -> Int { flat.firstIndex { $0.lesson.id == lessonID } ?? 0 }
 
+    // MARK: - Free tier
+    //
+    // The first module is free end to end: every lesson, the demos, the exercises, the
+    // completion screen. Everything after it is behind the one-time unlock. Pinned by id
+    // rather than position so reordering the course can't silently give away a paid module.
+
+    static let freeModuleID = "m1"
+
+    static var freeModule: Module { course.modules.first { $0.id == freeModuleID } ?? course.modules[0] }
+
+    static func isFree(moduleID: String) -> Bool { moduleID == freeModuleID }
+
+    /// Whether a lesson is playable without paying. Unknown ids read as free — a content
+    /// bug should never lock someone out of something they already bought.
+    static func isFree(lessonID: String) -> Bool {
+        guard let ref = flat.first(where: { $0.lesson.id == lessonID }) else { return true }
+        return isFree(moduleID: ref.module.id)
+    }
+
+    /// What the unlock actually buys, computed so the paywall copy can't drift from the course.
+    static var paidModuleCount: Int { course.modules.filter { !isFree(moduleID: $0.id) }.count }
+    static var paidLessonCount: Int { course.allLessons.count - freeModule.lessons.count }
+
     static let course = Course(
         id: "foundations",
         title: "Sound Design Foundations",
         subtitle: "Learn synthesis from the ground up, by turning real knobs.",
-        modules: [frequency, playback, subtractive, shape, motion]
+        // Order matters commercially, not just pedagogically. `frequency` is the free module,
+        // so whatever sits next is the first thing a buyer touches after paying — it needs to
+        // be the payoff, and a resonant filter sweep is the payoff. `playback` (speakers and
+        // gear) is the module people are least willing to pay for and the dullest thing to
+        // land on straight after a purchase, so it moves to the end as an appendix.
+        modules: [frequency, subtractive, shape, motion, playback]
     )
 
     // MARK: Module - Where Sound Plays

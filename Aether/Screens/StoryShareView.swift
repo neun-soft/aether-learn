@@ -310,7 +310,9 @@ struct StoryShareView: View {
 
     @MainActor private func renderImage() {
         guard image == nil else { return }
-        let renderer = ImageRenderer(content: StoryCard(module: module))
+        // The shared card is a branded artefact, not app chrome: it stays the dark
+        // card whatever appearance the app is wearing.
+        let renderer = ImageRenderer(content: StoryCard(module: module).environment(\.colorScheme, .dark))
         renderer.scale = 1                       // card is already 1080×1920 pt → 1080×1920 px
         image = renderer.uiImage
     }
