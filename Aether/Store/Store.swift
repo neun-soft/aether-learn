@@ -50,7 +50,23 @@ final class Store: ObservableObject {
 
     /// Price as StoreKit formats it for the user's storefront ("$4.99", "4,99 €"...).
     /// Falls back to nothing rather than a hardcoded price, which could be wrong abroad.
-    var displayPrice: String? { product?.displayPrice }
+    var displayPrice: String? {
+        #if DEBUG
+        if let stub = stubbedPrice { return stub }
+        #endif
+        return product?.displayPrice
+    }
+
+    #if DEBUG
+    /// Price to render instead of StoreKit's, set by AETHER_STUB_PRICE. Exists because the
+    /// StoreKit test server only runs when Xcode launches the app from a scheme — a headless
+    /// `simctl launch`, which is how the paywall screenshot gets captured, always sees an empty
+    /// product list and would shoot "Price unavailable". Compiled out of the shipped binary.
+    private var stubbedPrice: String? {
+        let v = ProcessInfo.processInfo.environment["AETHER_STUB_PRICE"]
+        return (v?.isEmpty ?? true) ? nil : v
+    }
+    #endif
 
     init() {
         purchased = UserDefaults.standard.bool(forKey: Self.cacheKey)
@@ -113,6 +129,11 @@ final class Store: ObservableObject {
     }
 
     func loadProduct() async {
+        #if DEBUG
+        // A stubbed price is a ready price — otherwise the footer sits on the spinner forever
+        // waiting for a product that this process can never load.
+        if stubbedPrice != nil { productState = .ready; return }
+        #endif
         if product != nil { productState = .ready; return }
         productState = .loading
         do {
