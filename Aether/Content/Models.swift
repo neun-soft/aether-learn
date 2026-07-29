@@ -58,7 +58,11 @@ struct Term: Identifiable, Hashable {
     let word: String          // matched case-insensitively in the theory text
     let plain: String         // one sentence, no other jargon in it
     var more: String? = nil   // optional second sentence for the curious
-    var id: String { word.lowercased() }
+
+    /// URL-safe slug, because the id becomes the host of the tap link. A raw multi-word term
+    /// like "wow and flutter" contains spaces, `URL(string:)` refuses to build one, and the
+    /// word ends up underlined but dead — which is exactly how it shipped.
+    var id: String { word.lowercased().replacingOccurrences(of: " ", with: "-") }
 }
 
 struct Lesson: Identifiable {

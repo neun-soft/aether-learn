@@ -55,8 +55,12 @@ struct TermText: View {
                 let afterOK = found.upperBound == out.endIndex
                     || !isWordCharacter(out.characters[found.upperBound])
 
-                if beforeOK, afterOK, out[found].link == nil {
-                    out[found].link = URL(string: "\(scheme)://\(term.id)")
+                // Style only once the link exists. Underlining a word whose URL failed to build
+                // is worse than leaving it plain: it advertises a definition and then does
+                // nothing when tapped.
+                if beforeOK, afterOK, out[found].link == nil,
+                   let url = URL(string: "\(scheme)://\(term.id)") {
+                    out[found].link = url
                     out[found].foregroundColor = accent
                     out[found].underlineStyle = .single
                     // Only the first mention in a paragraph is marked. A word that repeats four
