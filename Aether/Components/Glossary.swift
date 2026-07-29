@@ -40,8 +40,8 @@ struct TermText: View {
             })
     }
 
-    /// Marks up whole-word matches only, longest term first so "pink noise" wins over "noise"
-    /// and "noisy" never matches "noise".
+    /// Marks up the first whole-word match of each term, longest term first so "pink noise" wins
+    /// over "noise" and "noisy" never matches "noise".
     static func attributed(_ text: String, terms: [Term], accent: Color) -> AttributedString {
         var out = AttributedString(text)
         guard !terms.isEmpty else { return out }
@@ -59,6 +59,10 @@ struct TermText: View {
                     out[found].link = URL(string: "\(scheme)://\(term.id)")
                     out[found].foregroundColor = accent
                     out[found].underlineStyle = .single
+                    // Only the first mention in a paragraph is marked. A word that repeats four
+                    // times reads as four separate offers to explain something, and the paragraph
+                    // turns into a field of underlines nobody wants to read.
+                    break
                 }
 
                 guard found.upperBound < out.endIndex else { break }

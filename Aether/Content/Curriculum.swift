@@ -79,11 +79,9 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "frequency", plain: "How many times something repeats each second.",
-                         more: "A wave repeating 440 times a second is the note A. Repeat it faster and the note gets higher."),
-                    Term(word: "pitch", plain: "How high or low a note sounds to you."),
-                    Term(word: "spectrum", plain: "A picture of which frequencies are in a sound, low on the left and high on the right.",
-                         more: "A tall bar means there is a lot of that frequency in the sound.")
+                    G.frequency,
+                    G.pitch,
+                    G.spectrum
                 ],
                 exercise: Exercise(
                     prompt: "Turn NOISE all the way up. The note disappears, and playing different keys stops making any difference. Then sweep COLOUR from white to pink.",
@@ -113,14 +111,11 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "modulation", plain: "One control automatically moving another one for you.",
-                         more: "An LFO moving the pitch up and down is modulation. So is this, just far faster."),
-                    Term(word: "LFO", plain: "A very slow wave used to move a knob for you instead of your finger.",
-                         more: "It stands for low frequency oscillator. Low frequency means slow enough to watch."),
-                    Term(word: "carrier", plain: "In FM, the wave you actually hear."),
-                    Term(word: "modulator", plain: "In FM, the hidden wave that bends the carrier. You never hear it by itself."),
-                    Term(word: "timbre", plain: "What makes two instruments playing the same note still sound different.",
-                         more: "A piano and a guitar can play the exact same pitch and you can still tell them apart. That difference is timbre. It is pronounced TAM-ber.")
+                    G.modulation,
+                    G.lfo,
+                    G.carrier,
+                    G.modulator,
+                    G.timbre
                 ],
                 exercise: Exercise(
                     prompt: "Hold a note and turn FM up slowly. Watch the bottom wave get bent out of shape by the one above it. The note stays the same; only its character changes.",
@@ -147,11 +142,9 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "ratio", plain: "How fast one thing runs compared to another.",
-                         more: "A ratio of 2 means the hidden wave goes round twice for every one time the wave you hear goes round."),
-                    Term(word: "carrier", plain: "In FM, the wave you actually hear."),
-                    Term(word: "harmonic", plain: "An extra frequency sitting neatly above the main note, at two times, three times, four times its speed.",
-                         more: "Harmonics are what make a violin and a flute sound different while playing the same note.")
+                    G.ratio,
+                    G.carrier,
+                    G.harmonic
                 ],
                 exercise: Exercise(
                     prompt: "Step RATIO through its positions. Watch the bottom wave: at whole numbers it settles into a repeating shape, and in between it never does. Listen for the moment it stops sounding like a note.",
@@ -182,10 +175,9 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "oscillator", plain: "The part of a synth that makes the raw repeating wave.",
-                         more: "Oscillate just means to move back and forth. Everything else in the synth shapes what the oscillator produces."),
-                    Term(word: "cycle", plain: "One full repeat of a wave, before it starts over."),
-                    Term(word: "pitch", plain: "How high or low a note sounds to you.")
+                    G.oscillator,
+                    G.cycle,
+                    G.pitch
                 ],
                 exercise: Exercise(
                     prompt: "Hold a note and turn SYNC up slowly. Watch the dotted lines stay exactly where they are while the wave between them gets squeezed in. That is why the note does not change.",
@@ -224,16 +216,13 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "drive", plain: "How hard a sound is pushed into something that cannot take it all.",
-                         more: "It is called drive because you are driving the signal past the limit on purpose, to change how it sounds."),
-                    Term(word: "ceiling", plain: "The loudest signal a piece of equipment can pass on before it runs out of room."),
-                    Term(word: "overloading", plain: "Sending in more than something can handle, so the loudest parts get flattened."),
-                    Term(word: "distortion", plain: "When a wave comes out of something a different shape from how it went in.",
-                         more: "Distort just means change the shape. Since the shape is what you hear, a changed shape is a changed sound."),
-                    Term(word: "peaks", plain: "The tallest points of a wave, where it is furthest from the middle."),
-                    Term(word: "harmonics", plain: "Extra frequencies sitting neatly above the main note, at two times, three times, four times its speed.",
-                         more: "More harmonics sounds brighter and buzzier. A square-ish wave has far more of them than a round one."),
-                    Term(word: "harmonic", plain: "An extra frequency sitting neatly above the main note, at two times, three times, four times its speed.")
+                    G.drive,
+                    G.ceiling,
+                    G.overloading,
+                    G.distortion,
+                    G.peaks,
+                    G.harmonics,
+                    G.harmonic
                 ],
                 exercise: Exercise(
                     prompt: "Hold a note and turn DRIVE up slowly. Watch the bright wave meet the dotted ceiling and flatten off against it.",
@@ -263,10 +252,9 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "delay", plain: "An effect that stores a sound and plays it back a moment later."),
-                    Term(word: "echo", plain: "The same sound reaching you a second time, after taking longer to arrive."),
-                    Term(word: "feedback", plain: "Sending something back into where it came from, so it happens again.",
-                         more: "In a delay, feeding the copy back in is what turns one repeat into many.")
+                    G.delay,
+                    G.echo,
+                    G.feedback
                 ],
                 exercise: Exercise(
                     prompt: "Play one short note and watch it come back. Move TIME to spread the repeats apart, then FEEDBACK to get more of them.",
@@ -297,12 +285,11 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "cancel", plain: "When one wave pushes while another pulls, so they undo each other and you hear nothing.",
-                         more: "This is exactly how noise-cancelling headphones work."),
-                    Term(word: "comb filter", plain: "A filter that removes a row of evenly spaced frequencies, leaving gaps like the teeth of a comb."),
-                    Term(word: "filter", plain: "Anything that removes some frequencies from a sound and leaves the others."),
-                    Term(word: "flanger", plain: "An effect that slowly moves the gaps of a comb filter up and down, giving a sweeping, jet-plane sound."),
-                    Term(word: "chorus", plain: "An effect that uses a slightly longer, gently wandering copy to make one sound seem like several.")
+                    G.cancel,
+                    G.combFilter,
+                    G.filter,
+                    G.flanger,
+                    G.chorus
                 ],
                 exercise: Exercise(
                     prompt: "Hold a note and bring TIME all the way down. The echo disappears, the gaps appear, and the sound goes hollow.",
@@ -333,10 +320,9 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "reverb", plain: "The wash of sound made by thousands of bounces around a room.",
-                         more: "Short for reverberation. It is what tells you, with your eyes shut, whether you are in a cupboard or a church."),
-                    Term(word: "bounce", plain: "Sound hitting a surface and coming back off it, the way light does off a mirror."),
-                    Term(word: "echo", plain: "The same sound reaching you a second time, after taking longer to arrive.")
+                    G.reverb,
+                    G.bounce,
+                    G.echo
                 ],
                 exercise: Exercise(
                     prompt: "Play a short note with MIX at zero, then bring it up. The sound stops being right in your ears and starts being somewhere. Then open SIZE.",
@@ -376,11 +362,11 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "envelope", plain: "The shape of a sound\'s loudness from the moment it starts to the moment it ends."),
-                    Term(word: "attack", plain: "How long a sound takes to reach full volume after it starts."),
-                    Term(word: "sustain", plain: "The level a sound holds at while you keep the key held down."),
-                    Term(word: "decay", plain: "How long a sound takes to fall from full volume down to its holding level."),
-                    Term(word: "percussive", plain: "Sounding like something that was struck rather than blown or bowed.")
+                    G.envelope,
+                    G.attack,
+                    G.sustain,
+                    G.decay,
+                    G.percussive
                 ],
                 exercise: Exercise(
                     prompt: "Pull DECAY down and SUSTAIN to zero. Watch the shape go straight up and straight back down, and hear the note turn into a hit.",
@@ -411,11 +397,10 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "high-pass filter", plain: "A filter that lets high frequencies through and blocks low ones."),
-                    Term(word: "cutoff", plain: "The frequency where a filter starts doing its job.",
-                         more: "On a high-pass filter, everything below the cutoff gets removed."),
-                    Term(word: "noise", plain: "Sound with no repeating pattern, so it has no note in it."),
-                    Term(word: "decay", plain: "How long a sound takes to fall from full volume down to its holding level.")
+                    G.highPass,
+                    G.cutoff,
+                    G.noise,
+                    G.decay
                 ],
                 exercise: Exercise(
                     prompt: "Sweep CUTOFF up until only the thin bright part is left, then open DECAY to turn the closed hat into an open one.",
@@ -447,10 +432,9 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "oscillator", plain: "The part of a synth that makes the raw repeating wave.",
-                         more: "Because it repeats, it has a note in it. Noise does not repeat, so it does not."),
-                    Term(word: "noise", plain: "Sound with no repeating pattern, so it has no note in it."),
-                    Term(word: "layer", plain: "Two or more sounds played at the same moment so they are heard as one.")
+                    G.oscillator,
+                    G.noise,
+                    G.layer
                 ],
                 exercise: Exercise(
                     prompt: "Play a low key and move NOISE across its range. Stop where the thud and the crack stop sounding like two things and start sounding like one drum.",
@@ -483,11 +467,10 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "envelope", plain: "The shape of a sound\'s loudness from the moment it starts to the moment it ends.",
-                         more: "It does not have to control loudness. Point it at pitch and the pitch traces the same shape."),
-                    Term(word: "vibrato", plain: "A small, regular wobble in pitch, the kind a singer adds to a held note."),
-                    Term(word: "modulation", plain: "One control automatically moving another one for you."),
-                    Term(word: "sine wave", plain: "The simplest possible wave, a smooth curve with no extra frequencies in it at all.")
+                    G.envelope,
+                    G.vibrato,
+                    G.modulation,
+                    G.sineWave
                 ],
                 exercise: Exercise(
                     prompt: "Play the lowest keys. Move DEPTH to change how far the pitch falls, and DECAY to change how fast. Find the point where it stops sliding and starts sounding hit.",
@@ -530,12 +513,11 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "patch", plain: "One complete sound, meaning every setting on the synth at once.",
-                         more: "The word comes from old synths, where you connected the parts together with patch cables."),
-                    Term(word: "resonance", plain: "A boost right at the filter\'s cutoff, which makes that one frequency stand out."),
-                    Term(word: "cutoff", plain: "The frequency where a filter starts doing its job."),
-                    Term(word: "harmonics", plain: "Extra frequencies sitting neatly above the main note, at two times, three times, four times its speed."),
-                    Term(word: "drive", plain: "How hard a sound is pushed into something that cannot take it all.")
+                    G.patch,
+                    G.resonance,
+                    G.cutoff,
+                    G.harmonics,
+                    G.drive
                 ],
                 exercise: Exercise(
                     prompt: "Play low. Close CUTOFF until it stops being bright, shorten DECAY so notes let go, then add DRIVE and listen on your phone speaker.",
@@ -567,11 +549,10 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "lead", plain: "The sound playing the main melody, the part a listener follows."),
-                    Term(word: "detune", plain: "Slightly mistuning one copy of a sound against another so they drift against each other.",
-                         more: "The drifting is what your ear reads as width. Too much and it just sounds out of tune."),
-                    Term(word: "vibrato", plain: "A small, regular wobble in pitch, the kind a singer adds to a held note."),
-                    Term(word: "harmonics", plain: "Extra frequencies sitting neatly above the main note, at two times, three times, four times its speed.")
+                    G.lead,
+                    G.detune,
+                    G.vibrato,
+                    G.harmonics
                 ],
                 exercise: Exercise(
                     prompt: "Open CUTOFF until it cuts through, then add DETUNE for width. Stop as soon as it sounds wide rather than out of tune.",
@@ -603,10 +584,10 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "pad", plain: "A slow, soft sound that fills the background behind everything else."),
-                    Term(word: "attack", plain: "How long a sound takes to reach full volume after it starts."),
-                    Term(word: "release", plain: "How long a sound takes to fade away after you let go of the key."),
-                    Term(word: "reverb", plain: "The wash of sound made by thousands of bounces around a room.")
+                    G.pad,
+                    G.attack,
+                    G.release,
+                    G.reverb
                 ],
                 exercise: Exercise(
                     prompt: "Lengthen ATTACK and RELEASE until notes blur into each other, then open MIX. Play a chord, let go, and start another before the first has finished.",
@@ -636,8 +617,8 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [
-                    Term(word: "patch", plain: "One complete sound, meaning every setting on the synth at once."),
-                    Term(word: "signal path", plain: "The route a sound takes through the synth, from where it is made to where it comes out.")
+                    G.patch,
+                    G.signalPath
                 ],
                 exercise: Exercise(
                     prompt: "No target. Work left to right along the chain and build something you like, taking it to the extremes on the way.",
@@ -675,6 +656,7 @@ enum Curriculum {
                     "Out-of-range notes lose their body but their harmonics keep them audible"
                 ],
                 demo: nil,
+                terms: [G.driver, G.woofer, G.fundamental, G.harmonics, G.frequency],
                 exercise: Exercise(
                     prompt: "Pick a device and play a low note. When the marker falls below the device's range, the note loses its body — the harmonics are what you still hear.",
                     visibleParams: [],
@@ -694,6 +676,7 @@ enum Curriculum {
                 ],
                 takeaways: ["Your current output has its own limited range", "Deep bass is where cheap and good gear differ most"],
                 demo: nil,
+                terms: [G.driver, G.fundamental],
                 exercise: Exercise(
                     prompt: "Play the sub bass and the kick, then switch outputs. On small speakers they nearly vanish, on headphones or a big system you feel them.",
                     visibleParams: [],
@@ -716,6 +699,7 @@ enum Curriculum {
                     "The right setup depends on the purpose"
                 ],
                 demo: nil,
+                terms: [G.driver, G.spectrum],
                 exercise: Exercise(
                     prompt: "Match each situation to the setup that fits it best.",
                     visibleParams: [],
@@ -746,6 +730,7 @@ enum Curriculum {
                     startPatch: Patch([.oscWave: 0, .cutoff: 0.95, .ampSustain: 0.9, .ampRelease: 0.4]),
                     notes: held(57, 4.5)
                 ),
+                terms: [G.medium, G.frequency, G.amplitude],
                 exercise: Exercise(
                     prompt: "Tap a key to hold a note. The wiggling line is the medium vibrating.",
                     visibleParams: [],
@@ -763,6 +748,7 @@ enum Curriculum {
                 ],
                 takeaways: ["Frequency is vibrations per second, measured in Hz", "Slower is lower, faster is higher"],
                 demo: nil,
+                terms: [G.frequency, G.pitch, G.cycle],
                 exercise: Exercise(
                     prompt: "Sweep from slow, low vibrations up to fast, high ones. Watch the wave tighten as it rises.",
                     visibleParams: [],
@@ -784,6 +770,7 @@ enum Curriculum {
                     "How fast it moves is the frequency, and that is the pitch"
                 ],
                 demo: nil,
+                terms: [G.frequency, G.pitch],
                 exercise: Exercise(
                     prompt: "Drag the flap speed. Faster wings, faster vibration, higher buzz.",
                     visibleParams: [],
@@ -802,6 +789,7 @@ enum Curriculum {
                 ],
                 takeaways: ["A musical note is a specific frequency", "Doubling the frequency raises it one octave"],
                 demo: nil,
+                terms: [G.frequency, G.pitch, G.fundamental],
                 exercise: Exercise(
                     prompt: "Sweep and watch the note name. Try both snapping modes below: the C major scale, or all twelve notes.",
                     visibleParams: [],
@@ -830,6 +818,7 @@ enum Curriculum {
                     lanes: [lane(.ampSustain, [(0, 0.3), (2.5, 0.95), (5.5, 0.4)])],
                     notes: held(52, 6)
                 ),
+                terms: [G.amplitude, G.loudness, G.waveform],
                 exercise: Exercise(
                     prompt: "Raise your phone volume, then use Amplitude to make the wave taller and shorter.",
                     visibleParams: [.ampSustain],
@@ -856,6 +845,7 @@ enum Curriculum {
                     "In mastering, perceived loudness is measured precisely, in LUFS"
                 ],
                 demo: nil,
+                terms: [G.loudness, G.amplitude],
                 exercise: Exercise(
                     prompt: "Sweep from low to high. The amplitude never changes, but notice how much quieter the low notes seem.",
                     visibleParams: [],
@@ -879,6 +869,7 @@ enum Curriculum {
                     "Bass needs more amplitude to feel as loud as the mids"
                 ],
                 demo: nil,
+                terms: [G.amplitude, G.loudness],
                 exercise: Exercise(
                     prompt: "Play a low key, then a high key, at the same Amplitude. The high one sounds louder. Meaning loudness is not more volume, your ears just perceive it that way because they are more sensitive to some frequencies than others.",
                     visibleParams: [.ampSustain],
@@ -910,6 +901,7 @@ enum Curriculum {
                     lanes: [lane(.oscWave, [(0.5, 0), (6, 1)])],
                     notes: held(50, 6.5)
                 ),
+                terms: [G.waveform, G.harmonics, G.timbre, G.sineWave],
                 exercise: Exercise(
                     prompt: "Hold a key, then try each shape. Watch the wave change and hear the tone change.",
                     visibleParams: [.oscWave],
@@ -932,6 +924,7 @@ enum Curriculum {
                     "More sines make a sharper shape and a brighter sound"
                 ],
                 demo: nil,
+                terms: [G.sineWave, G.harmonics, G.waveform, G.spectrum],
                 exercise: Exercise(
                     prompt: "Add sines one at a time and hold a key. Watch the sum sharpen and hear it brighten.",
                     visibleParams: [],
@@ -959,6 +952,7 @@ enum Curriculum {
                     lanes: [lane(.oscWave, [(0.5, 0), (6, 1)])],
                     notes: held(45, 6.5)
                 ),
+                terms: [G.harmonics, G.harmonic, G.fundamental, G.timbre, G.spectrum],
                 exercise: Exercise(
                     prompt: "Change the shape and watch the harmonics stack up. More bars means a brighter sound.",
                     visibleParams: [.oscWave],
@@ -987,6 +981,7 @@ enum Curriculum {
                     lanes: [lane(.detune, [(0.5, 0), (7, 0.4)])],
                     notes: held(48, 7.5)
                 ),
+                terms: [G.beating, G.frequency, G.pitch],
                 exercise: Exercise(
                     prompt: "Hold a key and raise Detune. Watch the volume pulse below. More detune, faster beating.",
                     visibleParams: [.detune],
@@ -1010,6 +1005,7 @@ enum Curriculum {
                     lanes: [lane(.detune, [(0.5, 0), (6, 0.7)])],
                     notes: held(48, 6.5)
                 ),
+                terms: [G.detune, G.beating, G.oscillator],
                 exercise: Exercise(
                     prompt: "Hold a key and move Detune. The faint lines are the two copies; the bright line is what you hear.",
                     visibleParams: [.detune],
@@ -1040,6 +1036,7 @@ enum Curriculum {
                     "Closing it is like shutting a door: the highs go first"
                 ],
                 demo: nil,
+                terms: [G.filter, G.subtractive, G.harmonics],
                 exercise: Exercise(
                     prompt: "A beat is playing inside. Drag the door open and closed — open lets the highs through, shut muffles them.",
                     visibleParams: [],
@@ -1063,6 +1060,7 @@ enum Curriculum {
                     lanes: [lane(.cutoff, [(0.5, 1), (3.5, 0.08), (6.5, 0.9)])],
                     notes: held(45, 6.5)
                 ),
+                terms: [G.cutoff, G.filter, G.lowPass, G.harmonics],
                 exercise: Exercise(
                     prompt: "Hold a key and sweep CUT down until the tone goes dark, then back up.",
                     visibleParams: [.cutoff, .resonance],
@@ -1089,6 +1087,7 @@ enum Curriculum {
                     lanes: [lane(.resonance, [(0.5, 0), (2.5, 1.0)]), lane(.cutoff, [(2.5, 0.6), (6.5, 0.12)])],
                     notes: held(40, 6.5)
                 ),
+                terms: [G.resonance, G.cutoff, G.filter],
                 exercise: Exercise(
                     prompt: "Hold a key, raise RES to grow the peak, then sweep CUT. Hear the filter start to sing.",
                     visibleParams: [.resonance, .cutoff],
@@ -1111,6 +1110,7 @@ enum Curriculum {
                     lanes: [lane(.filterType, [(0, 0), (2, 0), (2.01, 0.34), (4, 0.34), (4.01, 0.67), (6, 0.67), (6.01, 1), (8, 1)])],
                     notes: held(48, 7.5)
                 ),
+                terms: [G.filter, G.lowPass, G.highPass, G.cutoff],
                 exercise: Exercise(
                     prompt: "Hold a key and pick each filter type. Notice what each one removes.",
                     visibleParams: [.cutoff, .resonance],
@@ -1140,6 +1140,7 @@ enum Curriculum {
                     "Pointed at volume it is the amplitude envelope, this module's subject"
                 ],
                 demo: nil,
+                terms: [G.envelope, G.attack, G.decay, G.sustain, G.release],
                 exercise: Exercise(
                     prompt: "Press and hold a key, then let go. The line is the note's volume over time.",
                     visibleParams: [],
@@ -1163,6 +1164,7 @@ enum Curriculum {
                     lanes: [lane(.ampAttack, [(0, 0.02), (7.5, 0.75)])],
                     notes: pulses(52, count: 8, every: 1, dur: 0.7)
                 ),
+                terms: [G.attack, G.envelope, G.percussive],
                 exercise: Exercise(
                     prompt: "Tap a key and raise ATTACK. Hear it change from an instant hit to a slow swell.",
                     visibleParams: [.ampAttack],
@@ -1185,6 +1187,7 @@ enum Curriculum {
                     lanes: [lane(.ampDecay, [(0, 0.1), (7.5, 0.7)])],
                     notes: pulses(50, count: 8, every: 1, dur: 0.8)
                 ),
+                terms: [G.decay, G.envelope, G.sustain],
                 exercise: Exercise(
                     prompt: "Tap a key and change DECAY. Watch how fast it drops to the holding level.",
                     visibleParams: [.ampDecay],
@@ -1207,6 +1210,7 @@ enum Curriculum {
                     lanes: [lane(.ampSustain, [(0, 0.9), (7.5, 0.1)])],
                     notes: pulses(50, count: 5, every: 1.6, dur: 1.3)
                 ),
+                terms: [G.sustain, G.envelope, G.decay],
                 exercise: Exercise(
                     prompt: "Hold a key, then change SUSTAIN. It sets how loud the note holds.",
                     visibleParams: [.ampSustain],
@@ -1229,6 +1233,7 @@ enum Curriculum {
                     lanes: [lane(.ampRelease, [(0, 0.1), (7.5, 0.7)])],
                     notes: pulses(52, count: 8, every: 1, dur: 0.4)
                 ),
+                terms: [G.release, G.envelope, G.sustain],
                 exercise: Exercise(
                     prompt: "Tap a key and let go, then change RELEASE. Hear the tail get longer or shorter.",
                     visibleParams: [.ampRelease],
@@ -1254,6 +1259,7 @@ enum Curriculum {
                     lanes: [lane(.ampHold, [(0, 0), (7.5, 0.7)])],
                     notes: pulses(53, count: 8, every: 1, dur: 0.7)
                 ),
+                terms: [G.envelope, G.decay, G.sustain],
                 exercise: Exercise(
                     prompt: "Press a key and keep it held. The sound sits at full volume for the HOLD time, then falls.",
                     visibleParams: [.ampHold],
@@ -1277,6 +1283,7 @@ enum Curriculum {
                     lanes: [lane(.ampDelay, [(0, 0), (7.5, 0.6)])],
                     notes: pulses(50, count: 8, every: 1, dur: 0.5)
                 ),
+                terms: [G.envelope, G.attack],
                 exercise: Exercise(
                     prompt: "Tap a key and raise DELAY. The sound waits before it starts.",
                     visibleParams: [.ampDelay],
@@ -1298,6 +1305,7 @@ enum Curriculum {
                     "Together they turn one tone into a pluck, pad, stab, or swell"
                 ],
                 demo: nil,
+                terms: [G.envelope, G.attack, G.decay, G.sustain, G.release, G.percussive],
                 exercise: Exercise(
                     prompt: "Shape the whole envelope. Try a slow pad, a punchy pluck, or a delayed stab.",
                     visibleParams: [.ampDelay, .ampAttack, .ampHold, .ampDecay, .ampSustain, .ampRelease, .ampCurve],
@@ -1330,6 +1338,7 @@ enum Curriculum {
                     lanes: [lane(.lfoRate, [(0.5, 0.35), (6.5, 0.7)])],
                     notes: held(48, 6.5)
                 ),
+                terms: [G.lfo, G.modulation, G.oscillator, G.frequency],
                 exercise: Exercise(
                     prompt: "Hold a key and hear the volume pulse on its own. Change RATE and DEPTH, then repoint DEST.",
                     visibleParams: [.lfoRate, .lfoDepth, .lfoShape],
@@ -1356,6 +1365,7 @@ enum Curriculum {
                     lanes: [lane(.lfoDepth, [(0.5, 0), (5.5, 0.3)])],
                     notes: held(60, 5.5)
                 ),
+                terms: [G.vibrato, G.lfo, G.modulation, G.pitch],
                 exercise: Exercise(
                     prompt: "Hold a key and dial in a vibrato: small DEPTH, RATE around 5–7 Hz.",
                     visibleParams: [.lfoRate, .lfoDepth],
@@ -1380,6 +1390,7 @@ enum Curriculum {
                     lanes: [lane(.lfoDepth, [(0.5, 0), (5.5, 0.8)])],
                     notes: held(53, 5.5)
                 ),
+                terms: [G.tremolo, G.lfo, G.modulation, G.amplitude],
                 exercise: Exercise(
                     prompt: "Hold a key. Make it breathe, then speed RATE up until it chops.",
                     visibleParams: [.lfoRate, .lfoDepth, .lfoShape],
@@ -1404,6 +1415,7 @@ enum Curriculum {
                     lanes: [lane(.lfoRate, [(0.5, 0.5), (7.5, 0.8)])],
                     notes: held(36, 7.5)
                 ),
+                terms: [G.modulation, G.lfo, G.cutoff, G.filter],
                 exercise: Exercise(
                     prompt: "Hold a low key and design a wobble bass with RATE, DEPTH, and SHAPE.",
                     visibleParams: [.lfoRate, .lfoDepth, .lfoShape],
