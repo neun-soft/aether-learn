@@ -13,3 +13,5 @@ HOW IT WORKS
 Each lesson has three steps. Learn the idea in plain language, watch a short demo that moves the controls for you, then play with a real, audio-reactive instrument built into the app. You see the waveform, the harmonics, the filter curve, and the envelope respond in real time as you turn the knobs.
 
 Built for curiosity. Whether you have never touched a synth or you want to finally understand the gear you already own, Aether Learn gets you from zero to making sounds you understand.
+
+Best suited for absolute beginners who want solid foundations to carry into any DAW or software synthesizer when they start producing music.
