@@ -64,33 +64,34 @@ enum Curriculum {
         lessons: [
             Lesson(
                 id: "msr1", title: "Noise Has No Pitch",
-                concept: "Every sound so far repeated the same shape over and over. Noise never repeats, and that is why you cannot sing along with it.",
+                concept: "Noise is every frequency at once, in amounts that never stop changing. That is why there is no note in it.",
                 theory: [
-                    "Here is the only reason anything has a pitch: the wave repeats. The same shape, again and again. How many times it repeats each second is the note you hear. Fast repeats sound high, slow repeats sound low.",
-                    "Noise does not repeat. Ever. It is a brand new random value every instant, so there is no shape to come back around, and no repeats to count. Nothing for your ear to call a note.",
-                    "Turn the Noise knob all the way up in the exercise and the note vanishes completely. You can still play the keyboard, and it will make no difference at all, because there is no longer anything in there that has a pitch.",
-                    "What is left is colour. White noise has an equal amount of every frequency, high and low, which sounds like a hissing television. Pink noise has more low and less high, which sounds like rain, or wind, or breathing. The names come from light: white light is every colour at once, and if you take the top of the spectrum away, what is left looks pink."
+                    "Here is the only reason anything has a pitch: the wave repeats. The same shape, again and again. How many times it repeats each second is the note you hear.",
+                    "Noise does not repeat. Ever. It is a brand new random value every instant, so there is no shape to come back around, and nothing for your ear to count.",
+                    "So what is actually in it? Every frequency, all of them, all at the same time, and in amounts that change constantly. That is the honest description: a bit of everything, forever rearranging. There is no one frequency standing out, and a note is exactly one frequency standing out, which is why there is no note to hear.",
+                    "Turn the Noise knob all the way up in the exercise and the pitch disappears completely. You can still play the keyboard and it will make no difference at all.",
+                    "Not all noise has the same amounts, though. Some has just as much high as low. Some has more low than high. Those two need names, and the names sound odd until you know where they came from.",
+                    "Light is made of frequencies too. Slow light looks red to us, fast light looks violet, and everything else sits in between. Your eye does not hear them one at a time the way it would notes. It adds up whatever arrives and reports back a single colour.",
+                    "Add up every frequency of light in equal amounts and the colour your eye reports is white. That is all white means: everything, evenly. So sound with every frequency in equal amounts got called white noise. It is the same word for the same idea, borrowed.",
+                    "Now take away some of the fast end, the blues and violets, and leave the slow red end standing. The colour your eye reports is pink. Sound with more low than high got the same name for the same reason: pink noise. In the exercise the swatch is worked out from the bars above it, so you can watch the colour change as you take the top off."
                 ],
                 takeaways: [
-                    "A sound has a pitch because its wave repeats",
-                    "Noise never repeats, so it has no pitch at all",
-                    "White noise has every frequency equally, and sounds like hiss",
-                    "Pink noise has more low than high, and sounds like rain or wind"
+                    "Noise is every frequency at once, in constantly changing amounts",
+                    "A note is one frequency standing out, and in noise none does",
+                    "Light is frequencies too, and your eye adds them into one colour",
+                    "Everything evenly looks white, so even sound is called white noise",
+                    "More low than high looks pink, so that sound is called pink noise"
                 ],
                 demo: nil,
-                terms: [
-                    G.frequency,
-                    G.pitch,
-                    G.spectrum
-                ],
+                terms: [G.frequency, G.pitch, G.noise, G.spectrum],
                 exercise: Exercise(
-                    prompt: "Turn NOISE all the way up. The note disappears, and playing different keys stops making any difference. Then sweep COLOUR from white to pink.",
+                    prompt: "Turn NOISE up until the note is gone and the keyboard stops mattering. Then move COLOUR and watch the bars tilt, the swatch turn pink, and the hiss soften into rain.",
                     visibleParams: [.noiseLevel, .noiseColor],
                     basePatch: Patch([.noiseLevel: 0.0, .noiseColor: 0.0, .oscWave: 0.0, .cutoff: 1.0,
                                       .ampAttack: 0.02, .ampDecay: 0.3, .ampSustain: 0.9, .ampRelease: 0.25]),
                     visual: .noiseColor,
-                    tip: "With NOISE all the way up, try playing high keys and low keys. They sound identical. That is what having no pitch means.",
-                    controlsHint: "Two knobs: how much noise, and what colour it is"
+                    tip: "With NOISE at the top, play the highest key and then the lowest. They sound identical. That is what having no pitch means.",
+                    controlsHint: "NOISE is how much, COLOUR tilts how much of it is low against high"
                 )
             ),
             Lesson(
