@@ -95,36 +95,36 @@ enum Curriculum {
                 )
             ),
             Lesson(
-                id: "msr2", title: "Modulation Becomes Tone",
-                concept: "FM stands for frequency modulation. It means using a second wave, far too fast to hear as movement, to bend the first one out of shape.",
+                id: "msr2", title: "Speed Decides What Modulation Does",
+                concept: "The same wiring that makes a slow wobble makes a completely different sound when you speed it up past what your ear can follow.",
                 theory: [
-                    "In the last module you used an LFO to wobble the pitch a few times a second. You could hear each wobble happen. That is modulation you can follow.",
-                    "Now imagine speeding that wobble up. Not five times a second, but five hundred. Far too fast to follow, so your ear stops hearing it as movement. The pitch does not seem to move at all any more. Instead the sound itself changes character. It gets brighter, harder, more like a bell.",
-                    "That is all FM is. F is frequency, M is modulation: one wave changing another wave\'s frequency, but doing it so fast that you hear the result as a new tone rather than as wobble.",
-                    "So what does the FM knob actually change? Not volume, and not a blend between two sounds. The hidden wave is being added onto the speed of the wave you hear. When the hidden wave is high, the one you hear speeds up. When it is low, it slows down. The knob sets how much of that gets added: at zero, nothing is added and the speed stays flat, and the further you turn it the harder the speed swings.",
-                    "The two waves have names. The one you hear is the carrier. The one doing the bending is the modulator, and you never hear it on its own. In the exercise all three are drawn: the modulator on top, the carrier under it, and what comes out at the bottom. Turn FM up and watch the bottom wave stop being a smooth curve."
+                    "In the last module you pointed an LFO at the pitch and got vibrato: the note wobbling up and down a few times a second. You could count the wobbles.",
+                    "Now speed that up. Not five times a second, but five hundred. Two things change at once.",
+                    "First, you stop being able to follow it. This is the same threshold you met right at the start of the course, when a vibration became a note. Below roughly twenty times a second your ear reports separate events; above it, your ear gives up counting and reports one steady thing instead. That threshold is not only about sound reaching your ears, it applies to anything your ear has to track, including a wobble.",
+                    "Second, and this is the useful part, the sound changes character. The note stays where it is. What changes is what it sounds like: harder, brighter, more like a bell or a struck metal bar than a plain wave.",
+                    "Worth being clear about two things, because they are easy to get wrong.",
+                    "It is not too high to hear. The wobbling wave is running at ordinary note speed, well inside the range you can hear perfectly well. If you sent it to the speakers you would hear a note. But it is not sent to the speakers. It is only used to move something, so you never hear it directly, and what is too fast is your ability to follow the wobbling, not the wave itself.",
+                    "And it is not the LFO doing this. LFO stands for low frequency oscillator, and low frequency is the whole point of it: slow enough to watch. What is doing the bending here is a second oscillator running at note speed. Same idea as the LFO, same wiring, but once it is fast it is not low frequency any more, so it does not get that name.",
+                    "When the thing being moved is the frequency, this has a name of its own: frequency modulation, or FM. The wave you hear is called the carrier. The hidden one bending it is called the modulator.",
+                    "So what does the FM knob change? Not volume, and not a blend between two sounds. The modulator\'s output is added onto the carrier\'s frequency: when the modulator is high the carrier speeds up, when it is low the carrier slows down. The knob sets how much gets added. At zero, nothing is added and the speed stays flat."
                 ],
                 takeaways: [
-                    "FM stands for frequency modulation",
-                    "It is a wobble sped up so far that you hear a new tone instead of movement",
-                    "The carrier is the wave you hear; the modulator bends it and is never heard alone",
-                    "More FM means a more complicated wave, which sounds brighter and harder"
+                    "Slow modulation is movement you can follow; fast modulation changes the sound itself",
+                    "The turning point is the same twenty-a-second threshold where vibration became a note",
+                    "The modulator is not too high to hear, it is simply never sent to the speakers",
+                    "It is not the LFO: low frequency is what LFO means, and this one is fast",
+                    "FM means the thing being modulated is frequency"
                 ],
                 demo: nil,
-                terms: [
-                    G.modulation,
-                    G.lfo,
-                    G.carrier,
-                    G.modulator,
-                    G.timbre
-                ],
+                terms: [G.modulation, G.lfo, G.oscillator, G.carrier, G.modulator, G.frequency, G.vibrato],
                 exercise: Exercise(
-                    prompt: "Hold a note and turn FM up slowly. Watch the bottom wave get bent out of shape by the one above it. The note stays the same; only its character changes.",
+                    prompt: "Hold a note and turn FM up slowly. The top wave is bending the middle one, and the bottom row is the result. The note does not move; what it sounds like does.",
                     visibleParams: [.fmAmount],
                     basePatch: Patch([.fmAmount: 0.0, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
                                       .ampAttack: 0.01, .ampDecay: 0.4, .ampSustain: 0.85, .ampRelease: 0.3]),
                     visual: .fm,
-                    controlsHint: "FM is how hard the hidden wave bends the one you hear"
+                    tip: "Compare it with the vibrato lesson. Identical wiring, one thousand times the speed, and nothing about it sounds related.",
+                    controlsHint: "FM is how much of the hidden wave gets added onto the speed of the one you hear"
                 )
             ),
             Lesson(

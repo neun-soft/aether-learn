@@ -135,8 +135,9 @@ struct NoiseColorView: View {
 // MARK: - FM: the two oscillators, drawn separately
 
 /// Three stacked rows: the modulator, the carrier it would have been, and the result. The point
-/// the picture has to make is that the modulator is never heard on its own — it only bends the
-/// one below it — so it is drawn dimmed and labelled "you never hear this".
+/// the picture has to make is that the modulator is a real wave at ordinary note speed, and the
+/// only reason it is inaudible is that it is used to move something instead of being played. It is
+/// drawn dimmed and labelled accordingly.
 struct FMView: View {
     var amount: Double         // FM depth 0…1
     var ratioIndex: Int        // index into Voice.fmRatios
@@ -151,7 +152,7 @@ struct FMView: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            row(label: "MODULATOR", note: "hidden: you never hear this", dim: true) { t in
+            row(label: "MODULATOR", note: "never sent to the speakers", dim: true) { t in
                 sin(2 * .pi * t * ratio * cycles)
             }
             row(label: "CARRIER", note: "the note you play", dim: true) { t in
