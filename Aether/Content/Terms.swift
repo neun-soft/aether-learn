@@ -163,6 +163,11 @@ enum G {
         plain: "A very slow wave used to move a knob for you instead of your finger.",
         more: "It stands for low frequency oscillator. Low frequency means slow enough to watch.")
 
+    static let wowAndFlutter = Term(
+        word: "wow and flutter",
+        plain: "The sagging, wavering pitch you get when something playing back a recording runs at an uneven speed.",
+        more: "Wow is the slow drift, flutter the faster shimmer. It is the sound of a worn tape deck or a turntable that will not hold its speed.")
+
     static let vibrato = Term(
         word: "vibrato",
         plain: "A small, regular wobble in pitch, the kind a singer adds to a held note.")

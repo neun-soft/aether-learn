@@ -103,7 +103,10 @@ enum Curriculum {
                     "Now speed that same wave up. Not five times a second, but five hundred. Two things change.",
                     "First, you stop being able to follow it. This is the same threshold from the very start of the course, where a vibration became a note: below roughly twenty times a second your ear reports separate events, and above it your ear gives up counting and reports one steady thing instead. A wobble crossing that line stops being heard as a wobble.",
                     "Second, the sound changes character. The note stays exactly where it is. What changes is what it sounds like: harder and brighter, more like a bell or a struck metal bar than a plain tone.",
-                    "One thing to be clear on. The fast wave is not too high-pitched to hear. It is running at ordinary note speed and you would hear a perfectly normal tone if it were sent to the speakers. It is not sent to the speakers. It is only used to move a control, exactly like the LFO was, so you never hear it directly.",
+                    "Here is the picture that makes it stick. Put a record on a turntable. The record is the carrier: it is the thing actually making the sound. Now rest a finger on the platter and wobble the speed.",
+                    "Your finger is the modulator. Your finger makes no sound at all. Nobody in the room hears your finger. But everybody hears what your finger did to the record.",
+                    "Wobble slowly and the pitch sags and rises, the sound of a tape deck that will not hold its speed, which engineers call wow and flutter. Wobble two hundred times a second and you can no longer pick out individual wobbles at all. What you hear instead is a completely different sound. Same finger, same wobbling, only faster than your ear can resolve.",
+                    "That also settles a question worth asking: is the fast wave too high-pitched to hear? No. It is running at ordinary note speed and would sound like a perfectly normal tone if you sent it to the speakers. But you do not send it to the speakers, any more than you point a microphone at your finger. It only moves something.",
                     "Which control? With the LFO you chose: pitch, volume, the filter. With FM the choice is already made, and it is in the name. F is frequency, so the fast wave is pointed at the frequency of the wave you hear. M is modulation, which is the word for one control moving another. Frequency modulation.",
                     "The only reason it stops being called an LFO is the L. Low frequency oscillator: low frequency is the whole meaning of the name, so once it is fast the name no longer fits. Same part, same wiring, different speed, different word.",
                     "The two waves have names worth knowing, because every FM synth uses them. The one you hear is the carrier. The fast hidden one bending it is the modulator.",
@@ -118,7 +121,7 @@ enum Curriculum {
                 ],
                 demo: nil,
                 terms: [G.lfo, G.modulation, G.oscillator, G.carrier, G.modulator, G.frequency,
-                        G.vibrato, G.tone, G.synthesis],
+                        G.vibrato, G.tone, G.synthesis, G.wowAndFlutter],
                 exercise: Exercise(
                     prompt: "Hold a note and turn FM up slowly. The top wave is bending the middle one, and the bottom row is the result. The note does not move; what it sounds like does.",
                     visibleParams: [.fmAmount],
@@ -136,19 +139,20 @@ enum Curriculum {
                     "FM depth decides how much bending happens. This lesson is about the other knob: how fast the hidden wave runs compared to the one you hear.",
                     "When the hidden wave runs at a simple multiple, twice as fast or three times as fast, the two line up neatly. Every bend happens at the same point in every cycle, so the result still repeats. It repeats, so it still has a pitch, and it still sounds like a note.",
                     "When it runs at something in between, like one and a half times, they never quite line up. The bends land in a different place every cycle, so the wave does not settle into a repeating shape. Less repetition means less pitch, and your ear hears metal instead of a note. Bells, gongs, and the inside of a piano all work this way.",
+                    "This is not a synth trick. It is exactly why a real bell sounds like a bell.",
+                    "Pluck a string, or blow down a tube, and the extra frequencies that come out sit at neat whole-number multiples of the lowest one: two times, three times, four times. Your ear knows that pattern and fuses the whole stack into a single note.",
+                    "Hit a bell and the extra frequencies land at ratios like 2.76 times, or 5.4 times. Nothing lines up with anything. Your ear cannot fit them into one series, finds no single pitch to settle on, and reports metal rather than a note. It is also why tuning a bell is a specialist craft: the founder is shaping the metal to drag those stubborn ratios back towards something musical.",
+                    "Your RATIO knob is doing the same thing from the other end. Whole numbers put the extra frequencies on the neat multiples, so you get an instrument. In-between numbers put them between the multiples, so you get metal.",
                     "That is why RATIO is the interesting knob and not the depth one. Depth makes it brighter. Ratio decides whether you are building an instrument or a bell."
                 ],
                 takeaways: [
                     "Whole-number ratios line up, keep repeating, and still sound like a note",
                     "In-between ratios never line up, so the sound turns metallic",
+                    "A real bell is metallic for the same reason: its frequencies do not line up either",
                     "Depth changes how bright it is; ratio changes what kind of thing it is"
                 ],
                 demo: nil,
-                terms: [
-                    G.ratio,
-                    G.carrier,
-                    G.harmonic
-                ],
+                terms: [G.ratio, G.carrier, G.harmonic, G.harmonics, G.fundamental, G.pitch],
                 exercise: Exercise(
                     prompt: "Step RATIO through its positions. Watch the bottom wave: at whole numbers it settles into a repeating shape, and in between it never does. Listen for the moment it stops sounding like a note.",
                     visibleParams: [.fmRatio, .fmAmount],
