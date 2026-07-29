@@ -65,6 +65,7 @@ final class SynthEngine {
     private var voices: [Voice] = []
     private let lfo: LFO
     private let reverb: Reverb
+    private let delay: DelayLine
     private let simHP: SVFilter
     private let simLP: SVFilter
     private let kick: KickSynth
@@ -98,6 +99,7 @@ final class SynthEngine {
         scope.initialize(repeating: 0, count: scopeSize)
         lfo = LFO(sampleRate: sr / 32)   // the LFO is advanced once per 32-sample control block
         reverb = Reverb(sampleRate: sr)
+        delay = DelayLine(sampleRate: sr)
         simHP = SVFilter(sampleRate: sr)
         simLP = SVFilter(sampleRate: sr)
         kick = KickSynth(sampleRate: sr)
@@ -225,6 +227,15 @@ final class SynthEngine {
 
             let drive = current.v(.drive)
             if drive > 0.001 { mix = tanh(mix * (1 + drive * 5)) }
+
+            // Delay before reverb, the standard order: the reverb then washes over the echoes
+            // instead of the echoes repeating a already-washed signal into mud.
+            let echo = current.v(.delayMix)
+            if echo > 0.001 {
+                let d = delay.process(mix, timeSec: 0.02 + pow(current.v(.delayTime), 2) * 0.9,
+                                      feedback: current.v(.delayFeedback))
+                mix += d * echo
+            }
 
             let wet = reverb.process(mix, size: current.v(.reverb))
             let mixAmt = current.v(.reverbMix)

@@ -62,20 +62,32 @@ enum WaveTables {
 // MARK: - Wavetable oscillator
 
 final class Oscillator {
-    private var phase = 0.0
+    private(set) var phase = 0.0
+    /// True on the sample where phase wrapped past 1. Hard sync watches this on the master
+    /// oscillator to know when to restart the slave.
+    private(set) var didWrap = false
     let sampleRate: Double
     init(sampleRate: Double) { self.sampleRate = sampleRate }
 
-    func reset() { phase = 0 }
+    func reset() { phase = 0; didWrap = false }
 
-    @inline(__always) func render(hz: Double, morph: Double, pulse: Double) -> Double {
+    /// Restart the cycle mid-flight. The discontinuity this creates *is* the sound of hard sync.
+    @inline(__always) func syncReset() { phase = 0 }
+
+    /// `phaseMod` offsets the read position rather than the frequency — phase modulation, which
+    /// is what every "FM" synth since the DX7 actually does. It stays stable at high depths,
+    /// where true frequency modulation drifts off pitch.
+    @inline(__always) func render(hz: Double, morph: Double, pulse: Double, phaseMod: Double = 0) -> Double {
         phase += hz / sampleRate
-        if phase >= 1 { phase -= 1 }
-        var s = WaveTables.sample(morph: morph, phase: phase)
+        didWrap = false
+        if phase >= 1 { phase -= 1; didWrap = true }
+        let p = phaseMod == 0 ? phase : (phase + phaseMod).truncatingRemainder(dividingBy: 1.0) + 1.0
+        let read = p >= 1 ? p - 1 : p
+        var s = WaveTables.sample(morph: morph, phase: read)
         // Pulse-width shaping only bites near the square end, where it is musically meaningful.
         if morph > 0.66 {
             let pw = 0.5 + (pulse - 0.5) * 0.9
-            let second = WaveTables.sample(morph: morph, phase: fmod(phase + pw, 1.0))
+            let second = WaveTables.sample(morph: morph, phase: fmod(read + pw, 1.0))
             s = (s - second) * 0.7
         }
         return s
@@ -181,6 +193,81 @@ final class Envelope {
             if p >= 1 { value = 0; stage = .idle }
         }
         return value
+    }
+}
+
+// MARK: - Noise (the other way to make a sound)
+//
+// Every oscillator so far repeats: a cycle, then the same cycle again, which is why it has a
+// pitch. Noise never repeats, so there is no pitch to hear — only colour. It is the raw material
+// for wind, breath, and every drum that isn't a kick.
+
+final class Noise {
+    // xorshift32: cheap, no allocation, and identical on every device.
+    private var state: UInt32 = 0x9E37_79B9
+    // One-pole states for the pink tilt.
+    private var p0 = 0.0, p1 = 0.0, p2 = 0.0
+
+    func reset() { p0 = 0; p1 = 0; p2 = 0 }
+
+    @inline(__always) private func white() -> Double {
+        state ^= state << 13
+        state ^= state >> 17
+        state ^= state << 5
+        return Double(Int32(bitPattern: state)) / Double(Int32.max)
+    }
+
+    /// `color`: 0 = white (flat, hissy), 1 = pink (−3 dB/octave, darker and more natural).
+    /// Pink is the one that sounds like rain or breath; white is the one that sounds like a TV.
+    @inline(__always) func render(color: Double) -> Double {
+        let w = white()
+        guard color > 0.001 else { return w }
+        // Three stacked one-poles approximate the −3 dB/octave tilt closely enough to hear.
+        p0 = 0.99765 * p0 + w * 0.0990460
+        p1 = 0.96300 * p1 + w * 0.2965164
+        p2 = 0.57000 * p2 + w * 1.0526913
+        let pink = (p0 + p1 + p2 + w * 0.1848) * 0.22
+        return lerp(w, pink, clamp01(color))
+    }
+}
+
+// MARK: - Delay line (echo, and the short end of it: doubling and comb tones)
+
+final class DelayLine {
+    private var buf: [Double]
+    private var write = 0
+    private let sr: Double
+    private var readTime = 0.05      // smoothed, so moving the time knob glides instead of clicking
+
+    init(sampleRate: Double, maxSeconds: Double = 1.2) {
+        sr = sampleRate
+        buf = [Double](repeating: 0, count: max(1, Int(sampleRate * maxSeconds)))
+    }
+
+    func reset() {
+        for i in buf.indices { buf[i] = 0 }
+        write = 0
+    }
+
+    /// Returns the wet signal only; the caller decides the dry/wet balance.
+    @inline(__always) func process(_ x: Double, timeSec: Double, feedback: Double) -> Double {
+        // Glide the read distance. Jumping it would pitch-shift the tail audibly on every
+        // knob movement, which reads as a bug rather than as an echo.
+        readTime += (max(0.002, min(timeSec, Double(buf.count) / sr - 0.01)) - readTime) * 0.0006
+
+        let d = readTime * sr
+        var r = Double(write) - d
+        if r < 0 { r += Double(buf.count) }
+        let i0 = Int(r) % buf.count
+        let i1 = (i0 + 1) % buf.count
+        let wet = lerp(buf[i0], buf[i1], r - Double(Int(r)))
+
+        // Cap feedback below 1 so a held knob can't build to infinity.
+        var v = x + wet * min(0.92, max(0, feedback))
+        if !v.isFinite { v = 0 }
+        buf[write] = flush(max(-4, min(4, v)))
+        write = (write + 1) % buf.count
+        return wet
     }
 }
 

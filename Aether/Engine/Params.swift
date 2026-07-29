@@ -10,6 +10,14 @@ enum ParamID: String, CaseIterable, Codable {
     case oscPulse       // pulse width shaping on the bright end
     case detune         // unison spread / 2nd-voice detune
 
+    // Other ways to make a wave. Each one repurposes the second oscillator, so they are
+    // mutually exclusive by design — see Voice.render for the precedence.
+    case noiseLevel     // blend un-pitched noise in alongside the oscillators
+    case noiseColor     // 0 white (hiss) → 1 pink (rain, breath)
+    case fmAmount       // osc2 phase-modulates osc1: 0 = off
+    case fmRatio        // quantized modulator:carrier ratio — whole = harmonic, odd = metallic
+    case syncAmount     // osc2 becomes a slave restarted by osc1 every cycle
+
     // Filter (subtractive)
     case cutoff
     case resonance
@@ -31,6 +39,9 @@ enum ParamID: String, CaseIterable, Codable {
 
     // FX
     case drive
+    case delayTime
+    case delayFeedback
+    case delayMix
     case reverb
     case reverbMix
 
@@ -50,6 +61,11 @@ struct ParamSpec {
         .oscWave:    .init(name: "Wave",     short: "WAVE",  def: 0.30),
         .oscPulse:   .init(name: "Width",    short: "PW",    def: 0.50),
         .detune:     .init(name: "Detune",   short: "DTUNE", def: 0.0),
+        .noiseLevel: .init(name: "Noise",    short: "NOISE", def: 0.00),
+        .noiseColor: .init(name: "Colour",   short: "COLR",  def: 0.00),
+        .fmAmount:   .init(name: "FM",       short: "FM",    def: 0.00),
+        .fmRatio:    .init(name: "Ratio",    short: "RATIO", def: 0.25),
+        .syncAmount: .init(name: "Sync",     short: "SYNC",  def: 0.00),
         .cutoff:     .init(name: "Cutoff",   short: "CUT",   def: 0.70),
         .resonance:  .init(name: "Reso",     short: "RES",   def: 0.20),
         .filterType: .init(name: "Type",     short: "TYPE",  def: 0.00),
@@ -63,7 +79,10 @@ struct ParamSpec {
         .lfoRate:    .init(name: "Rate",     short: "RATE",  def: 0.35),
         .lfoDepth:   .init(name: "Depth",    short: "DEPTH", def: 0.00),
         .lfoShape:   .init(name: "Shape",    short: "SHAPE", def: 0.00),
-        .drive:      .init(name: "Drive",    short: "DRIVE", def: 0.10),
+        .drive:         .init(name: "Drive",    short: "DRIVE", def: 0.10),
+        .delayTime:     .init(name: "Time",     short: "TIME",  def: 0.30),
+        .delayFeedback: .init(name: "Feedback", short: "FB",    def: 0.35),
+        .delayMix:      .init(name: "Echo",     short: "ECHO",  def: 0.00),
         .reverb:     .init(name: "Reverb",   short: "SIZE",  def: 0.45),
         .reverbMix:  .init(name: "Mix",      short: "MIX",   def: 0.25),
     ]

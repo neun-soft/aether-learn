@@ -28,8 +28,14 @@ final class Voice {
     let sr: Double
     private let osc1: Oscillator
     private let osc2: Oscillator
+    private let noise = Noise()
     private let filter: SVFilter
     let env: Envelope
+
+    /// Whole-number ratios sound harmonic (another note in the same series); the in-between
+    /// and high odd ones sound metallic, because their sidebands don't line up with the
+    /// harmonic series. This is the whole lesson of FM in one array.
+    static let fmRatios: [Double] = [0.5, 1, 1.5, 2, 3, 5, 7]
 
     private(set) var midi = 60
     private var vel = 0.8
@@ -87,16 +93,43 @@ final class Voice {
         let hz = noteHz * pow(2.0, pitchSemi / 12.0)
         let det = s.v(.detune) * 0.02
         let pulse = s.v(.oscPulse)
-        let a: Double, b: Double
+
+        // The second oscillator can only do one job at a time, so the three ways of using it
+        // take strict precedence: FM, then sync, then the plain detuned pair. Teaching them
+        // one at a time is also how the lessons introduce them, so a patch never sounds like
+        // two effects fighting.
+        let fm = s.v(.fmAmount)
+        let sync = s.v(.syncAmount)
+        var raw: Double
+
         if s.additiveCount > 0 {
             let table = WaveTables.partialSaw(s.additiveCount)
-            a = osc1.render(hz: hz * (1 - det), table: table)
-            b = osc2.render(hz: hz * (1 + det), table: table)
+            let a = osc1.render(hz: hz * (1 - det), table: table)
+            let b = osc2.render(hz: hz * (1 + det), table: table)
+            raw = (a + b) * 0.5
+        } else if fm > 0.001 {
+            // osc2 is the modulator. Its own output never reaches the output — you hear it
+            // only as the sidebands it puts on osc1.
+            let ratio = Voice.fmRatios[Int(clamp01(s.v(.fmRatio)) * Double(Voice.fmRatios.count - 1) + 0.5)]
+            let mod = osc2.render(hz: hz * ratio, morph: 0, pulse: 0.5)
+            raw = osc1.render(hz: hz, morph: morph, pulse: pulse, phaseMod: mod * fm * 1.5)
+        } else if sync > 0.001 {
+            // osc1 is the master: inaudible, it only keeps time. osc2 is the slave, tuned up
+            // to 3 octaves above and forced to restart on every master cycle. The pitch you
+            // hear stays the master's; sweeping the slave changes the timbre, not the note.
+            _ = osc1.render(hz: hz, morph: 0, pulse: 0.5)
+            if osc1.didWrap { osc2.syncReset() }
+            raw = osc2.render(hz: hz * (1 + sync * 7), morph: morph, pulse: pulse)
         } else {
-            a = osc1.render(hz: hz * (1 - det), morph: morph, pulse: pulse)
-            b = osc2.render(hz: hz * (1 + det), morph: morph, pulse: pulse)
+            let a = osc1.render(hz: hz * (1 - det), morph: morph, pulse: pulse)
+            let b = osc2.render(hz: hz * (1 + det), morph: morph, pulse: pulse)
+            raw = (a + b) * 0.5
         }
-        let raw = (a + b) * 0.5
+
+        // Noise sits alongside whatever the oscillators are doing rather than replacing them —
+        // a breath on top of a flute, or, with the oscillators down, the drum itself.
+        let nz = s.v(.noiseLevel)
+        if nz > 0.001 { raw = raw * (1 - nz * 0.6) + noise.render(color: s.v(.noiseColor)) * nz * 0.7 }
 
         let cutoffHz = 60.0 * pow(2.0, clamp01(cutoffNorm) * 8.0)
         let res = s.v(.resonance)
