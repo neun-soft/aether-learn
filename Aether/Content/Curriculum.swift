@@ -96,12 +96,13 @@ enum Curriculum {
                 )
             ),
             Lesson(
-                id: "msr2", title: "FM: One Wave Bends Another",
+                id: "msr2", title: "Modulation Becomes Tone",
                 concept: "FM stands for frequency modulation. It means using a second wave, far too fast to hear as movement, to bend the first one out of shape.",
                 theory: [
                     "In the last module you used an LFO to wobble the pitch a few times a second. You could hear each wobble happen. That is modulation you can follow.",
                     "Now imagine speeding that wobble up. Not five times a second, but five hundred. Far too fast to follow, so your ear stops hearing it as movement. The pitch does not seem to move at all any more. Instead the sound itself changes character. It gets brighter, harder, more like a bell.",
                     "That is all FM is. F is frequency, M is modulation: one wave changing another wave\'s frequency, but doing it so fast that you hear the result as a new tone rather than as wobble.",
+                    "So what does the FM knob actually change? Not volume, and not a blend between two sounds. The hidden wave is being added onto the speed of the wave you hear. When the hidden wave is high, the one you hear speeds up. When it is low, it slows down. The knob sets how much of that gets added: at zero, nothing is added and the speed stays flat, and the further you turn it the harder the speed swings.",
                     "The two waves have names. The one you hear is the carrier. The one doing the bending is the modulator, and you never hear it on its own. In the exercise all three are drawn: the modulator on top, the carrier under it, and what comes out at the bottom. Turn FM up and watch the bottom wave stop being a smooth curve."
                 ],
                 takeaways: [
@@ -127,12 +128,11 @@ enum Curriculum {
                     basePatch: Patch([.fmAmount: 0.0, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
                                       .ampAttack: 0.01, .ampDecay: 0.4, .ampSustain: 0.85, .ampRelease: 0.3]),
                     visual: .fm,
-                    tip: "One knob on purpose. The only thing to notice here is that a fast enough wobble stops being a wobble.",
                     controlsHint: "FM is how hard the hidden wave bends the one you hear"
                 )
             ),
             Lesson(
-                id: "msr3", title: "Why Some FM Sounds Like a Bell",
+                id: "msr3", title: "Repetition Makes a Note",
                 concept: "Whether FM sounds musical or like struck metal depends on how the two waves line up.",
                 theory: [
                     "FM depth decides how much bending happens. This lesson is about the other knob: how fast the hidden wave runs compared to the one you hear.",
@@ -159,24 +159,26 @@ enum Curriculum {
                     basePatch: Patch([.fmAmount: 0.5, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
                                       .ampAttack: 0.0, .ampDecay: 0.5, .ampSustain: 0.7, .ampRelease: 0.4]),
                     visual: .fm,
-                    tip: "Repeating shape means a note. Shape that never settles means metal. You can see which one you have before you hear it.",
+                    tip: "Ratio 1, 2, and 3 sound like instruments. 1.5 and 7 sound like something you would hit with a stick.",
                     controlsHint: "RATIO steps through fixed speeds: 0.5, 1, 1.5, 2, 3, 5, 7"
                 )
             ),
             Lesson(
-                id: "msr4", title: "Sync: Forcing a Wave to Start Over",
+                id: "msr4", title: "Restarting Adds Harmonics",
                 concept: "Two oscillators, where one keeps interrupting the other and dragging it back to the beginning.",
                 theory: [
                     "The name is short for synchronise, which means forcing two things to keep in step. Here one oscillator is forced to keep in step with another, whether it wants to or not.",
                     "There are two of them. The first is silent, and its only job is to keep time. Every time it finishes a cycle it reaches over and yanks the second one back to the very start, wherever that one had got to. The second oscillator is the one you actually hear.",
                     "Being cut off halfway through leaves a sharp corner in the wave, because it drops instantly back to zero instead of curving down gently. Sharp corners sound bright and harsh, which is why sync has that tearing, screaming quality.",
-                    "Here is the useful part, and the picture shows it better than words. The interruptions always happen at the same moments, because the silent one is still keeping the same time. So the pitch you hear never changes. Turn SYNC up and the tone tears and sweeps while the note itself sits perfectly still."
+                    "Here is the useful part. The interruptions always happen at the same moments, because the silent one is still keeping the same time. Something repeats at the same rate as before, so the note you hear does not move.",
+                    "You will still hear something climbing as you turn the knob, and it is worth being clear about what it is. It is not the note. It is a bright peak in the tone, sliding upwards as the interrupted wave is squeezed tighter. Play a low note and turn SYNC slowly: underneath the sliding brightness, the note itself stays exactly where you put it."
                 ],
                 takeaways: [
                     "Sync is short for synchronise: keeping two things in step",
                     "A silent oscillator keeps time and restarts the one you hear, every cycle",
                     "Being cut off mid-wave leaves a sharp corner, which sounds bright and harsh",
-                    "The interruptions never move, so the note stays put while the tone changes"
+                    "The interruptions never move, so the note stays put",
+                    "What slides upward as you turn it is the brightness, not the pitch"
                 ],
                 demo: nil,
                 terms: [
@@ -191,7 +193,7 @@ enum Curriculum {
                     basePatch: Patch([.syncAmount: 0.0, .oscWave: 0.55, .cutoff: 1.0, .resonance: 0.0,
                                       .ampAttack: 0.01, .ampDecay: 0.4, .ampSustain: 0.9, .ampRelease: 0.3]),
                     visual: .sync,
-                    tip: "The dotted lines are the silent oscillator. They never move, no matter how far you turn the knob.",
+                    tip: "Play the lowest note you can and turn SYNC very slowly. The bottom of the sound never moves.",
                     controlsHint: "SYNC tunes the wave you hear. The note does not follow it"
                 )
             )
@@ -204,27 +206,43 @@ enum Curriculum {
         id: "mfx", title: "Effects as Timbre", subtitle: "Drive, delay, and space", accent: Theme.signal,
         lessons: [
             Lesson(
-                id: "mfx1", title: "Pushing It Too Hard",
-                concept: "Drive overloads the signal on purpose. The distortion it adds is new harmonics.",
+                id: "mfx1", title: "Distortion Adds Harmonics",
+                concept: "Push a sound past what the equipment can hold and its shape gets flattened. A new shape means a new sound.",
                 theory: [
-                    "Every path a sound travels has a ceiling. Push past it and the peaks cannot go any higher, so they get flattened.",
-                    "A flattened peak is a different shape, and a different shape means different harmonics. That is the whole mechanism: distortion does not add fuzz on top of your sound, it rebuilds the wave with more harmonics in it.",
-                    "Gentle drive rounds the peaks and adds a few low harmonics. That is warmth, the thing people mean by analogue. Hard drive squares the wave off completely and adds a great many, which is aggression, grit, the sound of a broken amplifier.",
-                    "Because it adds harmonics, drive interacts with the filter. Drive first and the filter has more to cut; filter first and drive has less to work with. Order matters, and here drive comes after."
+                    "Everything that carries sound has a limit to how loud a signal it can pass on. A speaker cone can only move so far. A wire can only carry so much. Think of pouring water into a glass: past the top, the extra does not go anywhere. The glass is full. That limit is called the ceiling.",
+                    "Now push a wave into something with a ceiling, harder than it can take. The quiet middle of the wave passes through untouched. But the loud peaks, the tallest parts, hit the ceiling and cannot go any higher, so they come out flattened off at the top. That is what overloading means: sending in more than the thing can pass on.",
+                    "Here is why that matters, and it goes back to the very first module. The shape of a wave is what decides how it sounds. You have already heard this: a smooth round wave sounds soft, a square-edged wave sounds harsh and buzzy. Flattening the peaks changes a round shape into a squarer one, so the sound changes with it.",
+                    "That change has a name. Distortion just means the shape came out different from how it went in. And because a flatter, squarer shape is made of more harmonics than a round one, distortion always means more harmonics: more buzz, more edge, more of the sound you get from a guitar amp turned up.",
+                    "The DRIVE knob is how hard you push. A little and only the very tips get rounded off, which people hear as warmth. A lot and the wave is squashed almost square, which people hear as grit and aggression. Watch the picture as you turn it: the faint line is the wave going in, the bright one is what comes out."
                 ],
                 takeaways: [
-                    "Distortion flattens peaks, and a new shape means new harmonics",
-                    "A little is warmth and a lot is aggression, from the same control",
-                    "Drive gives the filter more material to work with"
+                    "Everything that carries sound has a ceiling it cannot go past",
+                    "Overloading means pushing in more than it can pass on, so the peaks come out flat",
+                    "The shape of a wave decides how it sounds, so a flattened shape sounds different",
+                    "Distortion means the shape changed, and a flatter shape has more harmonics",
+                    "A little drive sounds warm, a lot sounds gritty"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "drive", plain: "How hard a sound is pushed into something that cannot take it all.",
+                         more: "It is called drive because you are driving the signal past the limit on purpose, to change how it sounds."),
+                    Term(word: "ceiling", plain: "The loudest signal a piece of equipment can pass on before it runs out of room."),
+                    Term(word: "overloading", plain: "Sending in more than something can handle, so the loudest parts get flattened."),
+                    Term(word: "distortion", plain: "When a wave comes out of something a different shape from how it went in.",
+                         more: "Distort just means change the shape. Since the shape is what you hear, a changed shape is a changed sound."),
+                    Term(word: "peaks", plain: "The tallest points of a wave, where it is furthest from the middle."),
+                    Term(word: "harmonics", plain: "Extra frequencies sitting neatly above the main note, at two times, three times, four times its speed.",
+                         more: "More harmonics sounds brighter and buzzier. A square-ish wave has far more of them than a round one."),
+                    Term(word: "harmonic", plain: "An extra frequency sitting neatly above the main note, at two times, three times, four times its speed.")
+                ],
                 exercise: Exercise(
-                    prompt: "Bring Drive up and watch the round wave flatten into a square while the spectrum fills with new harmonics.",
-                    visibleParams: [.drive, .cutoff, .oscWave, .resonance],
-                    basePatch: Patch([.drive: 0.0, .oscWave: 0.0, .cutoff: 0.8, .ampSustain: 0.9, .ampAttack: 0.01, .ampRelease: 0.3]),
-                    visual: .spectrum,
-                    tip: "Drive a pure sine hard enough and it becomes a square. One knob turns the simplest wave into the richest.",
-                    controlsHint: "Drive sets how hard the signal is pushed into the ceiling"
+                    prompt: "Hold a note and turn DRIVE up slowly. Watch the bright wave meet the dotted ceiling and flatten off against it.",
+                    visibleParams: [.drive],
+                    basePatch: Patch([.drive: 0.0, .oscWave: 0.0, .cutoff: 1.0, .resonance: 0.0,
+                                      .ampAttack: 0.01, .ampDecay: 0.4, .ampSustain: 0.9, .ampRelease: 0.3]),
+                    visual: .drive,
+                    tip: "Start from a pure round wave. By the time DRIVE is at the top it is very nearly a square, and it sounds like one.",
+                    controlsHint: "DRIVE is how hard the sound is pushed past the ceiling"
                 )
             ),
             Lesson(

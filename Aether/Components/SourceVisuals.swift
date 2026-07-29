@@ -33,34 +33,31 @@ struct NoiseColorView: View {
         return lerp(white, pink, clamp01(color))
     }
 
+    /// White at 0, a real pink at 1. Pink is what remains of white light once the short
+    /// wavelengths are taken out, so the green and blue channels fall while red stays.
+    private func pinkAt(_ t: Double) -> Color {
+        Color(red: 1.0, green: lerp(1.0, 0.62, t), blue: lerp(1.0, 0.76, t))
+    }
+
     var body: some View {
         VStack(spacing: 14) {
             HStack(spacing: 12) {
                 panel(title: color < 0.5 ? "WHITE LIGHT" : "PINK LIGHT") {
                     ZStack {
-                        // Every colour at once is white. Pull the top of the spectrum down and
-                        // what is left over reads as pink.
-                        LinearGradient(colors: hues, startPoint: .leading, endPoint: .trailing)
-                            .opacity(0.9)
-                            .mask(
-                                GeometryReader { g in
-                                    Path { p in
-                                        let n = 60
-                                        p.move(to: CGPoint(x: 0, y: g.size.height))
-                                        for i in 0...n {
-                                            let t = Double(i) / Double(n)
-                                            let h = lerp(1.0, pow(1 - t, 0.85) * 0.92 + 0.08, clamp01(color))
-                                            p.addLine(to: CGPoint(x: g.size.width * t,
-                                                                  y: g.size.height * (1 - h)))
-                                        }
-                                        p.addLine(to: CGPoint(x: g.size.width, y: g.size.height))
-                                        p.closeSubpath()
-                                    }
-                                }
-                            )
-                        Text(color < 0.5 ? "all colours,\nequal amounts" : "top taken off,\nwhat is left looks pink")
-                            .mono(9).foregroundColor(Theme.textPrimary.opacity(0.85))
-                            .multilineTextAlignment(.center)
+                        // The panel's own colour is the point, so it has to actually change.
+                        // White light is every colour together, which our eyes read as white.
+                        // Remove the blue and violet end and what is left really does look pink,
+                        // so the fill goes from white to pink as the knob moves.
+                        LinearGradient(colors: [Color(white: 1.0), pinkAt(clamp01(color))],
+                                       startPoint: .top, endPoint: .bottom)
+                            .opacity(0.92)
+                        VStack(spacing: 3) {
+                            Text(color < 0.5 ? "every colour at once" : "blues removed")
+                                .mono(9).foregroundColor(.black.opacity(0.62))
+                            Text(color < 0.5 ? "looks white" : "what is left looks pink")
+                                .mono(9, .semibold).foregroundColor(.black.opacity(0.78))
+                        }
+                        .multilineTextAlignment(.center)
                     }
                 }
 
@@ -117,21 +114,33 @@ struct FMView: View {
 
     private var ratio: Double { Voice.fmRatios[min(max(0, ratioIndex), Voice.fmRatios.count - 1)] }
     private var isWhole: Bool { ratio == ratio.rounded() }
+    /// Two cycles of the carrier, no more. At ratio 7 an earlier version drew fourteen cycles of
+    /// modulator into the same width, which looked like noise even when the result was a clean
+    /// repeating wave — the picture contradicted its own caption.
+    private let cycles = 2.0
 
     var body: some View {
         VStack(spacing: 8) {
-            row(label: "MODULATOR", note: "you never hear this one", dim: true) { t in
-                sin(2 * .pi * t * ratio * 2)
+            row(label: "MODULATOR", note: "hidden: you never hear this", dim: true) { t in
+                sin(2 * .pi * t * ratio * cycles)
             }
             row(label: "CARRIER", note: "the note you play", dim: true) { t in
-                sin(2 * .pi * t * 2)
+                sin(2 * .pi * t * cycles)
             }
-            row(label: "RESULT", note: amount < 0.02 ? "turn FM up" : (isWhole ? "lines up: still a note" : "does not line up: metallic"),
+            row(label: "RESULT",
+                note: amount < 0.02 ? "turn FM up" : (isWhole ? "repeats: still a note" : "never repeats: metal"),
                 dim: false) { t in
-                // Phase modulation, the same maths the engine uses, so the drawing and the
-                // sound cannot drift apart.
-                sin(2 * .pi * t * 2 + sin(2 * .pi * t * ratio * 2) * amount * 3)
+                // The same phase-modulation maths the engine uses, so the drawing and the sound
+                // can never disagree.
+                sin(2 * .pi * t * cycles + sin(2 * .pi * t * ratio * cycles) * amount * 3)
             }
+
+            Text(amount < 0.02
+                 ? "FM adds the top wave onto the middle one\'s speed. At zero it adds nothing."
+                 : "The taller the top wave, the more the bottom one speeds up and slows down.")
+                .mono(9).foregroundColor(Theme.textMuted)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
         }
     }
 

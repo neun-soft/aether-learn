@@ -10,73 +10,70 @@ import SwiftUI
 
 /// Renders a paragraph with any of `terms` underlined and tappable.
 ///
-/// Built as a single concatenated `Text` rather than a wrapped `HStack` of words, so the
-/// paragraph keeps normal line breaking and justification. The tap is caught by an invisible
-/// overlay of buttons — `Text` cannot host a per-run gesture before iOS 17's `AttributedString`
-/// link handling, and this stays legible on the older deployment target.
+/// Built as one `Text` over an `AttributedString`, so the paragraph wraps, pads, and line-breaks
+/// exactly like every other paragraph in the app. An earlier version laid each word out
+/// individually and lost the parent's padding, pushing text off the screen edge.
+///
+/// Taps ride on link attributes with a private scheme, caught by an `OpenURLAction` on the
+/// paragraph. Nothing ever reaches the system URL handler.
 struct TermText: View {
     let paragraph: String
     let terms: [Term]
     let accent: Color
     var onTap: (Term) -> Void
 
+    static let scheme = "aether-term"
+
     var body: some View {
-        // Split the paragraph into alternating plain / term runs, longest terms first so
-        // "pink noise" wins over "noise" when both are defined.
-        let runs = TermText.split(paragraph, terms: terms.sorted { $0.word.count > $1.word.count })
+        Text(Self.attributed(paragraph, terms: terms, accent: accent))
+            .ui(15)
+            .foregroundColor(Theme.textSecondary)
+            .lineSpacing(4)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .environment(\.openURL, OpenURLAction { url in
+                guard url.scheme == Self.scheme,
+                      let term = terms.first(where: { $0.id == url.host })
+                else { return .discarded }
+                onTap(term)
+                return .handled
+            })
+    }
 
-        // Flow the runs as wrapping text. Each term run becomes its own tappable Text.
-        FlowLayout(spacing: 0) {
-            ForEach(Array(runs.enumerated()), id: \.offset) { _, run in
-                switch run {
-                case .plain(let s):
-                    Text(s).ui(15).foregroundColor(Theme.textSecondary)
-                case .term(let word, let term):
-                    Text(word)
-                        .ui(15, .medium)
-                        .foregroundColor(accent)
-                        .underline(true, color: accent.opacity(0.45))
-                        .onTapGesture { onTap(term) }
+    /// Marks up whole-word matches only, longest term first so "pink noise" wins over "noise"
+    /// and "noisy" never matches "noise".
+    static func attributed(_ text: String, terms: [Term], accent: Color) -> AttributedString {
+        var out = AttributedString(text)
+        guard !terms.isEmpty else { return out }
+
+        for term in terms.sorted(by: { $0.word.count > $1.word.count }) {
+            var searchRange = out.startIndex..<out.endIndex
+            while let found = out[searchRange].range(of: term.word, options: [.caseInsensitive]) {
+                // Only accept the match if it is a whole word.
+                let beforeOK = found.lowerBound == out.startIndex
+                    || !isWordCharacter(out.characters[out.index(beforeCharacter: found.lowerBound)])
+                let afterOK = found.upperBound == out.endIndex
+                    || !isWordCharacter(out.characters[found.upperBound])
+
+                if beforeOK, afterOK, out[found].link == nil {
+                    out[found].link = URL(string: "\(scheme)://\(term.id)")
+                    out[found].foregroundColor = accent
+                    out[found].underlineStyle = .single
                 }
+
+                guard found.upperBound < out.endIndex else { break }
+                searchRange = found.upperBound..<out.endIndex
             }
         }
-    }
-
-    enum Run {
-        case plain(String)
-        case term(String, Term)
-    }
-
-    /// Splits on whole-word matches only, so "noisy" never matches the term "noise".
-    static func split(_ text: String, terms: [Term]) -> [Run] {
-        guard !terms.isEmpty else { return [.plain(text)] }
-        var out: [Run] = []
-        var buffer = ""
-        let scalars = Array(text)
-        var i = 0
-
-        func isBoundary(_ idx: Int) -> Bool {
-            guard idx >= 0, idx < scalars.count else { return true }
-            return !scalars[idx].isLetter && !scalars[idx].isNumber
-        }
-
-        outer: while i < scalars.count {
-            for term in terms {
-                let w = Array(term.word)
-                guard i + w.count <= scalars.count else { continue }
-                let candidate = String(scalars[i..<(i + w.count)])
-                guard candidate.lowercased() == term.word.lowercased() else { continue }
-                guard isBoundary(i - 1), isBoundary(i + w.count) else { continue }
-                if !buffer.isEmpty { out.append(.plain(buffer)); buffer = "" }
-                out.append(.term(candidate, term))
-                i += w.count
-                continue outer
-            }
-            buffer.append(scalars[i])
-            i += 1
-        }
-        if !buffer.isEmpty { out.append(.plain(buffer)) }
         return out
+    }
+
+    private static func isWordCharacter(_ c: Character) -> Bool { c.isLetter || c.isNumber }
+}
+
+private extension AttributedString {
+    func index(beforeCharacter i: AttributedString.Index) -> AttributedString.Index {
+        characters.index(before: i)
     }
 }
 
@@ -132,41 +129,6 @@ struct TermSheet: View {
                 Spacer()
             }
             .padding(.horizontal, 24)
-        }
-    }
-}
-
-// MARK: - Wrapping layout for the term runs
-
-/// Lays children out left to right, wrapping like text. Used so a paragraph containing tappable
-/// words still breaks lines normally instead of running off the edge.
-struct FlowLayout: Layout {
-    var spacing: CGFloat = 0
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let maxWidth = proposal.width ?? .infinity
-        var x: CGFloat = 0, y: CGFloat = 0, lineHeight: CGFloat = 0
-        for sv in subviews {
-            let size = sv.sizeThatFits(.unspecified)
-            if x + size.width > maxWidth, x > 0 {
-                x = 0; y += lineHeight + spacing; lineHeight = 0
-            }
-            x += size.width
-            lineHeight = max(lineHeight, size.height)
-        }
-        return CGSize(width: maxWidth == .infinity ? x : maxWidth, height: y + lineHeight)
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        var x = bounds.minX, y = bounds.minY, lineHeight: CGFloat = 0
-        for sv in subviews {
-            let size = sv.sizeThatFits(.unspecified)
-            if x + size.width > bounds.maxX, x > bounds.minX {
-                x = bounds.minX; y += lineHeight + spacing; lineHeight = 0
-            }
-            sv.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
-            x += size.width
-            lineHeight = max(lineHeight, size.height)
         }
     }
 }
