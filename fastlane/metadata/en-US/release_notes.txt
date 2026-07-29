@@ -1,1 +1,5 @@
-Clearer Detune lesson: the two copies of your note now drift in and out of step on screen, so you can see the beating you hear. Share a finished module as an image. Small fixes throughout.
+Aether Learn is now free to download. The first module, Sound & Frequency, is free end to end — every lesson, demo, and exercise. A one-time purchase unlocks the rest of the course.
+
+If you bought the app before this update, you keep the whole course. Nothing is locked, and you will never be asked to pay again.
+
+The app now opens in its dark theme by default. Tap the toggle any time to switch.
