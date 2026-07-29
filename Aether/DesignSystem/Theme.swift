@@ -141,7 +141,10 @@ enum Appearance: String, CaseIterable, Identifiable {
 }
 
 final class ThemeStore: ObservableObject {
-    @AppStorage("aether.appearance") var appearance: Appearance = .light {
+    // Dark is the default: it's the look the icon and the App Store screenshots sell, and
+    // the one the instrument visuals were drawn against. Anyone who already flipped this
+    // keeps their choice — @AppStorage only falls back to the default when nothing is stored.
+    @AppStorage("aether.appearance") var appearance: Appearance = .dark {
         willSet { objectWillChange.send() }
     }
 }
