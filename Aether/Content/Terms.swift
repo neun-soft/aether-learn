@@ -58,6 +58,16 @@ enum G {
         plain: "The simplest possible wave, a smooth curve with nothing else mixed into it.",
         more: "Every other wave can be built by stacking sine waves together.")
 
+    static let tone = Term(
+        word: "tone",
+        plain: "A sound with a steady pitch you could hum along with.",
+        more: "People also use the word loosely to mean the character of a sound, as in a bright tone or a warm tone. Both meanings are common.")
+
+    static let synthesis = Term(
+        word: "synthesis",
+        plain: "Making a sound from scratch rather than recording one.",
+        more: "Synthesise just means to build something up from parts. A synthesiser is a machine for doing it.")
+
     static let timbre = Term(
         word: "timbre",
         plain: "What makes two instruments playing the same note still sound different.",

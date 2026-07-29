@@ -95,35 +95,37 @@ enum Curriculum {
                 )
             ),
             Lesson(
-                id: "msr2", title: "Speed Decides What Modulation Does",
-                concept: "The same wiring that makes a slow wobble makes a completely different sound when you speed it up past what your ear can follow.",
+                id: "msr2", title: "FM Synthesis",
+                concept: "FM is the LFO you already know, pointed at pitch and sped up until you can no longer follow it.",
                 theory: [
-                    "In the last module you pointed an LFO at the pitch and got vibrato: the note wobbling up and down a few times a second. You could count the wobbles.",
-                    "Now speed that up. Not five times a second, but five hundred. Two things change at once.",
-                    "First, you stop being able to follow it. This is the same threshold you met right at the start of the course, when a vibration became a note. Below roughly twenty times a second your ear reports separate events; above it, your ear gives up counting and reports one steady thing instead. That threshold is not only about sound reaching your ears, it applies to anything your ear has to track, including a wobble.",
-                    "Second, and this is the useful part, the sound changes character. The note stays where it is. What changes is what it sounds like: harder, brighter, more like a bell or a struck metal bar than a plain wave.",
-                    "Worth being clear about two things, because they are easy to get wrong.",
-                    "It is not too high to hear. The wobbling wave is running at ordinary note speed, well inside the range you can hear perfectly well. If you sent it to the speakers you would hear a note. But it is not sent to the speakers. It is only used to move something, so you never hear it directly, and what is too fast is your ability to follow the wobbling, not the wave itself.",
-                    "And it is not the LFO doing this. LFO stands for low frequency oscillator, and low frequency is the whole point of it: slow enough to watch. What is doing the bending here is a second oscillator running at note speed. Same idea as the LFO, same wiring, but once it is fast it is not low frequency any more, so it does not get that name.",
-                    "When the thing being moved is the frequency, this has a name of its own: frequency modulation, or FM. The wave you hear is called the carrier. The hidden one bending it is called the modulator.",
-                    "So what does the FM knob change? Not volume, and not a blend between two sounds. The modulator\'s output is added onto the carrier\'s frequency: when the modulator is high the carrier speeds up, when it is low the carrier slows down. The knob sets how much gets added. At zero, nothing is added and the speed stays flat."
+                    "The shortest honest description of FM is this: it is a fast LFO.",
+                    "You already have the whole idea. An LFO is a wave that moves a control for you instead of your finger. Point it at the pitch and you get vibrato, the note wobbling up and down a few times a second, and you can count the wobbles.",
+                    "Now speed that same wave up. Not five times a second, but five hundred. Two things change.",
+                    "First, you stop being able to follow it. This is the same threshold from the very start of the course, where a vibration became a note: below roughly twenty times a second your ear reports separate events, and above it your ear gives up counting and reports one steady thing instead. A wobble crossing that line stops being heard as a wobble.",
+                    "Second, the sound changes character. The note stays exactly where it is. What changes is what it sounds like: harder and brighter, more like a bell or a struck metal bar than a plain tone.",
+                    "One thing to be clear on. The fast wave is not too high-pitched to hear. It is running at ordinary note speed and you would hear a perfectly normal tone if it were sent to the speakers. It is not sent to the speakers. It is only used to move a control, exactly like the LFO was, so you never hear it directly.",
+                    "Which control? With the LFO you chose: pitch, volume, the filter. With FM the choice is already made, and it is in the name. F is frequency, so the fast wave is pointed at the frequency of the wave you hear. M is modulation, which is the word for one control moving another. Frequency modulation.",
+                    "The only reason it stops being called an LFO is the L. Low frequency oscillator: low frequency is the whole meaning of the name, so once it is fast the name no longer fits. Same part, same wiring, different speed, different word.",
+                    "The two waves have names worth knowing, because every FM synth uses them. The one you hear is the carrier. The fast hidden one bending it is the modulator.",
+                    "So what does the FM knob change? Not volume, and not a blend between two sounds. The modulator\'s output is added onto the carrier\'s frequency: when the modulator is high the carrier speeds up, when it is low it slows down. The knob is how much gets added. At zero, nothing is added and the speed stays flat."
                 ],
                 takeaways: [
-                    "Slow modulation is movement you can follow; fast modulation changes the sound itself",
-                    "The turning point is the same twenty-a-second threshold where vibration became a note",
-                    "The modulator is not too high to hear, it is simply never sent to the speakers",
-                    "It is not the LFO: low frequency is what LFO means, and this one is fast",
-                    "FM means the thing being modulated is frequency"
+                    "FM is an LFO pointed at pitch and sped up past what you can follow",
+                    "Above roughly twenty times a second a wobble stops sounding like a wobble",
+                    "The fast wave is ordinary and audible, it is just never sent to the speakers",
+                    "F is frequency, which is the control it moves; M is modulation",
+                    "It stops being called an LFO because the L means low"
                 ],
                 demo: nil,
-                terms: [G.modulation, G.lfo, G.oscillator, G.carrier, G.modulator, G.frequency, G.vibrato],
+                terms: [G.lfo, G.modulation, G.oscillator, G.carrier, G.modulator, G.frequency,
+                        G.vibrato, G.tone, G.synthesis],
                 exercise: Exercise(
                     prompt: "Hold a note and turn FM up slowly. The top wave is bending the middle one, and the bottom row is the result. The note does not move; what it sounds like does.",
                     visibleParams: [.fmAmount],
                     basePatch: Patch([.fmAmount: 0.0, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
                                       .ampAttack: 0.01, .ampDecay: 0.4, .ampSustain: 0.85, .ampRelease: 0.3]),
                     visual: .fm,
-                    tip: "Compare it with the vibrato lesson. Identical wiring, one thousand times the speed, and nothing about it sounds related.",
+                    tip: "Go back to the vibrato lesson and compare. Identical wiring, a thousand times the speed, and nothing about the two sounds seems related.",
                     controlsHint: "FM is how much of the hidden wave gets added onto the speed of the one you hear"
                 )
             ),
