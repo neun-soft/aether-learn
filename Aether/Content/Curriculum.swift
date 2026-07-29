@@ -96,40 +96,33 @@ enum Curriculum {
             ),
             Lesson(
                 id: "msr2", title: "FM Synthesis",
-                concept: "FM is the LFO you already know, pointed at pitch and sped up until you can no longer follow it.",
+                concept: "Put a finger on a spinning record and wobble it. Wobble slowly and you hear the pitch sag. Wobble fast enough and you hear a different sound entirely.",
                 theory: [
-                    "The shortest honest description of FM is this: it is a fast LFO.",
-                    "You already have the whole idea. An LFO is a wave that moves a control for you instead of your finger. Point it at the pitch and you get vibrato, the note wobbling up and down a few times a second, and you can count the wobbles.",
-                    "Now speed that same wave up. Not five times a second, but five hundred. Two things change.",
-                    "First, you stop being able to follow it. This is the same threshold from the very start of the course, where a vibration became a note: below roughly twenty times a second your ear reports separate events, and above it your ear gives up counting and reports one steady thing instead. A wobble crossing that line stops being heard as a wobble.",
-                    "Second, the sound changes character. The note stays exactly where it is. What changes is what it sounds like: harder and brighter, more like a bell or a struck metal bar than a plain tone.",
-                    "Here is the picture that makes it stick. Put a record on a turntable. The record is the carrier: it is the thing actually making the sound. Now rest a finger on the platter and wobble the speed.",
-                    "Your finger is the modulator. Your finger makes no sound at all. Nobody in the room hears your finger. But everybody hears what your finger did to the record.",
-                    "Wobble slowly and the pitch sags and rises, the sound of a tape deck that will not hold its speed, which engineers call wow and flutter. Wobble two hundred times a second and you can no longer pick out individual wobbles at all. What you hear instead is a completely different sound. Same finger, same wobbling, only faster than your ear can resolve.",
-                    "That also settles a question worth asking: is the fast wave too high-pitched to hear? No. It is running at ordinary note speed and would sound like a perfectly normal tone if you sent it to the speakers. But you do not send it to the speakers, any more than you point a microphone at your finger. It only moves something.",
-                    "Which control? With the LFO you chose: pitch, volume, the filter. With FM the choice is already made, and it is in the name. F is frequency, so the fast wave is pointed at the frequency of the wave you hear. M is modulation, which is the word for one control moving another. Frequency modulation.",
-                    "The only reason it stops being called an LFO is the L. Low frequency oscillator: low frequency is the whole meaning of the name, so once it is fast the name no longer fits. Same part, same wiring, different speed, different word.",
-                    "The two waves have names worth knowing, because every FM synth uses them. The one you hear is the carrier. The fast hidden one bending it is the modulator.",
-                    "So what does the FM knob change? Not volume, and not a blend between two sounds. The modulator\'s output is added onto the carrier\'s frequency: when the modulator is high the carrier speeds up, when it is low it slows down. The knob is how much gets added. At zero, nothing is added and the speed stays flat."
+                    "Put a record on a turntable and let it play. Now rest a finger on the platter and wobble the speed.",
+                    "Your finger makes no sound. Nobody in the room hears your finger. But everybody hears what your finger did to the record.",
+                    "Wobble it slowly and the pitch sags and rises, the sound of a tape deck that cannot hold its speed, which engineers call wow and flutter. Now wobble two hundred times a second. You can no longer pick out the individual wobbles, and what you hear instead is a completely different sound. Same finger, same wobbling, only faster than your ear can follow.",
+                    "That is FM, and it is the shortest description there is: a fast LFO. You already know the LFO as a wave that moves a control for you instead of your finger. Speed that same wave up past roughly twenty times a second, the same threshold from the start of the course where a vibration stopped being separate events and became a note, and it stops being heard as movement.",
+                    "The two waves have names. The record, the thing you actually hear, is the carrier. Your finger, hidden and silent, is the modulator.",
+                    "What does the modulator move? With the LFO you chose: pitch, volume, the filter. With FM the choice is already made and it is in the name. F is frequency, so it is pointed at how fast the carrier repeats. M is modulation. It stops being called an LFO only because the L stands for low, and this one is not.",
+                    "Concretely: play an A and the carrier repeats 440 times a second. Turn FM up and the modulator shoves that to 640, then down to 240, then back, hundreds of times a second. The knob sets how big those shoves are, and at zero there are none. The average is still 440, which is why the note does not change. The wave is simply no longer smooth, and a lumpier wave sounds brighter and harder."
                 ],
                 takeaways: [
-                    "FM is an LFO pointed at pitch and sped up past what you can follow",
-                    "Above roughly twenty times a second a wobble stops sounding like a wobble",
-                    "The fast wave is ordinary and audible, it is just never sent to the speakers",
-                    "F is frequency, which is the control it moves; M is modulation",
-                    "It stops being called an LFO because the L means low"
+                    "FM is an LFO sped up past what your ear can follow",
+                    "The modulator makes no sound of its own; you only hear what it did to the carrier",
+                    "F is frequency, which is the one thing it moves: how fast the carrier repeats",
+                    "The average stays put, so the note does not change, only its character"
                 ],
                 demo: nil,
                 terms: [G.lfo, G.modulation, G.oscillator, G.carrier, G.modulator, G.frequency,
                         G.vibrato, G.tone, G.synthesis, G.wowAndFlutter],
                 exercise: Exercise(
-                    prompt: "Hold a note and turn FM up slowly. The top wave is bending the middle one, and the bottom row is the result. The note does not move; what it sounds like does.",
+                    prompt: "Hold a note and turn FM up slowly. The top wave is your finger on the platter, the middle one is the record, and the bottom is what comes out.",
                     visibleParams: [.fmAmount],
                     basePatch: Patch([.fmAmount: 0.0, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
                                       .ampAttack: 0.01, .ampDecay: 0.4, .ampSustain: 0.85, .ampRelease: 0.3]),
                     visual: .fm,
-                    tip: "Go back to the vibrato lesson and compare. Identical wiring, a thousand times the speed, and nothing about the two sounds seems related.",
-                    controlsHint: "FM is how much of the hidden wave gets added onto the speed of the one you hear"
+                    tip: "Go back to the vibrato lesson and compare. Identical wiring, a thousand times the speed, and the two sounds seem completely unrelated.",
+                    controlsHint: "FM is how hard the hidden wave shoves the speed of the one you hear"
                 )
             ),
             Lesson(
