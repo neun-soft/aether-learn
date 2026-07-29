@@ -128,8 +128,11 @@ final class Voice {
 
         // Noise sits alongside whatever the oscillators are doing rather than replacing them —
         // a breath on top of a flute, or, with the oscillators down, the drum itself.
+        // At the top of the range the oscillator is gone completely, not just quieter. A lesson
+        // that says "noise has no pitch" has to be able to prove it, and it cannot while a
+        // pitched wave is still audible underneath.
         let nz = s.v(.noiseLevel)
-        if nz > 0.001 { raw = raw * (1 - nz * 0.6) + noise.render(color: s.v(.noiseColor)) * nz * 0.7 }
+        if nz > 0.001 { raw = raw * (1 - nz) + noise.render(color: s.v(.noiseColor)) * nz * 0.8 }
 
         let cutoffHz = 60.0 * pow(2.0, clamp01(cutoffNorm) * 8.0)
         let res = s.v(.resonance)

@@ -9,7 +9,7 @@ enum Route: Hashable {
 // Content and progress are separate models: content is static data shipped in the binary,
 // progress is per-user state persisted locally. Updating a lesson never wipes progress.
 
-enum LessonVisual { case none, scope, spectrum, additive, detune, bee, door, filter, envelope, lfo, equipment, output, match, beating }
+enum LessonVisual { case none, scope, spectrum, additive, detune, bee, door, filter, envelope, lfo, equipment, output, match, beating, noiseColor, fm, sync, drive }
 
 // Configures the frequency-explorer control for the frequency/pitch lessons.
 struct ToneConfig {
@@ -50,6 +50,17 @@ struct Exercise {
     var labels: [ParamID: String] = [:]                 // per-lesson knob label overrides
 }
 
+// A word the lesson uses that a beginner has no reason to know yet. Tapping it anywhere in the
+// theory text opens the definition over the lesson, with a back button; nothing navigates away,
+// so you never lose your place. Defining a word costs one line here and saves a reader who would
+// otherwise stop understanding at that sentence and keep reading anyway.
+struct Term: Identifiable, Hashable {
+    let word: String          // matched case-insensitively in the theory text
+    let plain: String         // one sentence, no other jargon in it
+    var more: String? = nil   // optional second sentence for the curious
+    var id: String { word.lowercased() }
+}
+
 struct Lesson: Identifiable {
     let id: String
     let title: String
@@ -57,6 +68,7 @@ struct Lesson: Identifiable {
     let theory: [String]           // paragraphs
     let takeaways: [String]
     let demo: DemoScript?
+    var terms: [Term] = []         // tappable definitions for this lesson's jargon
     let exercise: Exercise
 }
 

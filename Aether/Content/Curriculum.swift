@@ -50,109 +50,149 @@ enum Curriculum {
         // be the payoff, and a resonant filter sweep is the payoff. `playback` (speakers and
         // gear) is the module people are least willing to pay for and the dullest thing to
         // land on straight after a purchase, so it moves to the end as an appendix.
-        modules: [frequency, sources, subtractive, shape, motion, effects, drums, building, playback]
+        modules: [frequency, subtractive, shape, motion, sources, effects, drums, building, playback]
     )
 
 
     // MARK: Module - Other Ways to Make a Wave
+    //
+    // Placed after Motion, not before it: these lessons lean on the LFO and on modulation, and
+    // an earlier draft referenced both before either had been taught.
 
     static let sources = Module(
-        id: "msr", title: "Other Ways to Make a Wave", subtitle: "Noise, FM, and hard sync", accent: Theme.tone,
+        id: "msr", title: "Other Ways to Make a Wave", subtitle: "Noise, FM, and sync", accent: Theme.tone,
         lessons: [
             Lesson(
                 id: "msr1", title: "Noise Has No Pitch",
-                concept: "Every sound so far repeated a cycle. Noise never repeats, so there is nothing to hear as a note.",
+                concept: "Every sound so far repeated the same shape over and over. Noise never repeats, and that is why you cannot sing along with it.",
                 theory: [
-                    "A wave has pitch because it repeats. The same shape, over and over, so many times a second. That repetition rate is the pitch. Take the repetition away and the pitch goes with it.",
-                    "Noise is a new random value every single sample. No cycle, no repetition, no pitch. What is left is colour: how the energy is spread across the spectrum.",
-                    "White noise spreads energy evenly, which sounds bright and hissy, like an untuned radio. Pink noise falls off as it climbs, giving more weight to the low end. Pink is the one that sounds natural: rain, wind, breath, the sea. Your ear hears pink as flat, which is why it, and not white, is used to test a room.",
-                    "Turn Noise up on its own and you have the raw material for every drum that is not a kick, and for the breath on a flute. The spectrum shows it: a solid wall instead of the neat spikes a wave makes."
+                    "Here is the only reason anything has a pitch: the wave repeats. The same shape, again and again. How many times it repeats each second is the note you hear. Fast repeats sound high, slow repeats sound low.",
+                    "Noise does not repeat. Ever. It is a brand new random value every instant, so there is no shape to come back around, and no repeats to count. Nothing for your ear to call a note.",
+                    "Turn the Noise knob all the way up in the exercise and the note vanishes completely. You can still play the keyboard, and it will make no difference at all, because there is no longer anything in there that has a pitch.",
+                    "What is left is colour. White noise has an equal amount of every frequency, high and low, which sounds like a hissing television. Pink noise has more low and less high, which sounds like rain, or wind, or breathing. The names come from light: white light is every colour at once, and if you take the top of the spectrum away, what is left looks pink."
                 ],
                 takeaways: [
-                    "Pitch comes from repetition; noise never repeats, so it has none",
-                    "White noise is even across the spectrum and sounds hissy",
-                    "Pink noise falls off with height and sounds natural, like rain or breath"
+                    "A sound has a pitch because its wave repeats",
+                    "Noise never repeats, so it has no pitch at all",
+                    "White noise has every frequency equally, and sounds like hiss",
+                    "Pink noise has more low than high, and sounds like rain or wind"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "frequency", plain: "How many times something repeats each second.",
+                         more: "A wave repeating 440 times a second is the note A. Repeat it faster and the note gets higher."),
+                    Term(word: "pitch", plain: "How high or low a note sounds to you."),
+                    Term(word: "spectrum", plain: "A picture of which frequencies are in a sound, low on the left and high on the right.",
+                         more: "A tall bar means there is a lot of that frequency in the sound.")
+                ],
                 exercise: Exercise(
-                    prompt: "Bring Noise up until the note disappears into hiss, then sweep Colour from white to pink and watch the top of the spectrum fall away.",
-                    visibleParams: [.noiseLevel, .noiseColor, .oscWave, .cutoff],
-                    basePatch: Patch([.noiseLevel: 0.5, .noiseColor: 0.0, .cutoff: 0.95, .ampSustain: 0.9, .ampAttack: 0.02, .ampRelease: 0.25]),
-                    visual: .spectrum,
-                    tip: "Noise plus a fast envelope is a hi-hat. Noise plus a slow one is wind. The source is identical. Only the shape differs.",
-                    controlsHint: "Noise blends in alongside the oscillator; Colour tilts it from white to pink"
+                    prompt: "Turn NOISE all the way up. The note disappears, and playing different keys stops making any difference. Then sweep COLOUR from white to pink.",
+                    visibleParams: [.noiseLevel, .noiseColor],
+                    basePatch: Patch([.noiseLevel: 0.0, .noiseColor: 0.0, .oscWave: 0.0, .cutoff: 1.0,
+                                      .ampAttack: 0.02, .ampDecay: 0.3, .ampSustain: 0.9, .ampRelease: 0.25]),
+                    visual: .noiseColor,
+                    tip: "With NOISE all the way up, try playing high keys and low keys. They sound identical. That is what having no pitch means.",
+                    controlsHint: "Two knobs: how much noise, and what colour it is"
                 )
             ),
             Lesson(
-                id: "msr2", title: "One Wave Bending Another",
-                concept: "Frequency modulation: use a second oscillator, far too fast to hear as movement, to reshape the first.",
+                id: "msr2", title: "FM: One Wave Bends Another",
+                concept: "FM stands for frequency modulation. It means using a second wave, far too fast to hear as movement, to bend the first one out of shape.",
                 theory: [
-                    "You already used an LFO to wobble the pitch a few times a second. That was modulation you could follow with your ear.",
-                    "Now speed the modulator up into the audible range, hundreds of times a second, and something different happens. Too fast to hear as movement, it stops sounding like wobble and starts changing the timbre itself. New frequencies appear on either side of the original, called sidebands.",
-                    "This is FM. The modulating oscillator is never heard directly; you only hear what it does to the carrier. Turning FM up adds more sidebands, and the tone goes from pure, to bright, to clanging.",
-                    "It is how the DX7 made every bell, electric piano, and bass of the 1980s, and it is still the fastest route to a metallic sound that no filter can produce."
+                    "In the last module you used an LFO to wobble the pitch a few times a second. You could hear each wobble happen. That is modulation you can follow.",
+                    "Now imagine speeding that wobble up. Not five times a second, but five hundred. Far too fast to follow, so your ear stops hearing it as movement. The pitch does not seem to move at all any more. Instead the sound itself changes character. It gets brighter, harder, more like a bell.",
+                    "That is all FM is. F is frequency, M is modulation: one wave changing another wave\'s frequency, but doing it so fast that you hear the result as a new tone rather than as wobble.",
+                    "The two waves have names. The one you hear is the carrier. The one doing the bending is the modulator, and you never hear it on its own. In the exercise all three are drawn: the modulator on top, the carrier under it, and what comes out at the bottom. Turn FM up and watch the bottom wave stop being a smooth curve."
                 ],
                 takeaways: [
-                    "An audible-rate modulator changes timbre instead of adding wobble",
-                    "FM creates sidebands: new frequencies around the original",
-                    "The modulator is never heard on its own, only its effect"
+                    "FM stands for frequency modulation",
+                    "It is a wobble sped up so far that you hear a new tone instead of movement",
+                    "The carrier is the wave you hear; the modulator bends it and is never heard alone",
+                    "More FM means a more complicated wave, which sounds brighter and harder"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "modulation", plain: "One control automatically moving another one for you.",
+                         more: "An LFO moving the pitch up and down is modulation. So is this, just far faster."),
+                    Term(word: "LFO", plain: "A very slow wave used to move a knob for you instead of your finger.",
+                         more: "It stands for low frequency oscillator. Low frequency means slow enough to watch."),
+                    Term(word: "carrier", plain: "In FM, the wave you actually hear."),
+                    Term(word: "modulator", plain: "In FM, the hidden wave that bends the carrier. You never hear it by itself."),
+                    Term(word: "timbre", plain: "What makes two instruments playing the same note still sound different.",
+                         more: "A piano and a guitar can play the exact same pitch and you can still tell them apart. That difference is timbre. It is pronounced TAM-ber.")
+                ],
                 exercise: Exercise(
-                    prompt: "Start at zero and bring FM up slowly. Watch the single wave grow kinks as sidebands appear, and hear it turn from pure to bell-like.",
-                    visibleParams: [.fmAmount, .oscWave, .cutoff, .ampDecay],
-                    basePatch: Patch([.fmAmount: 0.0, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 0.9, .ampAttack: 0.0, .ampDecay: 0.5, .ampSustain: 0.5, .ampRelease: 0.4]),
-                    visual: .scope,
-                    tip: "Hold a note and turn FM slowly. The pitch never moves. Only the character does.",
-                    controlsHint: "FM sets how hard the hidden second oscillator bends the one you hear"
+                    prompt: "Hold a note and turn FM up slowly. Watch the bottom wave get bent out of shape by the one above it. The note stays the same; only its character changes.",
+                    visibleParams: [.fmAmount],
+                    basePatch: Patch([.fmAmount: 0.0, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
+                                      .ampAttack: 0.01, .ampDecay: 0.4, .ampSustain: 0.85, .ampRelease: 0.3]),
+                    visual: .fm,
+                    tip: "One knob on purpose. The only thing to notice here is that a fast enough wobble stops being a wobble.",
+                    controlsHint: "FM is how hard the hidden wave bends the one you hear"
                 )
             ),
             Lesson(
-                id: "msr3", title: "Harmonic or Metallic",
-                concept: "The ratio between the two oscillators decides whether FM sounds musical or like struck metal.",
+                id: "msr3", title: "Why Some FM Sounds Like a Bell",
+                concept: "Whether FM sounds musical or like struck metal depends on how the two waves line up.",
                 theory: [
-                    "FM depth decides how much. The ratio between the two oscillators decides what.",
-                    "When the modulator runs at a whole-number multiple of the carrier, 1, 2, or 3, the new sidebands land exactly on the harmonic series, the same series a saw wave is built from. The result still sounds like a note, just a richer one.",
-                    "When the ratio is not a whole number, the sidebands land between the harmonics. Nothing lines up, your ear finds no single pitch to lock onto, and the sound reads as metallic: bells, gongs, tines, the inside of a piano.",
-                    "That is the whole trick. Musical or metallic is one knob, and it is not the depth."
+                    "FM depth decides how much bending happens. This lesson is about the other knob: how fast the hidden wave runs compared to the one you hear.",
+                    "When the hidden wave runs at a simple multiple, twice as fast or three times as fast, the two line up neatly. Every bend happens at the same point in every cycle, so the result still repeats. It repeats, so it still has a pitch, and it still sounds like a note.",
+                    "When it runs at something in between, like one and a half times, they never quite line up. The bends land in a different place every cycle, so the wave does not settle into a repeating shape. Less repetition means less pitch, and your ear hears metal instead of a note. Bells, gongs, and the inside of a piano all work this way.",
+                    "That is why RATIO is the interesting knob and not the depth one. Depth makes it brighter. Ratio decides whether you are building an instrument or a bell."
                 ],
                 takeaways: [
-                    "Whole-number ratios put sidebands on the harmonic series, so it is still a note",
-                    "In-between ratios put them between harmonics, which reads as metal, bells, and gongs",
-                    "Depth sets how much; ratio sets what kind"
+                    "Whole-number ratios line up, keep repeating, and still sound like a note",
+                    "In-between ratios never line up, so the sound turns metallic",
+                    "Depth changes how bright it is; ratio changes what kind of thing it is"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "ratio", plain: "How fast one thing runs compared to another.",
+                         more: "A ratio of 2 means the hidden wave goes round twice for every one time the wave you hear goes round."),
+                    Term(word: "carrier", plain: "In FM, the wave you actually hear."),
+                    Term(word: "harmonic", plain: "An extra frequency sitting neatly above the main note, at two times, three times, four times its speed.",
+                         more: "Harmonics are what make a violin and a flute sound different while playing the same note.")
+                ],
                 exercise: Exercise(
-                    prompt: "With FM up, step Ratio through its values. Whole numbers stay musical; the in-between steps turn it into struck metal.",
-                    visibleParams: [.fmRatio, .fmAmount, .ampDecay, .cutoff],
-                    basePatch: Patch([.fmAmount: 0.45, .fmRatio: 0.25, .oscWave: 0.0, .cutoff: 0.95, .ampAttack: 0.0, .ampDecay: 0.45, .ampSustain: 0.0, .ampRelease: 0.5]),
-                    visual: .spectrum,
-                    tip: "Short decay plus an in-between ratio is a bell. Same patch, long sustain, is a synth brass.",
-                    controlsHint: "Ratio steps through fixed values: 0.5, 1, 1.5, 2, 3, 5, 7"
+                    prompt: "Step RATIO through its positions. Watch the bottom wave: at whole numbers it settles into a repeating shape, and in between it never does. Listen for the moment it stops sounding like a note.",
+                    visibleParams: [.fmRatio, .fmAmount],
+                    basePatch: Patch([.fmAmount: 0.5, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
+                                      .ampAttack: 0.0, .ampDecay: 0.5, .ampSustain: 0.7, .ampRelease: 0.4]),
+                    visual: .fm,
+                    tip: "Repeating shape means a note. Shape that never settles means metal. You can see which one you have before you hear it.",
+                    controlsHint: "RATIO steps through fixed speeds: 0.5, 1, 1.5, 2, 3, 5, 7"
                 )
             ),
             Lesson(
-                id: "msr4", title: "A Wave That Restarts",
-                concept: "Hard sync forces one oscillator to start over on another's schedule, and the tear it leaves is the sound.",
+                id: "msr4", title: "Sync: Forcing a Wave to Start Over",
+                concept: "Two oscillators, where one keeps interrupting the other and dragging it back to the beginning.",
                 theory: [
-                    "Two oscillators, but this time one is silent. The silent one, the master, does nothing but keep time. Every cycle it reaches the end and forces the other one, the slave, the one you hear, to jump back to the start, wherever it had got to.",
-                    "That interruption is violent. The wave is cut mid-stride and slammed back to zero, leaving a sharp edge, and sharp edges are rich in harmonics.",
-                    "The useful part is what stays put. The pitch you hear is the master's, because the restart happens on the master's schedule. So you can tune the slave far up, and the note does not change. Only the timbre does, sweeping and screaming above it.",
-                    "Move the Sync knob while holding a note. That vocal, tearing sweep is a sound no filter makes, and it is all over hard electronic music."
+                    "The name is short for synchronise, which means forcing two things to keep in step. Here one oscillator is forced to keep in step with another, whether it wants to or not.",
+                    "There are two of them. The first is silent, and its only job is to keep time. Every time it finishes a cycle it reaches over and yanks the second one back to the very start, wherever that one had got to. The second oscillator is the one you actually hear.",
+                    "Being cut off halfway through leaves a sharp corner in the wave, because it drops instantly back to zero instead of curving down gently. Sharp corners sound bright and harsh, which is why sync has that tearing, screaming quality.",
+                    "Here is the useful part, and the picture shows it better than words. The interruptions always happen at the same moments, because the silent one is still keeping the same time. So the pitch you hear never changes. Turn SYNC up and the tone tears and sweeps while the note itself sits perfectly still."
                 ],
                 takeaways: [
-                    "The master is silent and only sets when the slave restarts",
-                    "The forced restart leaves a sharp edge, which is rich in harmonics",
-                    "Sweeping the slave changes timbre while the pitch stays fixed"
+                    "Sync is short for synchronise: keeping two things in step",
+                    "A silent oscillator keeps time and restarts the one you hear, every cycle",
+                    "Being cut off mid-wave leaves a sharp corner, which sounds bright and harsh",
+                    "The interruptions never move, so the note stays put while the tone changes"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "oscillator", plain: "The part of a synth that makes the raw repeating wave.",
+                         more: "Oscillate just means to move back and forth. Everything else in the synth shapes what the oscillator produces."),
+                    Term(word: "cycle", plain: "One full repeat of a wave, before it starts over."),
+                    Term(word: "pitch", plain: "How high or low a note sounds to you.")
+                ],
                 exercise: Exercise(
-                    prompt: "Hold a note and sweep Sync. The pitch stays exactly where it is while the tone tears and sweeps above it.",
-                    visibleParams: [.syncAmount, .oscWave, .cutoff, .resonance],
-                    basePatch: Patch([.syncAmount: 0.2, .oscWave: 0.6, .cutoff: 0.95, .resonance: 0.1, .ampAttack: 0.01, .ampSustain: 0.9, .ampRelease: 0.3]),
-                    visual: .scope,
-                    tip: "Route the envelope to sweep Sync instead of your finger and you have the classic sync lead.",
-                    controlsHint: "Sync tunes the slave oscillator; the note you hear does not follow it"
+                    prompt: "Hold a note and turn SYNC up slowly. Watch the dotted lines stay exactly where they are while the wave between them gets squeezed in. That is why the note does not change.",
+                    visibleParams: [.syncAmount],
+                    basePatch: Patch([.syncAmount: 0.0, .oscWave: 0.55, .cutoff: 1.0, .resonance: 0.0,
+                                      .ampAttack: 0.01, .ampDecay: 0.4, .ampSustain: 0.9, .ampRelease: 0.3]),
+                    visual: .sync,
+                    tip: "The dotted lines are the silent oscillator. They never move, no matter how far you turn the knob.",
+                    controlsHint: "SYNC tunes the wave you hear. The note does not follow it"
                 )
             )
         ]

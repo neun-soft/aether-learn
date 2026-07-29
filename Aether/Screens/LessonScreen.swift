@@ -13,6 +13,7 @@ struct LessonScreen: View {
     @State private var phase: Phase = .theory
     @State private var toneNorm: Double = 0.3
     @State private var holdMode = true
+    @State private var openTerm: Term?
     @State private var selectedGear: String? = nil
     @State private var matches: [String: String] = [:]
     @State private var showCover = true
@@ -229,11 +230,22 @@ struct LessonScreen: View {
     }
 
     @ViewBuilder private var content: some View {
-        switch phase {
-        case .theory: theoryView
-        case .demo:   demoView
-        case .play:   playView
+        ZStack {
+            switch phase {
+            case .theory: theoryView
+            case .demo:   demoView
+            case .play:   playView
+            }
+
+            // Over the lesson, not pushed onto the stack: "back" returns to the exact sentence
+            // you were reading rather than to the top of the page.
+            if let term = openTerm {
+                TermSheet(term: term, accent: accent) { openTerm = nil }
+                    .transition(.opacity)
+                    .zIndex(1)
+            }
         }
+        .animation(.easeOut(duration: 0.16), value: openTerm)
     }
 
     // MARK: Learn
@@ -246,9 +258,21 @@ struct LessonScreen: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 ForEach(Array(lesson.theory.enumerated()), id: \.offset) { _, para in
-                    Text(lang.t(para))
-                        .ui(15).foregroundColor(Theme.textSecondary)
-                        .lineSpacing(4).fixedSize(horizontal: false, vertical: true)
+                    if lesson.terms.isEmpty {
+                        Text(lang.t(para))
+                            .ui(15).foregroundColor(Theme.textSecondary)
+                            .lineSpacing(4).fixedSize(horizontal: false, vertical: true)
+                    } else {
+                        TermText(paragraph: lang.t(para), terms: lesson.terms, accent: accent) {
+                            openTerm = $0
+                        }
+                    }
+                }
+
+                if !lesson.terms.isEmpty {
+                    Text(lang.t("Tap any underlined word for a plain-language definition."))
+                        .ui(12).foregroundColor(Theme.textDim)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -537,6 +561,16 @@ struct LessonScreen: View {
                 Text(lang.t("VOLUME OVER TIME")).mono(10, .semibold).tracking(1.5).foregroundColor(Theme.textDim)
                 BeatScope(history: synth.ampHistory, accent: accent, height: 72)
             }
+        case .noiseColor:
+            NoiseColorView(color: synth.patch[.noiseColor], level: synth.patch[.noiseLevel], accent: accent)
+        case .fm:
+            FMView(amount: synth.patch[.fmAmount],
+                   ratioIndex: Int(clamp01(synth.patch[.fmRatio]) * Double(Voice.fmRatios.count - 1) + 0.5),
+                   accent: accent)
+        case .sync:
+            SyncView(amount: synth.patch[.syncAmount], accent: accent)
+        case .drive:
+            DriveView(drive: synth.patch[.drive], accent: accent)
         case .none:
             EmptyView()
         }
