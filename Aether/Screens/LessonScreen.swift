@@ -571,8 +571,47 @@ struct LessonScreen: View {
             SyncView(amount: synth.patch[.syncAmount], accent: accent)
         case .drive:
             DriveView(drive: synth.patch[.drive], accent: accent)
+        case .delay:
+            DelayView(time: synth.patch[.delayTime], feedback: synth.patch[.delayFeedback],
+                      mix: synth.patch[.delayMix], accent: accent)
+        case .comb:
+            CombView(time: synth.patch[.delayTime], feedback: synth.patch[.delayFeedback], accent: accent)
+        case .room:
+            RoomView(size: synth.patch[.reverb], mix: synth.patch[.reverbMix], accent: accent)
+        case .hitShape:
+            HitShapeView(attack: synth.patch[.ampAttack], decay: synth.patch[.ampDecay],
+                         sustain: synth.patch[.ampSustain], playhead: synth.noteAge, accent: accent)
+        case .hatFilter:
+            HighPassNoiseView(cutoff: synth.patch[.cutoff], decay: synth.patch[.ampDecay], accent: accent)
+        case .snareMix:
+            SnareMixView(noise: synth.patch[.noiseLevel], accent: accent)
+        case .pitchDrop:
+            PitchDropView(depth: synth.patch[.lfoDepth], decay: synth.patch[.ampDecay], accent: accent)
+        case .pathBass, .pathLead, .pathPad, .pathFree:
+            SignalPathView(active: pathStages, wave: synth.patch[.oscWave], noise: synth.patch[.noiseLevel],
+                           cutoff: synth.patch[.cutoff], attack: synth.patch[.ampAttack],
+                           release: synth.patch[.ampRelease], accent: accent, caption: pathCaption)
         case .none:
             EmptyView()
+        }
+    }
+
+    // Which boxes of the signal path this lesson is working on, and the one line under it.
+    private var pathStages: Set<SignalPathView.Stage> {
+        switch lesson.exercise.visual {
+        case .pathBass: return [.filter, .envelope]
+        case .pathLead: return [.source, .filter]
+        case .pathPad:  return [.envelope, .space]
+        default:        return [.source, .filter, .envelope, .space]
+        }
+    }
+
+    private var pathCaption: String {
+        switch lesson.exercise.visual {
+        case .pathBass: return lang.t("A bass lives at the bottom, so the filter closes and the shape stays short.")
+        case .pathLead: return lang.t("A lead has to cut through, so the source is rich and the filter stays open.")
+        case .pathPad:  return lang.t("A pad is all timing: slow in, slow out, and a lot of room around it.")
+        default:        return lang.t("Every stage is yours now. Work left to right.")
         }
     }
 

@@ -246,75 +246,107 @@ enum Curriculum {
                 )
             ),
             Lesson(
-                id: "mfx2", title: "The Same Sound, Later",
-                concept: "Delay stores what you played and replays it. Feedback decides how many times.",
+                id: "mfx2", title: "A Sound Can Arrive Twice",
+                concept: "A delay keeps a copy of what you played and hands it back a moment later.",
                 theory: [
-                    "A delay keeps a short recording of everything passing through and plays it back a moment later. That is all it is.",
-                    "Time sets how long the wait is. Feedback sends the delayed copy back into the store, so it repeats again, quieter each pass, until it fades out. Echo sets how much of it you hear against the original.",
-                    "Long times give distinct repeats you can count. Shorten the time and the repeats crowd together until you stop hearing them as separate events and start hearing them as one thicker sound.",
-                    "High feedback with a long time is the classic dub echo. Push feedback near the top and it stops decaying at all, which is an instrument in its own right."
+                    "Shout at a cliff face and a moment later your voice comes back. Nothing new was made. The same sound simply took a longer route and arrived late. That is an echo, and a delay is a machine for producing one on purpose.",
+                    "It works by keeping a very short recording. Everything you play goes into it, and a set amount of time later it comes back out. The TIME knob is how long that wait is.",
+                    "You can also feed the copy back in to be recorded again. That gives you a second repeat, then a third, each one quieter than the last because a little is lost each time round. That is what FEEDBACK controls: not how loud the echo is, but how many times it goes round before it dies away.",
+                    "ECHO decides how much of all this you actually hear next to the original sound. At zero the delay is still running, you simply are not listening to it.",
+                    "In the picture, the white bar is the note you played and every coloured bar after it is the same note coming back. Move TIME and the bars spread apart or bunch up. Move FEEDBACK and more of them survive."
                 ],
                 takeaways: [
-                    "Delay replays a stored copy after a set time",
-                    "Feedback returns the copy to the store, making it repeat",
-                    "Repeats fade because each pass is quieter than the last"
+                    "A delay stores what you play and returns it after a set time",
+                    "Time is the length of the wait",
+                    "Feedback is how many repeats you get, because the copy is recorded again",
+                    "Each repeat is quieter, so it fades out on its own"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "delay", plain: "An effect that stores a sound and plays it back a moment later."),
+                    Term(word: "echo", plain: "The same sound reaching you a second time, after taking longer to arrive."),
+                    Term(word: "feedback", plain: "Sending something back into where it came from, so it happens again.",
+                         more: "In a delay, feeding the copy back in is what turns one repeat into many.")
+                ],
                 exercise: Exercise(
-                    prompt: "Play a short note and let it repeat. Raise Feedback for more repeats, then shorten Time until you can no longer count them.",
-                    visibleParams: [.delayMix, .delayTime, .delayFeedback, .ampDecay],
-                    basePatch: Patch([.delayMix: 0.4, .delayTime: 0.4, .delayFeedback: 0.4, .oscWave: 0.35, .cutoff: 0.7, .ampAttack: 0.0, .ampDecay: 0.2, .ampSustain: 0.0, .ampRelease: 0.15]),
-                    visual: .scope,
-                    tip: "Short notes show delay best. A long sustained note hides the repeats underneath itself.",
-                    controlsHint: "Echo is how much you hear, Time is the wait, Feedback is how many"
+                    prompt: "Play one short note and watch it come back. Move TIME to spread the repeats apart, then FEEDBACK to get more of them.",
+                    visibleParams: [.delayMix, .delayTime, .delayFeedback],
+                    basePatch: Patch([.delayMix: 0.45, .delayTime: 0.45, .delayFeedback: 0.45,
+                                      .oscWave: 0.3, .cutoff: 0.75,
+                                      .ampAttack: 0.0, .ampDecay: 0.18, .ampSustain: 0.0, .ampRelease: 0.12]),
+                    visual: .delay,
+                    holdDefault: false,
+                    tip: "Short taps show this best. A note you hold covers up its own repeats.",
+                    controlsHint: "ECHO is how much you hear, TIME is the wait, FEEDBACK is how many"
                 )
             ),
             Lesson(
-                id: "mfx3", title: "When a Delay Stops Being an Echo",
-                concept: "Under about 30 milliseconds the repeats fuse, and delay becomes a filter.",
+                id: "mfx3", title: "Two Copies Cancel Each Other",
+                concept: "Bring the copy close enough and you stop hearing two sounds. They start fighting instead.",
                 theory: [
-                    "Keep shortening the delay time. Somewhere around thirty milliseconds your ear gives up trying to hear two events and hears one.",
-                    "But the copy is still there, and now it is close enough to interfere with the original. At frequencies where the two line up they add and get louder. Where they oppose, they cancel and disappear.",
-                    "The result is a comb: a spectrum with regular notches cut through it, evenly spaced, like teeth. That is where the name comb filter comes from, and you can see it clearly on the spectrum.",
-                    "This one mechanism, a very short delay, is the basis of flanger, chorus, and phaser. Modulate the delay time slowly and the notches sweep, and that is a flanger. Use a slightly longer time and a gentler sweep and it is a chorus."
+                    "Keep shortening the wait. At around a thirtieth of a second your ear gives up trying to hear two separate arrivals and hears one sound instead. But the copy has not gone anywhere.",
+                    "Now the two are close enough to interfere with each other. A wave pushes and pulls. When both copies push at the same moment, they add together and that frequency gets louder. When one pushes while the other pulls, they work against each other and that frequency cancels out, sometimes completely.",
+                    "Whether they help or fight depends on the frequency, so some frequencies survive and others vanish. Drawn as a spectrum, that leaves a row of evenly spaced gaps, which is what gives the effect its name: a comb filter, because it looks like the teeth of a comb.",
+                    "You are hearing a filter now, not an echo, made out of nothing but a copy arriving slightly late. That is worth knowing because it is how three effects you will meet everywhere are built. Move those gaps slowly up and down and you have a flanger. Use a slightly longer wait and a gentler movement and you have a chorus."
                 ],
                 takeaways: [
-                    "Below about 30 ms the repeats fuse into one sound",
-                    "The copy interferes with the original: some frequencies add, others cancel",
-                    "Evenly spaced notches, a comb, are the basis of flanger and chorus"
+                    "Below about a thirtieth of a second, two copies fuse into one sound",
+                    "Where they push together, a frequency gets louder; where they oppose, it cancels",
+                    "The result is a row of evenly spaced gaps: a comb filter",
+                    "Flanger and chorus are both built from this"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "cancel", plain: "When one wave pushes while another pulls, so they undo each other and you hear nothing.",
+                         more: "This is exactly how noise-cancelling headphones work."),
+                    Term(word: "comb filter", plain: "A filter that removes a row of evenly spaced frequencies, leaving gaps like the teeth of a comb."),
+                    Term(word: "filter", plain: "Anything that removes some frequencies from a sound and leaves the others."),
+                    Term(word: "flanger", plain: "An effect that slowly moves the gaps of a comb filter up and down, giving a sweeping, jet-plane sound."),
+                    Term(word: "chorus", plain: "An effect that uses a slightly longer, gently wandering copy to make one sound seem like several.")
+                ],
                 exercise: Exercise(
-                    prompt: "Bring Time all the way down. The echo disappears and the spectrum grows regular notches. The sound goes hollow and metallic.",
-                    visibleParams: [.delayTime, .delayFeedback, .delayMix, .cutoff],
-                    basePatch: Patch([.delayMix: 0.5, .delayTime: 0.06, .delayFeedback: 0.6, .oscWave: 0.5, .cutoff: 0.85, .ampAttack: 0.01, .ampSustain: 0.9, .ampRelease: 0.3]),
-                    visual: .spectrum,
-                    tip: "Feedback deepens the notches. At high feedback a very short delay starts to ring at a pitch of its own.",
-                    controlsHint: "Time down low is where echo turns into filtering"
+                    prompt: "Hold a note and bring TIME all the way down. The echo disappears, the gaps appear, and the sound goes hollow.",
+                    visibleParams: [.delayTime, .delayFeedback],
+                    basePatch: Patch([.delayMix: 0.6, .delayTime: 0.35, .delayFeedback: 0.55,
+                                      .oscWave: 0.5, .cutoff: 0.9,
+                                      .ampAttack: 0.01, .ampDecay: 0.3, .ampSustain: 0.9, .ampRelease: 0.25]),
+                    visual: .comb,
+                    tip: "Turn FEEDBACK up once the gaps appear. The deeper the gaps, the more hollow it sounds.",
+                    controlsHint: "TIME down low is where an echo turns into a filter"
                 )
             ),
             Lesson(
-                id: "mfx4", title: "The Room Around It",
-                concept: "Reverb is thousands of reflections arriving too close together to count.",
+                id: "mfx4", title: "Many Arrivals Become a Room",
+                concept: "Reverb is the same sound reaching you thousands of times, too close together to count.",
                 theory: [
-                    "In any real space, sound reaches you twice: straight from the source, then again and again as it bounces off every surface.",
-                    "A single bounce would be an echo. But a room has walls, a floor, a ceiling, and objects, and each reflection bounces again. Within a fraction of a second there are thousands, far too dense and too close together to hear as separate events. That wash is reverb.",
-                    "Size sets how big the space feels, because a bigger room means longer gaps between reflections and a longer tail. Mix sets how far away the sound is: more reverb reads as further back, less reads as right in front of you.",
-                    "This is the last piece. Sources make the raw sound, filters and envelopes shape it, effects place it somewhere. A patch is finished when it sounds like it exists in a room."
+                    "In any real space you hear a sound twice over. First it comes straight to you. Then it comes again, having bounced off a wall, then off the floor, the ceiling, and everything in the room.",
+                    "One bounce on its own would be an echo. But a room has surfaces everywhere, and every bounce bounces again. Within a fraction of a second there are thousands of arrivals, far too many and too close together to hear as separate events. They blur into a single wash of sound. That wash is reverb, which is short for reverberation.",
+                    "SIZE is how far apart the walls are. A bigger space means the bounces travel further, so they arrive further apart and take longer to die away. That is why a cathedral rings for seconds and a bathroom does not.",
+                    "MIX is how much of the bounced sound you hear against the straight one. This is what your ears use to judge distance. Mostly straight sound means the source is right in front of you. Mostly bounces means it is far away, at the other end of the room.",
+                    "Look at the second picture. The tall white line is the sound arriving straight, and everything after it is the same sound coming back off a surface."
                 ],
                 takeaways: [
-                    "Reverb is thousands of reflections too dense to hear individually",
-                    "Size sets the space; Mix sets the distance",
-                    "One reflection is an echo, many are a room"
+                    "Reverb is thousands of bounces arriving too close together to count",
+                    "One bounce is an echo; a room full of them is reverb",
+                    "Size is how far apart the walls are, which sets how long it rings",
+                    "Mix is how far away the sound seems"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "reverb", plain: "The wash of sound made by thousands of bounces around a room.",
+                         more: "Short for reverberation. It is what tells you, with your eyes shut, whether you are in a cupboard or a church."),
+                    Term(word: "bounce", plain: "Sound hitting a surface and coming back off it, the way light does off a mirror."),
+                    Term(word: "echo", plain: "The same sound reaching you a second time, after taking longer to arrive.")
+                ],
                 exercise: Exercise(
-                    prompt: "Play a short note with Mix down, then raise it. The sound stops sitting in your ears and starts sitting in a room.",
-                    visibleParams: [.reverbMix, .reverb, .ampRelease, .cutoff],
-                    basePatch: Patch([.reverbMix: 0.15, .reverb: 0.5, .oscWave: 0.3, .cutoff: 0.7, .ampAttack: 0.01, .ampDecay: 0.3, .ampSustain: 0.0, .ampRelease: 0.3]),
-                    visual: .scope,
-                    tip: "Reverb on everything muddies everything. It works best when one thing is wet and the rest stays dry.",
-                    controlsHint: "Size is how big the room is, Mix is how far away you are"
+                    prompt: "Play a short note with MIX at zero, then bring it up. The sound stops being right in your ears and starts being somewhere. Then open SIZE.",
+                    visibleParams: [.reverbMix, .reverb],
+                    basePatch: Patch([.reverbMix: 0.0, .reverb: 0.5, .oscWave: 0.3, .cutoff: 0.75,
+                                      .ampAttack: 0.01, .ampDecay: 0.25, .ampSustain: 0.0, .ampRelease: 0.25]),
+                    visual: .room,
+                    holdDefault: false,
+                    tip: "Put MIX high and play one short note, then stop. What you can still hear is the room, not the note.",
+                    controlsHint: "SIZE is how big the room is, MIX is how far away you are"
                 )
             )
         ]
@@ -323,110 +355,153 @@ enum Curriculum {
     // MARK: Module - Designing Drums
 
     static let drums = Module(
-        id: "mdr", title: "Designing Drums", subtitle: "Kick, hat, and snare from scratch", accent: Theme.basics,
+        id: "mdr", title: "Designing Drums", subtitle: "Building a kit from nothing", accent: Theme.basics,
         lessons: [
             Lesson(
-                id: "mdr1", title: "A Drum Is Mostly an Envelope",
-                concept: "What makes a sound percussive is not the source. It is that the envelope is instant on and quickly off.",
+                id: "mdr1", title: "A Hit Is a Shape, Not a Sound",
+                concept: "What makes something percussive is not what it is made of. It is how quickly it arrives and leaves.",
                 theory: [
-                    "Take any source at all, a wave or noise or anything else. Give it an instant attack, no sustain, and a short decay, and it becomes a hit.",
-                    "That is the definition of percussive. Attack at zero so it starts the moment you touch it, sustain at zero so it refuses to hold, and a decay short enough that it is gone before you think about it.",
-                    "Everything else is detail. A kick, a hat, a snare, and a pluck all share this envelope. What separates them is which source is underneath and which part of the spectrum it occupies.",
-                    "Set the envelope first, then choose the source. Sound designers work in this order because the envelope decides what kind of thing it is, and the source only decides which one."
+                    "Think about the difference between a violin and a drum. It is not really what they are made of. It is timing. The violin swells in and holds for as long as the bow keeps moving. The drum is at full volume the instant it is struck and then it is gone.",
+                    "You already have the control for this. The envelope is the shape of a sound\'s loudness over time, and three of its settings are what make something a hit.",
+                    "Attack is how long it takes to reach full volume. For a hit this must be zero: struck things are loud immediately, because the energy arrives all at once.",
+                    "Sustain is the level it holds at while you keep the key down. For a hit this must also be zero. Nothing is feeding a drum after the stick has left it, so there is nothing to hold.",
+                    "Decay is how long it takes to fall from full volume to that nothing. Short is a hit. Long is a note.",
+                    "Set those three and any source at all becomes percussive. That is why this lesson comes before the kick, the hat and the snare: the shape is shared, and only the source changes between them."
                 ],
                 takeaways: [
-                    "Instant attack, no sustain, and a short decay is what percussive means",
-                    "The envelope decides it is a hit; the source decides which hit",
-                    "Set the shape first, pick the source second"
+                    "Percussive means instant attack, no sustain, and a short decay",
+                    "Attack zero, because struck things are loud immediately",
+                    "Sustain zero, because nothing keeps feeding a drum after the hit",
+                    "The shape decides that it is a hit; the source decides which hit"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "envelope", plain: "The shape of a sound\'s loudness from the moment it starts to the moment it ends."),
+                    Term(word: "attack", plain: "How long a sound takes to reach full volume after it starts."),
+                    Term(word: "sustain", plain: "The level a sound holds at while you keep the key held down."),
+                    Term(word: "decay", plain: "How long a sound takes to fall from full volume down to its holding level."),
+                    Term(word: "percussive", plain: "Sounding like something that was struck rather than blown or bowed.")
+                ],
                 exercise: Exercise(
-                    prompt: "Pull Decay right down and Sustain to zero. Whatever you play stops being a note and becomes a hit.",
-                    visibleParams: [.ampDecay, .ampSustain, .ampAttack, .noiseLevel],
-                    basePatch: Patch([.ampAttack: 0.0, .ampDecay: 0.12, .ampSustain: 0.0, .ampRelease: 0.1, .oscWave: 0.35, .cutoff: 0.8, .noiseLevel: 0.0]),
-                    visual: .envelope,
-                    tip: "Bring Noise up with this envelope already set and you have a hi-hat, before you have touched anything else.",
-                    controlsHint: "Attack at zero, Sustain at zero, and Decay short is the percussion shape"
+                    prompt: "Pull DECAY down and SUSTAIN to zero. Watch the shape go straight up and straight back down, and hear the note turn into a hit.",
+                    visibleParams: [.ampDecay, .ampSustain, .ampAttack],
+                    basePatch: Patch([.ampAttack: 0.25, .ampDecay: 0.6, .ampSustain: 0.7, .ampRelease: 0.2,
+                                      .oscWave: 0.35, .cutoff: 0.8]),
+                    visual: .hitShape,
+                    holdDefault: false,
+                    tip: "Try it the other way too. Put ATTACK up and the same sound stops being a drum and becomes a pad.",
+                    controlsHint: "Three settings turn any sound into a hit"
                 )
             ),
             Lesson(
-                id: "mdr2", title: "Hi-Hat: Noise Through a High-Pass",
-                concept: "Noise, a high-pass filter to keep only the top, and a very short decay.",
+                id: "mdr2", title: "A Cymbal Is Noise With No Bottom",
+                concept: "Take noise, throw away the low end, and cut it short. That is a hi-hat.",
                 theory: [
-                    "A hi-hat is two thin metal discs striking each other. There is no pitch in that, only a bright, short burst, which is exactly noise with the bottom removed.",
-                    "So: noise as the source, since there is nothing pitched about it. Then a high-pass filter, which keeps everything above the cutoff and throws away the low end, leaving only the bright part where a real cymbal lives.",
-                    "Then decay, which is what separates a closed hat from an open one. Very short is closed. Let it ring on and it opens. That single knob is the whole difference.",
-                    "White noise rather than pink here, because a cymbal is bright and hissy, and pink puts weight in a low end that a real hat does not have."
+                    "Two thin metal discs hitting each other. There is nothing in that sound you could hum, so there is no note in it, which tells you the source immediately: it has to be noise.",
+                    "But raw noise has energy everywhere, including deep at the bottom, and a pair of small metal discs cannot produce deep sound. So the low end has to go.",
+                    "The tool for that is a high-pass filter. High-pass means it lets the high frequencies pass through and blocks the low ones. It is the same filter you met before, working in the opposite direction: instead of keeping the bottom, it keeps the top.",
+                    "Sweep the cutoff up and watch the picture. Everything below the dotted line is thrown away, and what is left is thin, bright, and metallic. Nothing has been added to make it sound like a cymbal. Things have only been taken away.",
+                    "Then decay does the last job, and it is the only difference between the two hats every drum kit has. Very short is a closed hat. Let it ring on and it is an open one."
                 ],
                 takeaways: [
-                    "A cymbal has no pitch, so noise is the correct source",
-                    "High-pass removes the low end and leaves the bright part",
-                    "Decay length is the difference between a closed and an open hat"
+                    "A cymbal has no note in it, so noise is the right source",
+                    "A high-pass filter keeps the highs and blocks the lows",
+                    "A hat is made by taking away, not by adding",
+                    "Decay length is the whole difference between a closed and an open hat"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "high-pass filter", plain: "A filter that lets high frequencies through and blocks low ones."),
+                    Term(word: "cutoff", plain: "The frequency where a filter starts doing its job.",
+                         more: "On a high-pass filter, everything below the cutoff gets removed."),
+                    Term(word: "noise", plain: "Sound with no repeating pattern, so it has no note in it."),
+                    Term(word: "decay", plain: "How long a sound takes to fall from full volume down to its holding level.")
+                ],
                 exercise: Exercise(
-                    prompt: "Sweep Cutoff up with the high-pass engaged until only the bright hiss is left, then lengthen Decay to open the hat.",
-                    visibleParams: [.cutoff, .ampDecay, .noiseLevel, .noiseColor],
-                    basePatch: Patch([.noiseLevel: 1.0, .noiseColor: 0.0, .filterType: 0.33, .cutoff: 0.8, .resonance: 0.1, .ampAttack: 0.0, .ampDecay: 0.06, .ampSustain: 0.0, .ampRelease: 0.05]),
-                    visual: .spectrum,
-                    filterTypePicker: true,
-                    tip: "Switch the filter back to low-pass and the same patch turns into distant thunder.",
-                    controlsHint: "The filter is set to high-pass: everything below Cutoff is removed"
+                    prompt: "Sweep CUTOFF up until only the thin bright part is left, then open DECAY to turn the closed hat into an open one.",
+                    visibleParams: [.cutoff, .ampDecay],
+                    basePatch: Patch([.noiseLevel: 1.0, .noiseColor: 0.0, .filterType: 0.33,
+                                      .cutoff: 0.45, .resonance: 0.1,
+                                      .ampAttack: 0.0, .ampDecay: 0.08, .ampSustain: 0.0, .ampRelease: 0.05]),
+                    visual: .hatFilter,
+                    keyboardRoot: 60,
+                    holdDefault: false,
+                    tip: "Any key gives the same hat, because there is no note in noise to change.",
+                    controlsHint: "CUTOFF is where the bottom gets cut off, DECAY is how long it rings"
                 )
             ),
             Lesson(
-                id: "mdr3", title: "Snare: Noise and a Tone Together",
-                concept: "A snare is a drum and a rattle at once: a pitched body under a burst of noise.",
+                id: "mdr3", title: "Two Sounds Can Share One Hit",
+                concept: "A snare is a drum and a rattle happening at the same instant, and the balance between them is the sound.",
                 theory: [
-                    "A snare drum is two sounds arriving together. There is the drum itself, a tuned skin with a real pitch around 200 Hz, and there are the metal wires stretched under it, which rattle and produce noise.",
-                    "You already have both. The oscillator is the body; the noise is the wires. The Noise knob balances them, and that balance is the entire character of the drum.",
-                    "Mostly tone gives a soft, tom-like thud. Mostly noise gives a sharp crack with no weight behind it. Somewhere in between is the sound everyone recognises as a snare.",
-                    "Keep the same percussive envelope, but a little longer than the hat, because a snare has some body, so it needs a moment to show it."
+                    "A snare drum is really two instruments stacked on top of each other. There is the drum itself, a skin stretched over a shell, which has a real note in it, somewhere around two hundred vibrations a second. And stretched underneath that skin is a set of loose metal wires. When the skin is struck the wires jump and rattle, and a rattle has no note in it at all.",
+                    "You have both sources already. The oscillator is the skin. The noise is the wires. This lesson is only about how much of each.",
+                    "Mostly skin gives you a soft, round thud, closer to a tom than a snare. Mostly wires gives you a thin crack with no weight behind it, like a hand clap. The sound everyone recognises as a snare drum sits between the two, and finding that point by ear is the exercise.",
+                    "This is worth more than one drum. Almost every sound you will ever build is two or three simple things arriving together, and the balance between them is what you are really designing."
                 ],
                 takeaways: [
-                    "A snare is a pitched body plus a noise rattle, at the same time",
-                    "The balance between them is the character of the drum",
-                    "Too much noise loses the weight; too little loses the crack"
+                    "A snare is a skin with a note in it plus wires with no note in them",
+                    "The oscillator is the skin, the noise is the wires",
+                    "Too much noise loses the weight, too little loses the crack",
+                    "Most sounds are a few simple things layered, balanced by ear"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "oscillator", plain: "The part of a synth that makes the raw repeating wave.",
+                         more: "Because it repeats, it has a note in it. Noise does not repeat, so it does not."),
+                    Term(word: "noise", plain: "Sound with no repeating pattern, so it has no note in it."),
+                    Term(word: "layer", plain: "Two or more sounds played at the same moment so they are heard as one.")
+                ],
                 exercise: Exercise(
-                    prompt: "Play low and move Noise across its range. Find the point where the thud and the crack sound like one instrument.",
-                    visibleParams: [.noiseLevel, .cutoff, .ampDecay, .drive],
-                    basePatch: Patch([.noiseLevel: 0.55, .noiseColor: 0.2, .oscWave: 0.2, .cutoff: 0.7, .resonance: 0.25, .ampAttack: 0.0, .ampDecay: 0.16, .ampSustain: 0.0, .ampRelease: 0.12, .drive: 0.2]),
-                    visual: .scope,
+                    prompt: "Play a low key and move NOISE across its range. Stop where the thud and the crack stop sounding like two things and start sounding like one drum.",
+                    visibleParams: [.noiseLevel],
+                    basePatch: Patch([.noiseLevel: 0.15, .noiseColor: 0.2, .oscWave: 0.2,
+                                      .cutoff: 0.7, .resonance: 0.25,
+                                      .ampAttack: 0.0, .ampDecay: 0.16, .ampSustain: 0.0, .ampRelease: 0.12]),
+                    visual: .snareMix,
                     keyboardRoot: 36,
-                    tip: "A little Drive glues the tone and the noise into one hit instead of two things happening at once.",
-                    controlsHint: "Noise balances the rattle against the drum body"
+                    holdDefault: false,
+                    tip: "Around two thirds noise is where most snares live. Trust your ear over the number.",
+                    controlsHint: "One knob: how much of the hit is rattle instead of drum"
                 )
             ),
             Lesson(
-                id: "mdr4", title: "Kick: Pitch That Falls",
-                concept: "A kick is a low sine whose pitch drops fast at the very start. That drop is the beater.",
+                id: "mdr4", title: "A Falling Pitch Sounds Struck",
+                concept: "A kick drum is a low note whose pitch drops the instant it starts. That drop is the sound of being hit.",
                 theory: [
-                    "Strike a real bass drum and the skin is stretched tight for an instant, then relaxes. Tight means higher pitch, so the note starts high and falls immediately to where it settles.",
-                    "That drop lasts a few hundredths of a second, and it is the whole reason a kick sounds like it was hit rather than merely turned on. Without it you have a low sine, which sounds like a hum.",
-                    "You already have the tool: route the envelope to pitch. With a very short decay, the envelope produces exactly that fast fall, and it is why the same modulation you used for slow vibrato becomes a beater here. Speed changes what a modulation means.",
-                    "Underneath, a sine wave and nothing else. A kick is almost pure fundamental, and that is what makes it felt rather than heard."
+                    "Hit a real bass drum and the skin is stretched tight for a fraction of a second before it relaxes. A tighter skin makes a higher note, so the pitch starts high and falls immediately to where it settles.",
+                    "That fall lasts a few hundredths of a second and it is the entire reason a kick sounds struck instead of switched on. Take it away and you have a low hum. Put it back and your ear hears a beater hitting a skin.",
+                    "To make the pitch fall on its own you need something that starts high and drops to nothing. You already have exactly that: the envelope. Point it at pitch instead of loudness, and the pitch traces out the same falling shape.",
+                    "This is worth stopping on. In the Motion module the same connection, pointed at pitch, gave you vibrato. Nothing about the wiring has changed here. Only the speed has. Slow modulation is something you hear as movement; fast modulation is something you hear as a hit. Speed is what a modulation means.",
+                    "DEPTH is how far the pitch falls, and DECAY is how long the fall takes. Underneath it all is a plain sine wave, because a kick is almost pure low end, which is what makes it something you feel rather than hear."
                 ],
                 takeaways: [
                     "The pitch drop at the start is what makes a kick sound struck",
-                    "Envelope to pitch with a very short decay produces the drop",
-                    "The same routing that made vibrato makes a beater when it is fast enough"
+                    "Pointing the envelope at pitch produces that drop automatically",
+                    "The same routing that made vibrato makes a beater when it is fast enough",
+                    "Depth is how far it falls, decay is how long it takes"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "envelope", plain: "The shape of a sound\'s loudness from the moment it starts to the moment it ends.",
+                         more: "It does not have to control loudness. Point it at pitch and the pitch traces the same shape."),
+                    Term(word: "vibrato", plain: "A small, regular wobble in pitch, the kind a singer adds to a held note."),
+                    Term(word: "modulation", plain: "One control automatically moving another one for you."),
+                    Term(word: "sine wave", plain: "The simplest possible wave, a smooth curve with no extra frequencies in it at all.")
+                ],
                 exercise: Exercise(
-                    prompt: "Play the lowest notes. Shorten Decay until the pitch fall becomes a click at the front rather than a slide.",
-                    visibleParams: [.ampDecay, .lfoDepth, .drive, .cutoff],
-                    basePatch: Patch([.oscWave: 0.0, .cutoff: 0.45, .ampAttack: 0.0, .ampDecay: 0.28, .ampSustain: 0.0, .ampRelease: 0.2, .lfoDepth: 0.6, .drive: 0.25]),
-                    visual: .scope,
-                    showRouting: true,
+                    prompt: "Play the lowest keys. Move DEPTH to change how far the pitch falls, and DECAY to change how fast. Find the point where it stops sliding and starts sounding hit.",
+                    visibleParams: [.lfoDepth, .ampDecay],
+                    basePatch: Patch([.oscWave: 0.0, .cutoff: 0.45, .ampAttack: 0.0, .ampDecay: 0.3,
+                                      .ampSustain: 0.0, .ampRelease: 0.2, .lfoDepth: 0.55, .drive: 0.2]),
+                    visual: .pitchDrop,
+                    showRouting: false,
                     initialRouting: Routing(source: .envelope, dest: .pitch),
-                    allowedSources: [.envelope, .lfo],
-                    allowedDests: [.pitch, .cutoff, .none],
                     keyboardRoot: 24,
                     showOctave: false,
-                    tip: "Depth sets how far it falls. Too much and it whistles; too little and it hums.",
-                    controlsHint: "The envelope is routed to pitch, and Depth is how far the pitch drops"
+                    holdDefault: false,
+                    tip: "Too much depth and it whistles. Too little and it hums. The kick is in between.",
+                    controlsHint: "DEPTH is how far the pitch falls, DECAY is how long the fall lasts"
                 )
             )
         ]
@@ -438,106 +513,142 @@ enum Curriculum {
         id: "mbp", title: "Building a Patch", subtitle: "Putting all of it together", accent: Theme.filter,
         lessons: [
             Lesson(
-                id: "mbp1", title: "Bass: Low, Short, Closed",
-                concept: "A bass has to be felt without filling the space every other sound needs.",
+                id: "mbp1", title: "Low Sounds Need Room Made For Them",
+                concept: "A bass has to be felt without covering everything else, and that is a question of what you take away.",
                 theory: [
-                    "A bass patch has one hard constraint: it occupies the bottom of the spectrum, where there is the least room and the most energy. Everything about it follows from staying out of the way.",
-                    "So the filter comes down. A bass rarely needs anything above a few hundred hertz, and a closed filter keeps it from crowding what sits above it. A little resonance right at the cutoff gives it definition without brightness.",
-                    "The envelope is short and closed. Sustain low so it does not drone, decay quick so each note lets go before the next arrives. Long low notes overlap into mud faster than anything else.",
-                    "A touch of drive adds harmonics higher up, which is a trick worth knowing: those harmonics let a phone speaker imply a bass note it physically cannot reproduce. Your ear fills in the fundamental."
+                    "A patch just means one complete sound: a source, a filter, a shape, and wherever you put it. This module builds four of them, and each one is really an argument about what a sound has to do in a piece of music.",
+                    "A bass has the hardest job. It sits at the very bottom, where there is the least room and the most energy, so almost every decision is about staying out of the way of everything above it.",
+                    "So the filter comes down. A bass rarely needs anything bright in it, and closing the filter keeps it from crowding the instruments sitting above. A little resonance right at the cutoff gives it definition without making it bright.",
+                    "The shape stays short. Sustain low so it does not drone on, decay quick so each note has let go before the next one lands. Long low notes overlapping is the fastest way to turn music into mud.",
+                    "One last trick, and it comes straight back to the gear module. Adding a little drive puts extra harmonics higher up, well above the note itself. A phone speaker cannot reproduce the low note at all, but it can reproduce those harmonics, and your ear fills in the missing note underneath. That is why a good bass still reads on a laptop."
                 ],
                 takeaways: [
-                    "Close the filter, because a bass does not need the top",
-                    "Keep it short so notes do not overlap into mud",
+                    "A bass fights for room at the bottom, so most choices are about taking away",
+                    "Close the filter: a bass does not need the top",
+                    "Keep it short, or overlapping notes turn to mud",
                     "Drive adds high harmonics that imply the low note on small speakers"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "patch", plain: "One complete sound, meaning every setting on the synth at once.",
+                         more: "The word comes from old synths, where you connected the parts together with patch cables."),
+                    Term(word: "resonance", plain: "A boost right at the filter\'s cutoff, which makes that one frequency stand out."),
+                    Term(word: "cutoff", plain: "The frequency where a filter starts doing its job."),
+                    Term(word: "harmonics", plain: "Extra frequencies sitting neatly above the main note, at two times, three times, four times its speed."),
+                    Term(word: "drive", plain: "How hard a sound is pushed into something that cannot take it all.")
+                ],
                 exercise: Exercise(
-                    prompt: "Play low and build it: close Cutoff, shorten Decay, then add Drive until it reads clearly on your phone speaker.",
-                    visibleParams: [.cutoff, .resonance, .ampDecay, .drive],
-                    basePatch: Patch([.oscWave: 0.55, .cutoff: 0.35, .resonance: 0.25, .ampAttack: 0.0, .ampDecay: 0.3, .ampSustain: 0.25, .ampRelease: 0.15, .drive: 0.3]),
-                    visual: .filter,
+                    prompt: "Play low. Close CUTOFF until it stops being bright, shorten DECAY so notes let go, then add DRIVE and listen on your phone speaker.",
+                    visibleParams: [.cutoff, .ampDecay, .drive],
+                    basePatch: Patch([.oscWave: 0.55, .cutoff: 0.75, .resonance: 0.25,
+                                      .ampAttack: 0.0, .ampDecay: 0.5, .ampSustain: 0.25,
+                                      .ampRelease: 0.15, .drive: 0.0]),
+                    visual: .pathBass,
                     keyboardRoot: 24,
-                    tip: "Check it on the worst speaker you own. If the note survives there, the harmonics are doing their job.",
-                    controlsHint: "Everything here is about staying low and getting out of the way"
+                    tip: "Check it on the worst speaker you own. If the note still reads there, the harmonics are doing their job.",
+                    controlsHint: "Everything here is about staying low and out of the way"
                 )
             ),
             Lesson(
-                id: "mbp2", title: "Lead: Bright and In Front",
-                concept: "A lead has to be heard over everything else, which is a question of harmonics and movement.",
+                id: "mbp2", title: "Bright Sounds Carry Furthest",
+                concept: "A lead has to be heard over everything else, which comes down to harmonics and movement.",
                 theory: [
-                    "A lead is the opposite problem to a bass. It has to cut through a full arrangement, and it lives in the middle and upper range where every other instrument is competing.",
-                    "Brightness is the first tool: an open filter and a rich wave, so there are harmonics up where the ear is most sensitive. A saw has the most to offer here.",
-                    "Movement is the second. A completely static sound disappears into a mix no matter how loud it is, because the ear stops attending to anything that does not change. A little detune makes it wide and alive; slow vibrato keeps it breathing.",
-                    "Sustain stays high, because a lead holds notes. This is the one patch where a long, singing tail is the point rather than a problem."
+                    "A lead is the opposite problem to a bass. It is the part people follow, so it has to stay audible through everything else that is playing.",
+                    "Brightness is the first tool. Start from a rich source, open the filter, and there are plenty of harmonics up where human hearing is most sensitive. That is why a saw-shaped wave is the traditional starting point for a lead: it has the most harmonics to work with.",
+                    "Movement is the second, and it is the one people forget. A sound that never changes disappears into music no matter how loud it is, because your ear stops paying attention to anything that stays still. That is not a mixing problem, it is how attention works.",
+                    "Two cheap kinds of movement. Detune slightly mistunes a second copy against the first so they drift in and out of step, which reads as width and life. And a slow, shallow vibrato keeps the pitch breathing rather than sitting frozen.",
+                    "Sustain stays high, because a lead holds notes. This is the one patch where a long singing tail is the point rather than a problem."
                 ],
                 takeaways: [
-                    "Brightness cuts through: open filter, rich wave",
-                    "Static sounds vanish in a mix, and movement keeps attention",
-                    "Detune for width, slow vibrato for life"
+                    "Brightness carries: a rich source and an open filter",
+                    "A sound that never changes disappears, however loud it is",
+                    "Detune gives width, slow vibrato gives life",
+                    "Keep sustain high, because a lead holds its notes"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "lead", plain: "The sound playing the main melody, the part a listener follows."),
+                    Term(word: "detune", plain: "Slightly mistuning one copy of a sound against another so they drift against each other.",
+                         more: "The drifting is what your ear reads as width. Too much and it just sounds out of tune."),
+                    Term(word: "vibrato", plain: "A small, regular wobble in pitch, the kind a singer adds to a held note."),
+                    Term(word: "harmonics", plain: "Extra frequencies sitting neatly above the main note, at two times, three times, four times its speed.")
+                ],
                 exercise: Exercise(
-                    prompt: "Open Cutoff, add Detune for width, then a little vibrato Depth. Stop when it sings instead of wobbling.",
-                    visibleParams: [.cutoff, .detune, .lfoDepth, .resonance],
-                    basePatch: Patch([.oscWave: 0.65, .cutoff: 0.85, .resonance: 0.15, .detune: 0.25, .ampAttack: 0.03, .ampDecay: 0.3, .ampSustain: 0.85, .ampRelease: 0.3, .lfoRate: 0.4, .lfoDepth: 0.1, .delayMix: 0.15, .delayTime: 0.35, .delayFeedback: 0.3]),
-                    visual: .scope,
-                    showRouting: true,
-                    initialRouting: Routing(source: .lfo, dest: .pitch),
+                    prompt: "Open CUTOFF until it cuts through, then add DETUNE for width. Stop as soon as it sounds wide rather than out of tune.",
+                    visibleParams: [.cutoff, .detune],
+                    basePatch: Patch([.oscWave: 0.65, .cutoff: 0.55, .resonance: 0.15, .detune: 0.0,
+                                      .ampAttack: 0.03, .ampDecay: 0.3, .ampSustain: 0.85, .ampRelease: 0.3,
+                                      .delayMix: 0.12, .delayTime: 0.35, .delayFeedback: 0.3]),
+                    visual: .pathLead,
                     keyboardRoot: 60,
-                    tip: "Vibrato depth should be almost too subtle to notice on its own. If you can hear it clearly, it is too much.",
-                    controlsHint: "Bright, wide, and moving are the three things that make a lead carry"
+                    tip: "Play two notes together once DETUNE is up. Width is much easier to hear on a chord than on one note.",
+                    controlsHint: "Bright and moving are the two things that make a lead carry"
                 )
             ),
             Lesson(
-                id: "mbp3", title: "Pad: Slow and Wide",
-                concept: "A pad is defined by its envelope. Everything arrives late and leaves slowly.",
+                id: "mbp3", title: "Slow Shapes Fill Space",
+                concept: "A pad is defined almost entirely by timing. Everything arrives late and leaves slowly.",
                 theory: [
-                    "A pad is background. It fills space behind everything else without ever asking to be noticed, and it does that almost entirely through timing.",
-                    "Attack is long, so notes fade in rather than announcing themselves. Release is long, so they overlap and blur into each other instead of stopping. That overlap is the point: a pad should sound continuous even when you play separate notes.",
-                    "Width comes from detune, and more of it than a lead would take. Slightly out-of-tune copies beating against each other is what makes a pad sound large rather than loud.",
-                    "Then reverb, generously. This is the one patch where a wash is correct, because the sound is supposed to feel like a place rather than an instrument."
+                    "A pad is background. Its job is to fill the space behind everything else without ever asking to be noticed, and it does that mostly through timing rather than through tone.",
+                    "Attack is long, so notes fade in instead of announcing themselves. Nothing about a pad should have a moment where it starts.",
+                    "Release is long, so notes carry on after you let go and overlap with whatever you play next. That overlap is the whole point: separate notes should sound like one continuous thing, and the release is what glues them.",
+                    "Width comes from detune, and a pad takes far more of it than a lead would. Several slightly mistuned copies drifting against each other is what makes a pad sound large rather than loud.",
+                    "Then reverb, generously. This is the one patch where a wash is the correct answer, because a pad is supposed to feel like a place rather than an instrument."
                 ],
                 takeaways: [
                     "Long attack and long release make notes overlap into one texture",
-                    "Heavy detune reads as width, not as being out of tune",
+                    "The overlap is the sound, not a side effect",
+                    "Heavy detune reads as width rather than as being out of tune",
                     "Reverb belongs here more than anywhere else"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "pad", plain: "A slow, soft sound that fills the background behind everything else."),
+                    Term(word: "attack", plain: "How long a sound takes to reach full volume after it starts."),
+                    Term(word: "release", plain: "How long a sound takes to fade away after you let go of the key."),
+                    Term(word: "reverb", plain: "The wash of sound made by thousands of bounces around a room.")
+                ],
                 exercise: Exercise(
-                    prompt: "Lengthen Attack and Release until notes blur together, then widen with Detune and open the reverb.",
-                    visibleParams: [.ampAttack, .ampRelease, .detune, .reverbMix],
-                    basePatch: Patch([.oscWave: 0.4, .cutoff: 0.6, .resonance: 0.1, .detune: 0.4, .ampAttack: 0.45, .ampDecay: 0.5, .ampSustain: 0.8, .ampRelease: 0.6, .reverb: 0.7, .reverbMix: 0.4]),
-                    visual: .envelope,
+                    prompt: "Lengthen ATTACK and RELEASE until notes blur into each other, then open MIX. Play a chord, let go, and start another before the first has finished.",
+                    visibleParams: [.ampAttack, .ampRelease, .reverbMix],
+                    basePatch: Patch([.oscWave: 0.4, .cutoff: 0.6, .resonance: 0.1, .detune: 0.4,
+                                      .ampAttack: 0.08, .ampDecay: 0.5, .ampSustain: 0.8, .ampRelease: 0.2,
+                                      .reverb: 0.7, .reverbMix: 0.1]),
+                    visual: .pathPad,
                     keyboardRoot: 48,
-                    tip: "Play a chord, let go, and start the next one before the first has finished. That overlap is the sound.",
-                    controlsHint: "Slow in, slow out, wide, and wet"
+                    tip: "Hold three keys at once. A pad is nearly always chords, because the overlap is what you are building.",
+                    controlsHint: "Slow in, slow out, and plenty of room"
                 )
             ),
             Lesson(
-                id: "mbp4", title: "Now Make Your Own",
-                concept: "Every control is on the table. Nothing here is new. This is the whole instrument at once.",
+                id: "mbp4", title: "Build One Yourself",
+                concept: "Every control at once, in the order that sound travels through them.",
                 theory: [
-                    "This is the last exercise, and there is nothing left to teach. Every knob you have met is in front of you at the same time, which is exactly what a real synthesiser looks like when you open it.",
-                    "The method does not change. Decide what kind of thing it is with the envelope. Choose the source: a wave, noise, FM, or sync. Shape it with the filter. Add movement so it does not sit still. Place it in a room with delay and reverb.",
-                    "That order is worth keeping. Most patches that go wrong went wrong because someone reached for an effect to fix a problem in the source, and no amount of reverb fixes a sound that was never interesting to begin with.",
-                    "Nothing here can break. Turn things to extremes on purpose. The sounds you find by accident at the ends of the range are worth more than the ones you aimed for."
+                    "This is the last exercise and there is nothing new in it. Every knob you have met is in front of you at the same time, which is what a real synthesiser looks like when you open it up.",
+                    "The order is what saves you. Decide what kind of thing it is with the shape: is this a hit, or a note you hold. Choose the source: a wave, noise, FM, or sync. Take away what you do not want with the filter. Add movement so it does not sit still. Then put it somewhere with delay and reverb.",
+                    "That order is worth keeping, because most patches that go wrong went wrong by reaching for an effect to fix a problem in the source. No amount of reverb rescues a sound that was not interesting to start with.",
+                    "Nothing here can break, and nothing is graded. Turn things to their extremes deliberately. The sounds you find by accident at the ends of the range are usually better than the ones you set out to make."
                 ],
                 takeaways: [
-                    "Envelope first, then source, then filter, then movement, then space",
-                    "Effects place a sound; they do not rescue it",
-                    "The extremes are where the interesting accidents live"
+                    "Shape first, then source, then filter, then movement, then space",
+                    "Effects place a sound, they do not rescue it",
+                    "The extremes are where the useful accidents happen"
                 ],
                 demo: nil,
+                terms: [
+                    Term(word: "patch", plain: "One complete sound, meaning every setting on the synth at once."),
+                    Term(word: "signal path", plain: "The route a sound takes through the synth, from where it is made to where it comes out.")
+                ],
                 exercise: Exercise(
-                    prompt: "No target this time. Build something you like, and take it to the extremes on the way.",
-                    visibleParams: [.oscWave, .noiseLevel, .fmAmount, .syncAmount, .cutoff, .resonance, .ampAttack, .ampDecay, .ampSustain, .ampRelease, .drive, .delayMix, .reverbMix, .detune],
-                    basePatch: Patch([.oscWave: 0.35, .cutoff: 0.7, .resonance: 0.15, .ampAttack: 0.05, .ampDecay: 0.35, .ampSustain: 0.6, .ampRelease: 0.35]),
-                    visual: .scope,
-                    showRouting: true,
-                    initialRouting: Routing(source: .lfo, dest: .none),
+                    prompt: "No target. Work left to right along the chain and build something you like, taking it to the extremes on the way.",
+                    visibleParams: [.oscWave, .noiseLevel, .fmAmount, .syncAmount,
+                                    .cutoff, .resonance, .ampAttack, .ampDecay, .ampSustain, .ampRelease,
+                                    .drive, .delayMix, .reverbMix, .detune],
+                    basePatch: Patch([.oscWave: 0.35, .cutoff: 0.7, .resonance: 0.15,
+                                      .ampAttack: 0.05, .ampDecay: 0.35, .ampSustain: 0.6, .ampRelease: 0.35]),
+                    visual: .pathFree,
                     keyboardRoot: 48,
-                    tip: "If you make something you want to keep, write the knob positions down. This app has no save button, yet.",
+                    tip: "If you make something worth keeping, write the knob positions down. There is no save button yet.",
                     controlsHint: "Everything, all at once. This is the whole instrument"
                 )
             )
