@@ -50,7 +50,440 @@ enum Curriculum {
         // be the payoff, and a resonant filter sweep is the payoff. `playback` (speakers and
         // gear) is the module people are least willing to pay for and the dullest thing to
         // land on straight after a purchase, so it moves to the end as an appendix.
-        modules: [frequency, subtractive, shape, motion, playback]
+        modules: [frequency, sources, subtractive, shape, motion, effects, drums, building, playback]
+    )
+
+
+    // MARK: Module - Other Ways to Make a Wave
+
+    static let sources = Module(
+        id: "msr", title: "Other Ways to Make a Wave", subtitle: "Noise, FM, and hard sync", accent: Theme.tone,
+        lessons: [
+            Lesson(
+                id: "msr1", title: "Noise Has No Pitch",
+                concept: "Every sound so far repeated a cycle. Noise never repeats, so there is nothing to hear as a note.",
+                theory: [
+                    "A wave has pitch because it repeats. The same shape, over and over, so many times a second — that repetition rate is the pitch. Take the repetition away and the pitch goes with it.",
+                    "Noise is a new random value every single sample. No cycle, no repetition, no pitch. What is left is colour: how the energy is spread across the spectrum.",
+                    "White noise spreads energy evenly, which sounds bright and hissy, like an untuned radio. Pink noise falls off as it climbs, giving more weight to the low end. Pink is the one that sounds natural — rain, wind, breath, the sea. Your ear hears pink as flat, which is why it, and not white, is used to test a room.",
+                    "Turn Noise up on its own and you have the raw material for every drum that isn't a kick, and for the breath on a flute. The spectrum shows it: a solid wall instead of the neat spikes a wave makes."
+                ],
+                takeaways: [
+                    "Pitch comes from repetition; noise never repeats, so it has none",
+                    "White noise is even across the spectrum and sounds hissy",
+                    "Pink noise falls off with height and sounds natural — rain, breath, wind"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Bring Noise up until the note disappears into hiss, then sweep Colour from white to pink and watch the top of the spectrum fall away.",
+                    visibleParams: [.noiseLevel, .noiseColor, .oscWave, .cutoff],
+                    basePatch: Patch([.noiseLevel: 0.5, .noiseColor: 0.0, .cutoff: 0.95, .ampSustain: 0.9, .ampAttack: 0.02, .ampRelease: 0.25]),
+                    visual: .spectrum,
+                    tip: "Noise plus a fast envelope is a hi-hat. Noise plus a slow one is wind. The source is identical — only the shape differs.",
+                    controlsHint: "Noise blends in alongside the oscillator; Colour tilts it from white to pink"
+                )
+            ),
+            Lesson(
+                id: "msr2", title: "One Wave Bending Another",
+                concept: "Frequency modulation: use a second oscillator, far too fast to hear as movement, to reshape the first.",
+                theory: [
+                    "You already used an LFO to wobble the pitch a few times a second. That was modulation you could follow with your ear.",
+                    "Now speed the modulator up into the audible range — hundreds of times a second — and something different happens. Too fast to hear as movement, it stops sounding like wobble and starts changing the timbre itself. New frequencies appear on either side of the original, called sidebands.",
+                    "This is FM. The modulating oscillator is never heard directly; you only hear what it does to the carrier. Turning FM up adds more sidebands, and the tone goes from pure, to bright, to clanging.",
+                    "It is how the DX7 made every bell, electric piano, and bass of the 1980s, and it is still the fastest route to a metallic sound that no filter can produce."
+                ],
+                takeaways: [
+                    "An audible-rate modulator changes timbre instead of adding wobble",
+                    "FM creates sidebands: new frequencies around the original",
+                    "The modulator is never heard on its own, only its effect"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Start at zero and bring FM up slowly. Watch the single wave grow kinks as sidebands appear, and hear it turn from pure to bell-like.",
+                    visibleParams: [.fmAmount, .oscWave, .cutoff, .ampDecay],
+                    basePatch: Patch([.fmAmount: 0.0, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 0.9, .ampAttack: 0.0, .ampDecay: 0.5, .ampSustain: 0.5, .ampRelease: 0.4]),
+                    visual: .scope,
+                    tip: "Hold a note and turn FM slowly. The pitch never moves — only the character does.",
+                    controlsHint: "FM sets how hard the hidden second oscillator bends the one you hear"
+                )
+            ),
+            Lesson(
+                id: "msr3", title: "Harmonic or Metallic",
+                concept: "The ratio between the two oscillators decides whether FM sounds musical or like struck metal.",
+                theory: [
+                    "FM depth decides how much. The ratio between the two oscillators decides what.",
+                    "When the modulator runs at a whole-number multiple of the carrier — 1, 2, 3 — the new sidebands land exactly on the harmonic series, the same series a saw wave is built from. The result still sounds like a note, just a richer one.",
+                    "When the ratio is not a whole number, the sidebands land between the harmonics. Nothing lines up, your ear finds no single pitch to lock onto, and the sound reads as metallic: bells, gongs, tines, the inside of a piano.",
+                    "That is the whole trick. Musical or metallic is one knob, and it is not the depth."
+                ],
+                takeaways: [
+                    "Whole-number ratios put sidebands on the harmonic series — still a note",
+                    "In-between ratios put them between harmonics — metal, bells, gongs",
+                    "Depth sets how much; ratio sets what kind"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "With FM up, step Ratio through its values. Whole numbers stay musical; the in-between steps turn it into struck metal.",
+                    visibleParams: [.fmRatio, .fmAmount, .ampDecay, .cutoff],
+                    basePatch: Patch([.fmAmount: 0.45, .fmRatio: 0.25, .oscWave: 0.0, .cutoff: 0.95, .ampAttack: 0.0, .ampDecay: 0.45, .ampSustain: 0.0, .ampRelease: 0.5]),
+                    visual: .spectrum,
+                    tip: "Short decay plus an in-between ratio is a bell. Same patch, long sustain, is a synth brass.",
+                    controlsHint: "Ratio steps through fixed values: 0.5, 1, 1.5, 2, 3, 5, 7"
+                )
+            ),
+            Lesson(
+                id: "msr4", title: "A Wave That Restarts",
+                concept: "Hard sync forces one oscillator to start over on another's schedule, and the tear it leaves is the sound.",
+                theory: [
+                    "Two oscillators, but this time one is silent. The silent one, the master, does nothing but keep time. Every cycle it reaches the end and forces the other one — the slave, the one you hear — to jump back to the start, wherever it had got to.",
+                    "That interruption is violent. The wave is cut mid-stride and slammed back to zero, leaving a sharp edge, and sharp edges are rich in harmonics.",
+                    "The useful part is what stays put. The pitch you hear is the master's, because the restart happens on the master's schedule. So you can tune the slave far up, and the note does not change — only the timbre, which sweeps and screams.",
+                    "Move the Sync knob while holding a note. That vocal, tearing sweep is a sound no filter makes, and it is all over hard electronic music."
+                ],
+                takeaways: [
+                    "The master is silent and only sets when the slave restarts",
+                    "The forced restart leaves a sharp edge, which is rich in harmonics",
+                    "Sweeping the slave changes timbre while the pitch stays fixed"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Hold a note and sweep Sync. The pitch stays exactly where it is while the tone tears and sweeps above it.",
+                    visibleParams: [.syncAmount, .oscWave, .cutoff, .resonance],
+                    basePatch: Patch([.syncAmount: 0.2, .oscWave: 0.6, .cutoff: 0.95, .resonance: 0.1, .ampAttack: 0.01, .ampSustain: 0.9, .ampRelease: 0.3]),
+                    visual: .scope,
+                    tip: "Route the envelope to sweep Sync instead of your finger and you have the classic sync lead.",
+                    controlsHint: "Sync tunes the slave oscillator; the note you hear does not follow it"
+                )
+            )
+        ]
+    )
+
+    // MARK: Module - Effects as Timbre
+
+    static let effects = Module(
+        id: "mfx", title: "Effects as Timbre", subtitle: "Drive, delay, and space", accent: Theme.signal,
+        lessons: [
+            Lesson(
+                id: "mfx1", title: "Pushing It Too Hard",
+                concept: "Drive overloads the signal on purpose. The distortion it adds is new harmonics.",
+                theory: [
+                    "Every path a sound travels has a ceiling. Push past it and the peaks cannot go any higher, so they get flattened.",
+                    "A flattened peak is a different shape, and a different shape means different harmonics. That is the whole mechanism: distortion does not add fuzz on top of your sound, it rebuilds the wave with more harmonics in it.",
+                    "Gentle drive rounds the peaks and adds a few low harmonics — warmth, the thing people mean by analogue. Hard drive squares the wave off completely and adds a great many — aggression, grit, the sound of a broken amplifier.",
+                    "Because it adds harmonics, drive interacts with the filter. Drive first and the filter has more to cut; filter first and drive has less to work with. Order matters, and here drive comes after."
+                ],
+                takeaways: [
+                    "Distortion flattens peaks, and a new shape means new harmonics",
+                    "A little is warmth, a lot is aggression — same control",
+                    "Drive gives the filter more material to work with"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Bring Drive up and watch the round wave flatten into a square while the spectrum fills with new harmonics.",
+                    visibleParams: [.drive, .cutoff, .oscWave, .resonance],
+                    basePatch: Patch([.drive: 0.0, .oscWave: 0.0, .cutoff: 0.8, .ampSustain: 0.9, .ampAttack: 0.01, .ampRelease: 0.3]),
+                    visual: .spectrum,
+                    tip: "Drive a pure sine hard enough and it becomes a square. One knob turns the simplest wave into the richest.",
+                    controlsHint: "Drive sets how hard the signal is pushed into the ceiling"
+                )
+            ),
+            Lesson(
+                id: "mfx2", title: "The Same Sound, Later",
+                concept: "Delay stores what you played and replays it. Feedback decides how many times.",
+                theory: [
+                    "A delay keeps a short recording of everything passing through and plays it back a moment later. That is all it is.",
+                    "Time sets how long the wait is. Feedback sends the delayed copy back into the store, so it repeats again, quieter each pass, until it fades out. Echo sets how much of it you hear against the original.",
+                    "Long times give distinct repeats you can count. Shorten the time and the repeats crowd together until you stop hearing them as separate events and start hearing them as one thicker sound.",
+                    "High feedback with a long time is the classic dub echo. Push feedback near the top and it stops decaying at all, which is an instrument in its own right."
+                ],
+                takeaways: [
+                    "Delay replays a stored copy after a set time",
+                    "Feedback returns the copy to the store, making it repeat",
+                    "Repeats fade because each pass is quieter than the last"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Play a short note and let it repeat. Raise Feedback for more repeats, then shorten Time until you can no longer count them.",
+                    visibleParams: [.delayMix, .delayTime, .delayFeedback, .ampDecay],
+                    basePatch: Patch([.delayMix: 0.4, .delayTime: 0.4, .delayFeedback: 0.4, .oscWave: 0.35, .cutoff: 0.7, .ampAttack: 0.0, .ampDecay: 0.2, .ampSustain: 0.0, .ampRelease: 0.15]),
+                    visual: .scope,
+                    tip: "Short notes show delay best. A long sustained note hides the repeats underneath itself.",
+                    controlsHint: "Echo is how much you hear, Time is the wait, Feedback is how many"
+                )
+            ),
+            Lesson(
+                id: "mfx3", title: "When a Delay Stops Being an Echo",
+                concept: "Under about 30 milliseconds the repeats fuse, and delay becomes a filter.",
+                theory: [
+                    "Keep shortening the delay time. Somewhere around thirty milliseconds your ear gives up trying to hear two events and hears one.",
+                    "But the copy is still there, and now it is close enough to interfere with the original. At frequencies where the two line up they add and get louder. Where they oppose, they cancel and disappear.",
+                    "The result is a comb: a spectrum with regular notches cut through it, evenly spaced, like teeth. That is where the name comb filter comes from, and you can see it clearly on the spectrum.",
+                    "This one mechanism, a very short delay, is the basis of flanger, chorus, and phaser. Modulate the delay time slowly and the notches sweep — that is a flanger. Use a slightly longer time and a gentler sweep and it is a chorus."
+                ],
+                takeaways: [
+                    "Below about 30 ms the repeats fuse into one sound",
+                    "The copy interferes with the original: some frequencies add, others cancel",
+                    "Evenly spaced notches — a comb — are the basis of flanger and chorus"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Bring Time all the way down. The echo disappears and the spectrum grows regular notches — the sound goes hollow and metallic.",
+                    visibleParams: [.delayTime, .delayFeedback, .delayMix, .cutoff],
+                    basePatch: Patch([.delayMix: 0.5, .delayTime: 0.06, .delayFeedback: 0.6, .oscWave: 0.5, .cutoff: 0.85, .ampAttack: 0.01, .ampSustain: 0.9, .ampRelease: 0.3]),
+                    visual: .spectrum,
+                    tip: "Feedback deepens the notches. At high feedback a very short delay starts to ring at a pitch of its own.",
+                    controlsHint: "Time down low is where echo turns into filtering"
+                )
+            ),
+            Lesson(
+                id: "mfx4", title: "The Room Around It",
+                concept: "Reverb is thousands of reflections arriving too close together to count.",
+                theory: [
+                    "In any real space, sound reaches you twice: straight from the source, then again and again as it bounces off every surface.",
+                    "A single bounce would be an echo. But a room has walls, a floor, a ceiling, and objects, and each reflection bounces again. Within a fraction of a second there are thousands, far too dense and too close together to hear as separate events. That wash is reverb.",
+                    "Size sets how big the space feels, because a bigger room means longer gaps between reflections and a longer tail. Mix sets how far away the sound is: more reverb reads as further back, less reads as right in front of you.",
+                    "This is the last piece. Sources make the raw sound, filters and envelopes shape it, effects place it somewhere. A patch is finished when it sounds like it exists in a room."
+                ],
+                takeaways: [
+                    "Reverb is thousands of reflections too dense to hear individually",
+                    "Size sets the space; Mix sets the distance",
+                    "One reflection is an echo, many are a room"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Play a short note with Mix down, then raise it. The sound stops sitting in your ears and starts sitting in a room.",
+                    visibleParams: [.reverbMix, .reverb, .ampRelease, .cutoff],
+                    basePatch: Patch([.reverbMix: 0.15, .reverb: 0.5, .oscWave: 0.3, .cutoff: 0.7, .ampAttack: 0.01, .ampDecay: 0.3, .ampSustain: 0.0, .ampRelease: 0.3]),
+                    visual: .scope,
+                    tip: "Reverb on everything muddies everything. It works best when one thing is wet and the rest stays dry.",
+                    controlsHint: "Size is how big the room is, Mix is how far away you are"
+                )
+            )
+        ]
+    )
+
+    // MARK: Module - Designing Drums
+
+    static let drums = Module(
+        id: "mdr", title: "Designing Drums", subtitle: "Kick, hat, and snare from scratch", accent: Theme.basics,
+        lessons: [
+            Lesson(
+                id: "mdr1", title: "A Drum Is Mostly an Envelope",
+                concept: "What makes a sound percussive is not the source. It is that the envelope is instant on and quickly off.",
+                theory: [
+                    "Take any source at all — a wave, noise, anything. Give it an instant attack, no sustain, and a short decay, and it becomes a hit.",
+                    "That is the definition of percussive. Attack at zero so it starts the moment you touch it, sustain at zero so it refuses to hold, and a decay short enough that it is gone before you think about it.",
+                    "Everything else is detail. A kick, a hat, a snare, and a pluck all share this envelope. What separates them is which source is underneath and which part of the spectrum it occupies.",
+                    "Set the envelope first, then choose the source. Sound designers work in this order because the envelope decides what kind of thing it is, and the source only decides which one."
+                ],
+                takeaways: [
+                    "Instant attack, no sustain, short decay — that is what percussive means",
+                    "The envelope decides it is a hit; the source decides which hit",
+                    "Set the shape first, pick the source second"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Pull Decay right down and Sustain to zero. Whatever you play stops being a note and becomes a hit.",
+                    visibleParams: [.ampDecay, .ampSustain, .ampAttack, .noiseLevel],
+                    basePatch: Patch([.ampAttack: 0.0, .ampDecay: 0.12, .ampSustain: 0.0, .ampRelease: 0.1, .oscWave: 0.35, .cutoff: 0.8, .noiseLevel: 0.0]),
+                    visual: .envelope,
+                    tip: "Bring Noise up with this envelope already set and you have a hi-hat, before you have touched anything else.",
+                    controlsHint: "Attack at zero, Sustain at zero, and Decay short is the percussion shape"
+                )
+            ),
+            Lesson(
+                id: "mdr2", title: "Hi-Hat: Noise Through a High-Pass",
+                concept: "Noise, a high-pass filter to keep only the top, and a very short decay.",
+                theory: [
+                    "A hi-hat is two thin metal discs striking each other. There is no pitch in that, only a bright, short burst — which is exactly noise with the bottom removed.",
+                    "So: noise as the source, since there is nothing pitched about it. Then a high-pass filter, which keeps everything above the cutoff and throws away the low end, leaving only the bright part where a real cymbal lives.",
+                    "Then decay, which is what separates a closed hat from an open one. Very short is closed. Let it ring on and it opens. That single knob is the whole difference.",
+                    "White noise rather than pink here — a cymbal is bright and hissy, and pink puts weight in a low end that a real hat does not have."
+                ],
+                takeaways: [
+                    "A cymbal has no pitch, so noise is the correct source",
+                    "High-pass removes the low end and leaves the bright part",
+                    "Decay length is the difference between a closed and an open hat"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Sweep Cutoff up with the high-pass engaged until only the bright hiss is left, then lengthen Decay to open the hat.",
+                    visibleParams: [.cutoff, .ampDecay, .noiseLevel, .noiseColor],
+                    basePatch: Patch([.noiseLevel: 1.0, .noiseColor: 0.0, .filterType: 0.33, .cutoff: 0.8, .resonance: 0.1, .ampAttack: 0.0, .ampDecay: 0.06, .ampSustain: 0.0, .ampRelease: 0.05]),
+                    visual: .spectrum,
+                    filterTypePicker: true,
+                    tip: "Switch the filter back to low-pass and the same patch turns into distant thunder.",
+                    controlsHint: "The filter is set to high-pass: everything below Cutoff is removed"
+                )
+            ),
+            Lesson(
+                id: "mdr3", title: "Snare: Noise and a Tone Together",
+                concept: "A snare is a drum and a rattle at once — a pitched body under a burst of noise.",
+                theory: [
+                    "A snare drum is two sounds arriving together. There is the drum itself, a tuned skin with a real pitch around 200 Hz, and there are the metal wires stretched under it, which rattle and produce noise.",
+                    "You already have both. The oscillator is the body; the noise is the wires. The Noise knob balances them, and that balance is the entire character of the drum.",
+                    "Mostly tone gives a soft, tom-like thud. Mostly noise gives a sharp crack with no weight behind it. Somewhere in between is the sound everyone recognises as a snare.",
+                    "Keep the same percussive envelope, but a little longer than the hat — a snare has some body, so it needs a moment to show it."
+                ],
+                takeaways: [
+                    "A snare is a pitched body plus a noise rattle, at the same time",
+                    "The balance between them is the character of the drum",
+                    "Too much noise loses the weight; too little loses the crack"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Play low and move Noise across its range. Find the point where the thud and the crack sound like one instrument.",
+                    visibleParams: [.noiseLevel, .cutoff, .ampDecay, .drive],
+                    basePatch: Patch([.noiseLevel: 0.55, .noiseColor: 0.2, .oscWave: 0.2, .cutoff: 0.7, .resonance: 0.25, .ampAttack: 0.0, .ampDecay: 0.16, .ampSustain: 0.0, .ampRelease: 0.12, .drive: 0.2]),
+                    visual: .scope,
+                    keyboardRoot: 36,
+                    tip: "A little Drive glues the tone and the noise into one hit instead of two things happening at once.",
+                    controlsHint: "Noise balances the rattle against the drum body"
+                )
+            ),
+            Lesson(
+                id: "mdr4", title: "Kick: Pitch That Falls",
+                concept: "A kick is a low sine whose pitch drops fast at the very start. That drop is the beater.",
+                theory: [
+                    "Strike a real bass drum and the skin is stretched tight for an instant, then relaxes. Tight means higher pitch, so the note starts high and falls immediately to where it settles.",
+                    "That drop lasts a few hundredths of a second, and it is the whole reason a kick sounds like it was hit rather than merely turned on. Without it you have a low sine, which sounds like a hum.",
+                    "You already have the tool: route the envelope to pitch. With a very short decay, the envelope produces exactly that fast fall, and it is why the same modulation you used for slow vibrato becomes a beater here. Speed changes what a modulation means.",
+                    "Underneath, a sine wave and nothing else. A kick is almost pure fundamental — that is what makes it felt rather than heard."
+                ],
+                takeaways: [
+                    "The pitch drop at the start is what makes a kick sound struck",
+                    "Envelope to pitch with a very short decay produces the drop",
+                    "The same routing that made vibrato makes a beater when it is fast enough"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Play the lowest notes. Shorten Decay until the pitch fall becomes a click at the front rather than a slide.",
+                    visibleParams: [.ampDecay, .lfoDepth, .drive, .cutoff],
+                    basePatch: Patch([.oscWave: 0.0, .cutoff: 0.45, .ampAttack: 0.0, .ampDecay: 0.28, .ampSustain: 0.0, .ampRelease: 0.2, .lfoDepth: 0.6, .drive: 0.25]),
+                    visual: .scope,
+                    showRouting: true,
+                    initialRouting: Routing(source: .envelope, dest: .pitch),
+                    allowedSources: [.envelope, .lfo],
+                    allowedDests: [.pitch, .cutoff, .none],
+                    keyboardRoot: 24,
+                    showOctave: false,
+                    tip: "Depth sets how far it falls. Too much and it whistles; too little and it hums.",
+                    controlsHint: "The envelope is routed to pitch — Depth is how far the pitch drops"
+                )
+            )
+        ]
+    )
+
+    // MARK: Module - Building a Patch
+
+    static let building = Module(
+        id: "mbp", title: "Building a Patch", subtitle: "Putting all of it together", accent: Theme.filter,
+        lessons: [
+            Lesson(
+                id: "mbp1", title: "Bass: Low, Short, Closed",
+                concept: "A bass has to be felt without filling the space every other sound needs.",
+                theory: [
+                    "A bass patch has one hard constraint: it occupies the bottom of the spectrum, where there is the least room and the most energy. Everything about it follows from staying out of the way.",
+                    "So the filter comes down. A bass rarely needs anything above a few hundred hertz, and a closed filter keeps it from crowding what sits above it. A little resonance right at the cutoff gives it definition without brightness.",
+                    "The envelope is short and closed. Sustain low so it does not drone, decay quick so each note lets go before the next arrives. Long low notes overlap into mud faster than anything else.",
+                    "A touch of drive adds harmonics higher up, which is a trick worth knowing: those harmonics let a phone speaker imply a bass note it physically cannot reproduce. Your ear fills in the fundamental."
+                ],
+                takeaways: [
+                    "Close the filter — a bass does not need the top",
+                    "Keep it short so notes do not overlap into mud",
+                    "Drive adds high harmonics that imply the low note on small speakers"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Play low and build it: close Cutoff, shorten Decay, then add Drive until it reads clearly on your phone speaker.",
+                    visibleParams: [.cutoff, .resonance, .ampDecay, .drive],
+                    basePatch: Patch([.oscWave: 0.55, .cutoff: 0.35, .resonance: 0.25, .ampAttack: 0.0, .ampDecay: 0.3, .ampSustain: 0.25, .ampRelease: 0.15, .drive: 0.3]),
+                    visual: .filter,
+                    keyboardRoot: 24,
+                    tip: "Check it on the worst speaker you own. If the note survives there, the harmonics are doing their job.",
+                    controlsHint: "Everything here is about staying low and getting out of the way"
+                )
+            ),
+            Lesson(
+                id: "mbp2", title: "Lead: Bright and In Front",
+                concept: "A lead has to be heard over everything else, which is a question of harmonics and movement.",
+                theory: [
+                    "A lead is the opposite problem to a bass. It has to cut through a full arrangement, and it lives in the middle and upper range where every other instrument is competing.",
+                    "Brightness is the first tool: an open filter and a rich wave, so there are harmonics up where the ear is most sensitive. A saw has the most to offer here.",
+                    "Movement is the second. A completely static sound disappears into a mix no matter how loud it is — the ear stops attending to anything that does not change. A little detune makes it wide and alive; slow vibrato keeps it breathing.",
+                    "Sustain stays high, because a lead holds notes. This is the one patch where a long, singing tail is the point rather than a problem."
+                ],
+                takeaways: [
+                    "Brightness cuts through: open filter, rich wave",
+                    "Static sounds vanish in a mix — movement keeps attention",
+                    "Detune for width, slow vibrato for life"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Open Cutoff, add Detune for width, then a little vibrato Depth. Stop when it sings instead of wobbling.",
+                    visibleParams: [.cutoff, .detune, .lfoDepth, .resonance],
+                    basePatch: Patch([.oscWave: 0.65, .cutoff: 0.85, .resonance: 0.15, .detune: 0.25, .ampAttack: 0.03, .ampDecay: 0.3, .ampSustain: 0.85, .ampRelease: 0.3, .lfoRate: 0.4, .lfoDepth: 0.1, .delayMix: 0.15, .delayTime: 0.35, .delayFeedback: 0.3]),
+                    visual: .scope,
+                    showRouting: true,
+                    initialRouting: Routing(source: .lfo, dest: .pitch),
+                    keyboardRoot: 60,
+                    tip: "Vibrato depth should be almost too subtle to notice on its own. If you can hear it clearly, it is too much.",
+                    controlsHint: "Bright, wide, and moving — the three things that make a lead carry"
+                )
+            ),
+            Lesson(
+                id: "mbp3", title: "Pad: Slow and Wide",
+                concept: "A pad is defined by its envelope. Everything arrives late and leaves slowly.",
+                theory: [
+                    "A pad is background. It fills space behind everything else without ever asking to be noticed, and it does that almost entirely through timing.",
+                    "Attack is long, so notes fade in rather than announcing themselves. Release is long, so they overlap and blur into each other instead of stopping. That overlap is the point: a pad should sound continuous even when you play separate notes.",
+                    "Width comes from detune, and more of it than a lead would take. Slightly out-of-tune copies beating against each other is what makes a pad sound large rather than loud.",
+                    "Then reverb, generously. This is the one patch where a wash is correct — the sound is supposed to feel like a place rather than an instrument."
+                ],
+                takeaways: [
+                    "Long attack and long release make notes overlap into one texture",
+                    "Heavy detune reads as width, not as being out of tune",
+                    "Reverb belongs here more than anywhere else"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "Lengthen Attack and Release until notes blur together, then widen with Detune and open the reverb.",
+                    visibleParams: [.ampAttack, .ampRelease, .detune, .reverbMix],
+                    basePatch: Patch([.oscWave: 0.4, .cutoff: 0.6, .resonance: 0.1, .detune: 0.4, .ampAttack: 0.45, .ampDecay: 0.5, .ampSustain: 0.8, .ampRelease: 0.6, .reverb: 0.7, .reverbMix: 0.4]),
+                    visual: .envelope,
+                    keyboardRoot: 48,
+                    tip: "Play a chord, let go, and start the next one before the first has finished. That overlap is the sound.",
+                    controlsHint: "Slow in, slow out, wide, and wet"
+                )
+            ),
+            Lesson(
+                id: "mbp4", title: "Now Make Your Own",
+                concept: "Every control is on the table. Nothing here is new — this is the whole instrument at once.",
+                theory: [
+                    "This is the last exercise, and there is nothing left to teach. Every knob you have met is in front of you at the same time, which is exactly what a real synthesiser looks like when you open it.",
+                    "The method does not change. Decide what kind of thing it is with the envelope. Choose the source: a wave, noise, FM, or sync. Shape it with the filter. Add movement so it does not sit still. Place it in a room with delay and reverb.",
+                    "That order is worth keeping. Most patches that go wrong went wrong because someone reached for an effect to fix a problem in the source, and no amount of reverb fixes a sound that was never interesting to begin with.",
+                    "Nothing here can break. Turn things to extremes on purpose — the sounds you find by accident at the ends of the range are worth more than the ones you aimed for."
+                ],
+                takeaways: [
+                    "Envelope first, then source, then filter, then movement, then space",
+                    "Effects place a sound; they do not rescue it",
+                    "The extremes are where the interesting accidents live"
+                ],
+                demo: nil,
+                exercise: Exercise(
+                    prompt: "No target this time. Build something you like, and take it to the extremes on the way.",
+                    visibleParams: [.oscWave, .noiseLevel, .fmAmount, .syncAmount, .cutoff, .resonance, .ampAttack, .ampDecay, .ampSustain, .ampRelease, .drive, .delayMix, .reverbMix, .detune],
+                    basePatch: Patch([.oscWave: 0.35, .cutoff: 0.7, .resonance: 0.15, .ampAttack: 0.05, .ampDecay: 0.35, .ampSustain: 0.6, .ampRelease: 0.35]),
+                    visual: .scope,
+                    showRouting: true,
+                    initialRouting: Routing(source: .lfo, dest: .none),
+                    keyboardRoot: 48,
+                    tip: "If you make something you want to keep, write the knob positions down. This app has no save button — yet.",
+                    controlsHint: "Everything, all at once. This is the whole instrument"
+                )
+            )
+        ]
     )
 
     // MARK: Module - Where Sound Plays
