@@ -108,27 +108,40 @@ final class Oscillator {
 
 enum FilterMode: Int { case lowpass, highpass, bandpass, notch }
 
+/// Topology-preserving (zero-delay-feedback) state variable filter.
+///
+/// This used to be a Chamberlin SVF, which is only stable while its coefficient stays under ~1.
+/// That clamp bit at about 7 kHz — so the top sixth of the CUTOFF knob moved nothing at all, in
+/// any lesson, and the hi-hat exercise (a high-pass swept as far up as it will go) is exactly
+/// where that shows. The TPT form stays accurate to its cutoff right up to Nyquist, so the knob
+/// now does something everywhere along its travel.
 final class SVFilter {
-    private var low = 0.0, band = 0.0
+    private var ic1 = 0.0, ic2 = 0.0    // integrator states
     let sampleRate: Double
     init(sampleRate: Double) { self.sampleRate = sampleRate }
 
-    func reset() { low = 0; band = 0 }
+    func reset() { ic1 = 0; ic2 = 0 }
 
     @inline(__always) func process(_ x: Double, cutoffHz: Double, res: Double, mode: FilterMode) -> Double {
-        // The Chamberlin SVF is only stable while the coefficient stays below ~1, which caps the
-        // usable cutoff near fs/6. Clamp f (and guard the state) so bright cutoffs can't blow up.
-        let f = min(0.98, 2.0 * sin(.pi * min(cutoffHz, sampleRate * 0.24) / sampleRate))
-        let q = max(0.035, 1.0 - res * 0.985)      // lower q value = more resonance
-        let high = x - low - q * band
-        band += f * high
-        low += f * band
-        if !low.isFinite || !band.isFinite { low = 0; band = 0 }
-        band = flush(max(-3, min(3, band))); low = flush(max(-3, min(3, low)))
+        // tan() runs away at Nyquist, so hold the cutoff just short of it.
+        let g = tan(.pi * min(max(cutoffHz, 10.0), sampleRate * 0.45) / sampleRate)
+        let k = max(0.035, 1.0 - res * 0.985)      // damping: lower value = more resonance
+        let a1 = 1.0 / (1.0 + g * (g + k))
+        let a2 = g * a1
+        let a3 = g * a2
+        let v3 = x - ic2
+        let v1 = a1 * ic1 + a2 * v3
+        let v2 = ic2 + a2 * ic1 + a3 * v3
+        ic1 = 2 * v1 - ic1
+        ic2 = 2 * v2 - ic2
+        if !ic1.isFinite || !ic2.isFinite { ic1 = 0; ic2 = 0 }
+        ic1 = flush(max(-6, min(6, ic1))); ic2 = flush(max(-6, min(6, ic2)))
+        let low = v2
+        let high = x - k * v1 - low
         switch mode {
         case .lowpass:  return low
         case .highpass: return high
-        case .bandpass: return band
+        case .bandpass: return v1
         case .notch:    return low + high
         }
     }
