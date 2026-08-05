@@ -13,6 +13,9 @@ struct LessonScreen: View {
     @State private var phase: Phase = .theory
     @State private var toneNorm: Double = 0.3
     @State private var holdMode = true
+    // Some exercises have more to look at than the screen has room for. Folding the keyboard away
+    // gives the visual and the knobs the bottom third back, and the note carries on sounding.
+    @State private var keyboardShown = true
     @State private var openTerm: Term?
     @State private var selectedGear: String? = nil
     @State private var matches: [String: String] = [:]
@@ -420,14 +423,19 @@ struct LessonScreen: View {
             if lesson.exercise.showKeyboard {
                 VStack(spacing: 8) {
                     HStack(spacing: 10) {
-                        holdToggle
-                        if lesson.exercise.showOctave { octaveStepper }
+                        if keyboardShown {
+                            holdToggle
+                            if lesson.exercise.showOctave { octaveStepper }
+                        }
+                        keyboardToggle
                     }
-                    Keyboard(latched: holdMode ? synth.latchedNote : nil,
-                             onDown: onKeyDown, onUp: onKeyUp,
-                             root: lesson.exercise.keyboardRoot + octaveShift * 12, accent: accent)
-                        .padding(.horizontal, 14)
-                    Text(lang.t(keyboardHint)).ui(11).foregroundColor(Theme.textFaint)
+                    if keyboardShown {
+                        Keyboard(latched: holdMode ? synth.latchedNote : nil,
+                                 onDown: onKeyDown, onUp: onKeyUp,
+                                 root: lesson.exercise.keyboardRoot + octaveShift * 12, accent: accent)
+                            .padding(.horizontal, 14)
+                        Text(lang.t(keyboardHint)).ui(11).foregroundColor(Theme.textFaint)
+                    }
                 }
             }
 
@@ -470,6 +478,24 @@ struct LessonScreen: View {
     private var keyboardHint: String {
         if !holdMode { return "Press and hold a key. Let go to release it." }
         return synth.latchedNote == nil ? "Tap a key to hold the sound. Tap again to stop." : "Tap the lit key again to stop"
+    }
+
+    private var keyboardToggle: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.22)) { keyboardShown.toggle() }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: keyboardShown ? "chevron.down" : "pianokeys")
+                if !keyboardShown { Text(lang.t("Keyboard")) }
+            }
+            .font(AppFont.ui(12, .medium))
+            .foregroundColor(Theme.textMuted)
+            .padding(.horizontal, keyboardShown ? 12 : 14).padding(.vertical, 8)
+            .background(Theme.inset)
+            .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(lang.t(keyboardShown ? "Hide keyboard" : "Show keyboard")))
     }
 
     private var holdToggle: some View {

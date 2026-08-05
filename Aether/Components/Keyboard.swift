@@ -50,7 +50,10 @@ struct Keyboard: View {
                 }
             }
         }
-        .frame(height: 130)
+        // Half the height it used to be. Key *width* is what a thumb aims at and that is set by
+        // the panel width, not by this, so the only thing shortening costs is black-key travel —
+        // and the space it gives back is the difference between the knobs being on screen or not.
+        .frame(height: 74)
     }
 
     private struct Key: View {
