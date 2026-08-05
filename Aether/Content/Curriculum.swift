@@ -50,57 +50,27 @@ enum Curriculum {
         // be the payoff, and a resonant filter sweep is the payoff. `playback` (speakers and
         // gear) is the module people are least willing to pay for and the dullest thing to
         // land on straight after a purchase, so it moves to the end as an appendix.
-        modules: [frequency, subtractive, shape, motion, sources, effects, drums, building, playback]
+        modules: [frequency, subtractive, shape, motion, drums, effects, sources, building, playback]
     )
 
 
     // MARK: Module - Other Ways to Make a Wave
     //
-    // Placed after Motion, not before it: these lessons lean on the LFO and on modulation, and
-    // an earlier draft referenced both before either had been taught.
+    // Placed late on purpose. These lessons lean on the LFO and on modulation, so they cannot
+    // come before Motion, and none of them is needed to build a kit or a patch — FM and sync are
+    // the extra shelf, not the floor. Noise used to open this module and no longer does: it moved
+    // into Designing Drums, where the very next lesson makes a cymbal out of it.
 
     static let sources = Module(
-        id: "msr", title: "Other Ways to Make a Wave", subtitle: "Noise, FM, and sync", accent: Theme.tone,
+        id: "msr", title: "Other Ways to Make a Wave", subtitle: "FM and sync", accent: Theme.tone,
         lessons: [
-            Lesson(
-                id: "msr1", title: "Noise Has No Pitch",
-                concept: "Noise is every frequency at once, in amounts that never stop changing. That is why there is no note in it.",
-                theory: [
-                    "Here is the only reason anything has a pitch: the wave repeats. The same shape, again and again. How many times it repeats each second is the note you hear.",
-                    "Noise does not repeat. Ever. It is a brand new random value every instant, so there is no shape to come back around, and nothing for your ear to count.",
-                    "So what is actually in it? Every frequency, all of them, all at the same time, and in amounts that change constantly. That is the honest description: a bit of everything, forever rearranging. There is no one frequency standing out, and a note is exactly one frequency standing out, which is why there is no note to hear.",
-                    "Turn the Noise knob all the way up in the exercise and the pitch disappears completely. You can still play the keyboard and it will make no difference at all.",
-                    "Not all noise has the same amounts, though. Some has just as much high as low. Some has more low than high. Those two need names, and the names sound odd until you know where they came from.",
-                    "Light is made of frequencies too. Slow light looks red to us, fast light looks violet, and everything else sits in between. Your eye does not hear them one at a time the way it would notes. It adds up whatever arrives and reports back a single colour.",
-                    "Add up every frequency of light in equal amounts and the colour your eye reports is white. That is all white means: everything, evenly. So sound with every frequency in equal amounts got called white noise. It is the same word for the same idea, borrowed.",
-                    "Now take away some of the fast end, the blues and violets, and leave the slow red end standing. The colour your eye reports is pink. Sound with more low than high got the same name for the same reason: pink noise. In the exercise the swatch is worked out from the bars above it, so you can watch the colour change as you take the top off."
-                ],
-                takeaways: [
-                    "Noise is every frequency at once, in constantly changing amounts",
-                    "A note is one frequency standing out, and in noise none does",
-                    "Light is frequencies too, and your eye adds them into one colour",
-                    "Everything evenly looks white, so even sound is called white noise",
-                    "More low than high looks pink, so that sound is called pink noise"
-                ],
-                demo: nil,
-                terms: [G.frequency, G.pitch, G.noise, G.spectrum],
-                exercise: Exercise(
-                    prompt: "Turn NOISE up until the note is gone and the keyboard stops mattering. Then move COLOUR and watch the bars tilt, the swatch turn pink, and the hiss soften into rain.",
-                    visibleParams: [.noiseLevel, .noiseColor],
-                    basePatch: Patch([.noiseLevel: 0.0, .noiseColor: 0.0, .oscWave: 0.0, .cutoff: 1.0,
-                                      .ampAttack: 0.02, .ampDecay: 0.3, .ampSustain: 0.9, .ampRelease: 0.25]),
-                    visual: .noiseColor,
-                    tip: "With NOISE at the top, play the highest key and then the lowest. They sound identical. That is what having no pitch means.",
-                    controlsHint: "NOISE is how much, COLOUR tilts how much of it is low against high"
-                )
-            ),
             Lesson(
                 id: "msr2", title: "FM Synthesis",
                 concept: "Put a finger on a spinning record and wobble it. Wobble slowly and you hear the pitch sag. Wobble fast enough and you hear a different sound entirely.",
                 theory: [
-                    "Put a record on a turntable and let it play. Now rest a finger on the platter and wobble the speed.",
                     "Your finger makes no sound. Nobody in the room hears your finger. But everybody hears what your finger did to the record.",
-                    "Wobble it slowly and the pitch sags and rises, the sound of a tape deck that cannot hold its speed, which engineers call wow and flutter. Now wobble two hundred times a second. You can no longer pick out the individual wobbles, and what you hear instead is a completely different sound. Same finger, same wobbling, only faster than your ear can follow.",
+                    "Wobble slowly and the pitch sags and rises: the sound of a tape deck that cannot hold its speed, which engineers call wow and flutter.",
+                    "Now imagine you could wobble two hundred times a second. No hand can, and no turntable would survive it, but nothing about the idea changes — it is still one thing moving the speed of another. What comes out is no longer a sagging pitch. The wobbles are far too quick to pick out one at a time, and what reaches you instead is a completely different sound.",
                     "That is FM, and it is the shortest description there is: a fast LFO. You already know the LFO as a wave that moves a control for you instead of your finger. Speed that same wave up past roughly twenty times a second, the same threshold from the start of the course where a vibration stopped being separate events and became a note, and it stops being heard as movement.",
                     "The two waves have names. The record, the thing you actually hear, is the carrier. Your finger, hidden and silent, is the modulator.",
                     "What does the modulator move? With the LFO you chose: pitch, volume, the filter. With FM the choice is already made and it is in the name. F is frequency, so it is pointed at how fast the carrier repeats. M is modulation. It stops being called an LFO only because the L stands for low, and this one is not.",
@@ -298,6 +268,9 @@ enum Curriculum {
                                       .oscWave: 0.5, .cutoff: 0.9,
                                       .ampAttack: 0.01, .ampDecay: 0.3, .ampSustain: 0.9, .ampRelease: 0.25]),
                     visual: .comb,
+                    // Same as the echo lesson before it: a latched note covers up its own copies,
+                    // and switching the keyboard's behaviour mid-module reads as a bug.
+                    holdDefault: false,
                     tip: "Turn FEEDBACK up once the gaps appear. The deeper the gaps, the more hollow it sounds.",
                     controlsHint: "TIME down low is where an echo turns into a filter"
                 )
@@ -306,11 +279,12 @@ enum Curriculum {
                 id: "mfx4", title: "Many Arrivals Become a Room",
                 concept: "Reverb is the same sound reaching you thousands of times, too close together to count.",
                 theory: [
+                    "You already know what this one sounds like. A church, an empty car park, a stairwell: you clap once and the place answers. That answer is the thing this lesson is about, and all it is is the same clap reaching you again and again.",
                     "In any real space you hear a sound twice over. First it comes straight to you. Then it comes again, having bounced off a wall, then off the floor, the ceiling, and everything in the room.",
                     "One bounce on its own would be an echo. But a room has surfaces everywhere, and every bounce bounces again. Within a fraction of a second there are thousands of arrivals, far too many and too close together to hear as separate events. They blur into a single wash of sound. That wash is reverb, which is short for reverberation.",
                     "SIZE is how far apart the walls are. A bigger space means the bounces travel further, so they arrive further apart and take longer to die away. That is why a cathedral rings for seconds and a bathroom does not.",
                     "MIX is how much of the bounced sound you hear against the straight one. This is what your ears use to judge distance. Mostly straight sound means the source is right in front of you. Mostly bounces means it is far away, at the other end of the room.",
-                    "Look at the second picture. The tall white line is the sound arriving straight, and everything after it is the same sound coming back off a surface."
+                    "The picture is the one thing your ear cannot do: it separates the wash back out into the arrivals it is made of. The tall white line is the sound that reached you straight. Every line after it is that same sound coming back off a surface."
                 ],
                 takeaways: [
                     "Reverb is thousands of bounces arriving too close together to count",
@@ -343,6 +317,42 @@ enum Curriculum {
     static let drums = Module(
         id: "mdr", title: "Designing Drums", subtitle: "Building a kit from nothing", accent: Theme.basics,
         lessons: [
+            // Keeps its "msr" id: it was written for Other Ways to Make a Wave and moved here so
+            // the hat and the snare have a source to be made of. Renaming it would wipe the
+            // completion mark for anyone who has already done it.
+            Lesson(
+                id: "msr1", title: "Noise",
+                concept: "Noise is every frequency at once, in amounts that never stop changing. That is why there is no note in it.",
+                theory: [
+                    "Here is the only reason anything has a pitch: the wave repeats. The same shape, again and again. How many times it repeats each second is the note you hear.",
+                    "Noise does not repeat. Ever. It is a brand new random value every instant, so there is no shape to come back around, and nothing for your ear to count.",
+                    "So what is actually in it? Every frequency, all of them, all at the same time, and in amounts that change constantly. That is the honest description: a bit of everything, forever rearranging. There is no one frequency standing out, and a note is exactly one frequency standing out, which is why there is no note to hear.",
+                    "Turn the Noise knob all the way up in the exercise and the pitch disappears completely. You can still play the keyboard and it will make no difference at all.",
+                    "Not all noise has the same amounts, though. Some has just as much high as low. Some has more low than high. Those two need names, and the names sound odd until you know where they came from.",
+                    "Light is made of frequencies too. Slow light looks red to us, fast light looks violet, and everything else sits in between. Your eye does not hear them one at a time the way it would notes. It adds up whatever arrives and reports back a single colour.",
+                    "Add up every frequency of light in equal amounts and the colour your eye reports is white. That is all white means: everything, evenly. So sound with every frequency in equal amounts got called white noise. It is the same word for the same idea, borrowed.",
+                    "Now turn the fast end down, the blues and violets, and leave the slow red end standing. The colour your eye reports is pink. Sound with the high end turned down the same way got the same name for the same reason: pink noise. Nothing is taken away at the bottom — the low end is untouched, and the top is quieter, so what is left leans low.",
+                    "That tilt is visible in the values themselves, before you count a single frequency. White noise picks each value with no memory of the last, so it jumps the full distance every instant. Pink noise leans on what came just before, so it wanders instead of jumping. Wandering slowly is what having more low than high looks like in time, and it is what the exercise draws."
+                ],
+                takeaways: [
+                    "Noise is every frequency at once, in constantly changing amounts",
+                    "A note is one frequency standing out, and in noise none does",
+                    "White noise jumps: each value ignores the one before it",
+                    "Pink noise wanders: the high end is turned down, so it leans low",
+                    "The colour names are borrowed from light, not from the sound"
+                ],
+                demo: nil,
+                terms: [G.frequency, G.pitch, G.noise, G.spectrum],
+                exercise: Exercise(
+                    prompt: "Turn NOISE up until the note is gone and the keyboard stops mattering. Then move COLOUR and watch the dots stop jumping and start wandering, the bars tilt, and the hiss soften into rain.",
+                    visibleParams: [.noiseLevel, .noiseColor],
+                    basePatch: Patch([.noiseLevel: 0.0, .noiseColor: 0.0, .oscWave: 0.0, .cutoff: 1.0,
+                                      .ampAttack: 0.02, .ampDecay: 0.3, .ampSustain: 0.9, .ampRelease: 0.25]),
+                    visual: .noiseColor,
+                    tip: "With NOISE at the top, play the highest key and then the lowest. They sound identical. That is what having no pitch means.",
+                    controlsHint: "NOISE is how much, COLOUR tilts how much of it is low against high"
+                )
+            ),
             Lesson(
                 id: "mdr1", title: "A Hit Is a Shape, Not a Sound",
                 concept: "What makes something percussive is not what it is made of. It is how quickly it arrives and leaves.",
