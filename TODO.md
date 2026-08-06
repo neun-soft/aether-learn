@@ -48,13 +48,19 @@ switching to "play a note to hear them drift" so a still picture doesn't read as
 
 ## P1 — UX friction on every lesson
 
-### 4. Keyboard too tall
+### 4. Keyboard too tall — **done**
 
 **Want:** `Keyboard.swift` cut the height by half without changing the size of the keys. this is possible because the black keys are taking too much space so if I visually cut it I can see it will still be functional and good UI/UX
 
-### 5. FM Synthesis repeated wording (`msr2`)
+**Fix:** 74pt → 38pt, black keys 0.62 → 0.58 of that. Tap targets are unchanged, because a thumb
+aims at key *width* and that comes from the panel width, not the height.
+
+### 5. FM Synthesis repeated wording (`msr2`) — **done**
 
 **Want:** title and first theory paragraph stop restating each other. Copy edit only.
+
+**Fix:** the `concept` line spent the whole slow-wobble/fast-wobble pair that paragraphs 2 and 3
+then deliver properly. It is now just the hook.
 
 ### 6. Filter-cutoff visual under the Sync knob (`msr4`, "Restarting Adds Harmonics")
 

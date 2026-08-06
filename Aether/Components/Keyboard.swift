@@ -45,15 +45,17 @@ struct Keyboard: View {
                 }
                 ForEach(blackKeys) { bk in
                     Key(midi: bk.midi, white: false, latched: latched, accent: accent, onDown: onDown, onUp: onUp)
-                        .frame(width: w * 0.62, height: geo.size.height * 0.62)
+                        .frame(width: w * 0.62, height: geo.size.height * 0.58)
                         .offset(x: CGFloat(bk.boundary) * (w + 2) - w * 0.31 - 1)
                 }
             }
         }
-        // Half the height it used to be. Key *width* is what a thumb aims at and that is set by
-        // the panel width, not by this, so the only thing shortening costs is black-key travel —
-        // and the space it gives back is the difference between the knobs being on screen or not.
-        .frame(height: 74)
+        // Halved twice now, and it costs nothing either time. A thumb aims at key *width*, which
+        // is set by the panel, not by this — the tap targets are the same size as they were at
+        // 148pt. All that shortens is the vertical run of the black keys, which nobody uses for
+        // aiming. The 96pt this gives back is the difference between the exercise visual and its
+        // knobs being on screen together or the lesson being a scroll.
+        .frame(height: 38)
     }
 
     private struct Key: View {

@@ -66,7 +66,10 @@ enum Curriculum {
         lessons: [
             Lesson(
                 id: "msr2", title: "FM Synthesis",
-                concept: "Put a finger on a spinning record and wobble it. Wobble slowly and you hear the pitch sag. Wobble fast enough and you hear a different sound entirely.",
+                // Deliberately does not spend the slow-wobble/fast-wobble pair here: the second and
+                // third paragraphs are that pair, and putting it in the opening line as well meant
+                // reading the same two sentences twice before learning anything new.
+                concept: "Put a finger on a spinning record and wobble it. Everything FM does is in that one gesture.",
                 theory: [
                     "Your finger makes no sound. Nobody in the room hears your finger. But everybody hears what your finger did to the record.",
                     "Wobble slowly and the pitch sags and rises: the sound of a tape deck that cannot hold its speed, which engineers call wow and flutter.",
