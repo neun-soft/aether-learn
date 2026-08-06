@@ -94,11 +94,22 @@ music rather than as a sweep.
 
 ## P3 — New capabilities
 
-### 12. Feedback goes to a backend
+### 12. Feedback goes to a backend — **done, needs the endpoint confirmed**
 
-**Want:** `progress.recordFeedback` (`RatingViews.swift:211`) also POSTs to our endpoint —
-anonymous id, module id, text, app version, locale. Keep the on-device write as the offline queue and
-retry; never block or fail the UI.
+**Want:** `progress.recordFeedback` also POSTs to our endpoint — anonymous id, module id, text, app
+version, locale. Keep the on-device write as the offline queue and retry; never block or fail the UI.
+
+**Fix:** `Aether/Store/Feedback.swift`. The device copy is the queue, not a fallback: written to
+disk first, removed only once the server takes it, drained on launch and on every foreground.
+Retries reuse the note's id so a delivered-but-unacknowledged note is not stored twice. A 4xx other
+than 408/429 counts as delivered, otherwise a permanently rejected note blocks the queue forever.
+
+Verified against a local collector: send, offline retention with the server down, and delivery of
+the retained note on the next launch with its original id.
+
+**Open:** the endpoint defaults to `https://aether.neunsoft.com/api/feedback` (the domain the
+privacy link already uses) and is overridable with the `AetherFeedbackEndpoint` Info.plist key.
+Nothing is live there yet — confirm the real URL and stand up the collector.
 
 ---
 

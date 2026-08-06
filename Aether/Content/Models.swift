@@ -115,29 +115,63 @@ final class ProgressStore: ObservableObject {
 
     private let key = "aetherlearn.progress.v1"
     private let feedbackKey = "aetherlearn.feedback.v1"
+    private var isFlushing = false
 
     init() { load() }
 
-    // MARK: Feedback (stored locally until we have an endpoint to POST it to)
+    // MARK: Feedback
 
-    /// Append a piece of "what can we do better?" feedback. Kept as a flat list of
-    /// { module, text, ts } so it's trivial to upload once the endpoint exists.
+    /// Append a piece of "what can we do better?" feedback and try to send it.
+    ///
+    /// Written to disk before the network is touched, and the caller is never told whether the
+    /// upload worked. Someone who has just said the app let them down should not then be shown
+    /// a failure; the queue will carry the note until it lands.
     func recordFeedback(moduleID: String, text: String) {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        var list = storedFeedback()
-        list.append(["module": moduleID, "text": trimmed, "ts": Date().timeIntervalSince1970])
-        if let data = try? JSONSerialization.data(withJSONObject: list) {
+        var list = pendingFeedback()
+        list.append(FeedbackNote(module: moduleID, text: trimmed, ts: Date().timeIntervalSince1970))
+        savePending(list)
+        flushFeedback()
+    }
+
+    /// Everything still waiting to be delivered, oldest first.
+    func pendingFeedback() -> [FeedbackNote] {
+        guard let data = UserDefaults.standard.data(forKey: feedbackKey) else { return [] }
+        if let list = try? JSONDecoder().decode([FeedbackNote].self, from: data) { return list }
+        // Notes written by the version that only ever stored them locally, in its flat
+        // dictionary shape. Read them once so nobody's feedback is lost to the upgrade.
+        if let raw = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
+            return raw.compactMap {
+                guard let m = $0["module"] as? String, let t = $0["text"] as? String else { return nil }
+                return FeedbackNote(module: m, text: t, ts: $0["ts"] as? Double ?? 0)
+            }
+        }
+        return []
+    }
+
+    private func savePending(_ list: [FeedbackNote]) {
+        if let data = try? JSONEncoder().encode(list) {
             UserDefaults.standard.set(data, forKey: feedbackKey)
         }
     }
 
-    /// All feedback collected so far, oldest first. Read this when wiring up the upload.
-    func storedFeedback() -> [[String: Any]] {
-        guard let data = UserDefaults.standard.data(forKey: feedbackKey),
-              let list = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]
-        else { return [] }
-        return list
+    /// Try to deliver the queue, oldest first, one at a time. Safe to call as often as you like:
+    /// a flush already in progress makes the next call a no-op rather than double-posting.
+    func flushFeedback() {
+        guard !isFlushing else { return }
+        let queue = pendingFeedback()
+        guard let next = queue.first else { return }
+        isFlushing = true
+        FeedbackService.send(next) { [weak self] delivered in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.isFlushing = false
+                guard delivered else { return }   // keep it; try again on the next launch
+                self.savePending(self.pendingFeedback().filter { $0.id != next.id })
+                self.flushFeedback()              // drain the rest
+            }
+        }
     }
 
     func isDone(_ lessonID: String) -> Bool { completed.contains(lessonID) }

@@ -3,6 +3,7 @@ import SwiftUI
 struct RootView: View {
     @StateObject private var progress = ProgressStore()
     @EnvironmentObject private var store: Store
+    @Environment(\.scenePhase) private var scenePhase
     @State private var path: [Route] = []
 
     var body: some View {
@@ -34,6 +35,12 @@ struct RootView: View {
         .tint(Theme.tone)
         // Existing users who already worked through what is now paid content keep it.
         .task { store.grandfatherIfLegacyUser(progress: progress) }
+        // A note typed with no signal waits on disk. Every launch and every return to the
+        // foreground is another chance to deliver it.
+        .task { progress.flushFeedback() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { progress.flushFeedback() }
+        }
         #if DEBUG
         .onAppear {
             if let id = Shot.lessonID { path = [.lesson(Curriculum.indexOf(id))] }
