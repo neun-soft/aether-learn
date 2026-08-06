@@ -8,10 +8,15 @@ Lesson IDs from `Aether/Content/Curriculum.swift`. Phases live in `LessonScreen.
 
 ## P0 — Broken / misleading (trust killers)
 
-### 1. "Repetition Makes a Note" doesn't demonstrate its point (`msr3`) — **done**
+### 1. "Repetition Makes a Note" doesn't demonstrate its point (`msr3`) — **done, then rewritten**
 
 **Want:** stepping RATIO to an in-between value (1.5, 7) must audibly stop being a note and turn
 metallic. Today every position keeps a clear pitch, so the lesson proves nothing.
+
+**Second pass:** raising the index made it clang, but device testing showed the lesson's premise
+was simply false — an inharmonic FM tone still has a pitch you can play a recognisable tune with.
+Retitled "Instruments and Bells" and reworded to what actually happens: the character changes from
+ringing to clanging, the pitch does not go anywhere. A carillon plays melodies.
 
 **Cause:** the FM modulation index was `amount * 1.5`, so even at full depth the index topped out
 at 1.5 — the carrier dominates and the ear still finds the fundamental at every ratio. The visual
@@ -32,6 +37,10 @@ engine. Same nominal rate, unrelated phase — it drifted within seconds of open
 multiply by) each control block; the graph reads them per frame via `SynthController.lfoPhase` /
 `.lfoValue`. Not `@Published` on purpose — the 30 Hz display timer would alias a 20 Hz LFO.
 
+**Second pass:** on device the dot rode the wrong side of the curve on triangle and saw. The graph
+kept its own copy of the shape function with both of those upside down relative to the engine's.
+`LFO.value(phase:shape:)` is now the single source for played and drawn alike.
+
 ### 3. Detune visual moves while nothing is playing (`m1l8`) — **done**
 
 **Want:** still when no note sounds; motion rate = the real beat frequency.
@@ -43,6 +52,8 @@ is `2 * spread * hz`. At C3 and 0.15 detune it drew 0.21 Hz against an actual 0.
 **Fix:** rate now derives from `Voice.detuneSpread` and the engine's `soundingHz`, capped at 12 Hz
 for legibility (past that you hear two pitches, not a pulse). Silent = frozen, with the caption
 switching to "play a note to hear them drift" so a still picture doesn't read as broken.
+**Second pass:** wave height cut to 0.68 — the sum swelling to full height hit the panel edges and
+read as clipping rather than as two waves reinforcing.
 
 ---
 
@@ -53,7 +64,8 @@ switching to "play a note to hear them drift" so a still picture doesn't read as
 **Want:** `Keyboard.swift` cut the height by half without changing the size of the keys. this is possible because the black keys are taking too much space so if I visually cut it I can see it will still be functional and good UI/UX
 
 **Fix:** 74pt → 38pt, black keys 0.62 → 0.58 of that. Tap targets are unchanged, because a thumb
-aims at key *width* and that comes from the panel width, not the height.
+aims at key *width* and that comes from the panel width, not the height. **Second pass:** 38 was a
+key too far — it read as a strip rather than something to play. Settled at 52.
 
 ### 5. FM Synthesis repeated wording (`msr2`) — **done**
 
@@ -86,20 +98,27 @@ inside a bee's real range, so nothing is faked). `Lesson.watchLast` reorders the
 Watch screen grows the same Done/Next buttons the exercise has, since it is now the last step.
 The slider and wings follow the demo's rate. Verified on device.
 
+**Second pass:** the tune dropped an octave (65–110 Hz) — at 130–220 flaps a second the buzz was
+too dense to pick the melody out of. Play now offers "Now watch it" instead of "Next lesson",
+which was skipping the demo the lesson builds towards. A caption says what is playing and why.
+
 ### 9. "Frequency Becomes Pitch" gets a Watch (`m1l3`) — **done**
 
 **Want:** same exercise UI, playing a short lullaby, so the frequency→pitch mapping is heard as
 music rather than as a sweep.
 
-**Fix:** `DemoScript.tone` plays Brahms' lullaby as raw frequencies; the Watch screen shows the
-frequency explorer itself (the generic visual would have been an empty panel) with the handle and
-the note name following the tune. Verified on device: 494 Hz reads B4 mid-melody.
+**Fix:** `DemoScript.tone` drives the frequency explorer itself on the Watch screen (the generic
+visual would have been an empty panel), with the handle and note name following along.
+
+**Second pass:** the lullaby is gone. The demo now does what the exercise asks — steps up the
+slider and lands on C at 131, 262 and 523, so the octave doubling is something you watch happen
+rather than something the text claims.
 
 ### 10. Effects lessons use real effects (module `mfx`) — **done**
 
 **Want:** add a lesson that teaches why every audio effect is either gain, delay or both
 
-**Fix:** new lesson `mfx5`, "It Is All Level and Time", closing the effects module. Sorts the five
+**Fix:** new lesson `mfx5`, "It Is All Gain and Delay", closing the effects module. Sorts the five
 effects the module just built into the two ingredients, with a table (`EffectFamiliesView`) whose
 point is that no row needs a third column. The exercise gives one knob per ingredient — DRIVE and
 ECHO — so the claim is testable, not just asserted. Verified on device.

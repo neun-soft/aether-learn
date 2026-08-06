@@ -112,35 +112,36 @@ enum Curriculum {
                 )
             ),
             Lesson(
-                id: "msr3", title: "Repetition Makes a Note",
-                concept: "Whether FM sounds musical or like struck metal depends on how the two waves line up.",
+                id: "msr3", title: "Instruments and Bells",
+                concept: "Whether FM sounds like a struck string or a struck bell depends on how the two waves line up.",
                 theory: [
                     "FM depth decides how much bending happens. This lesson is about the other knob: how fast the hidden wave runs compared to the one you hear.",
-                    "When the hidden wave runs at a simple multiple, twice as fast or three times as fast, the two line up neatly. Every bend happens at the same point in every cycle, so the result still repeats. It repeats, so it still has a pitch, and it still sounds like a note.",
-                    "When it runs at something in between, like one and a half times, they never quite line up. The bends land in a different place every cycle, so the wave does not settle into a repeating shape. Less repetition means less pitch, and your ear hears metal instead of a note. Bells, gongs, and the inside of a piano all work this way.",
+                    "When the hidden wave runs at a simple multiple, twice as fast or three times as fast, the two line up neatly. Every bend happens at the same point in every cycle, so the wave settles into a repeating shape. That is what a plucked string or a blown tube does, and it is why those sound the way they do.",
+                    "When it runs at something in between, like one and a half times, they never quite line up. The bends land in a different place every cycle and the shape never settles. You still hear a note — you could play a tune with it, and people do — but its character changes completely: it stops sounding struck-and-ringing and starts sounding struck-and-clanging. Bells, gongs, and the inside of a piano all work this way.",
                     "This is not a synth trick. It is exactly why a real bell sounds like a bell.",
-                    "Pluck a string, or blow down a tube, and the extra frequencies that come out sit at neat whole-number multiples of the lowest one: two times, three times, four times. Your ear knows that pattern and fuses the whole stack into a single note.",
-                    "Hit a bell and the extra frequencies land at ratios like 2.76 times, or 5.4 times. Nothing lines up with anything. Your ear cannot fit them into one series, finds no single pitch to settle on, and reports metal rather than a note. It is also why tuning a bell is a specialist craft: the founder is shaping the metal to drag those stubborn ratios back towards something musical.",
+                    "Pluck a string and the extra frequencies that come out sit at neat whole-number multiples of the lowest one: two times, three times, four times. Your ear knows that pattern and fuses the whole stack into one clean note.",
+                    "Hit a bell and the extra frequencies land at ratios like 2.76 times, or 5.4 times. Your ear still picks a pitch out of it — a carillon plays melodies, after all — but it cannot fit the rest into one tidy series, and what it reports back is metal. It is also why tuning a bell is a specialist craft: the founder is shaping the metal to drag those stubborn ratios back towards something musical.",
                     "Your RATIO knob is doing the same thing from the other end. Whole numbers put the extra frequencies on the neat multiples, so you get an instrument. In-between numbers put them between the multiples, so you get metal.",
-                    "That is why RATIO is the interesting knob and not the depth one. Depth makes it brighter. Ratio decides whether you are building an instrument or a bell."
+                    "That is why RATIO is the interesting knob and not the depth one. Depth makes it brighter. Ratio decides which kind of instrument you are holding."
                 ],
                 takeaways: [
-                    "Whole-number ratios line up, keep repeating, and still sound like a note",
-                    "In-between ratios never line up, so the sound turns metallic",
+                    "Whole-number ratios line up, so the wave repeats and you get a strings-and-tubes sound",
+                    "In-between ratios never line up, so you get a bells-and-gongs sound",
+                    "Either way there is still a pitch — what changes is the character, not the note",
                     "A real bell is metallic for the same reason: its frequencies do not line up either",
                     "Depth changes how bright it is; ratio changes what kind of thing it is"
                 ],
                 demo: nil,
                 terms: [G.ratio, G.carrier, G.harmonic, G.harmonics, G.fundamental, G.pitch],
                 exercise: Exercise(
-                    prompt: "Step RATIO through its positions. Watch the bottom wave: at whole numbers it settles into a repeating shape, and in between it never does. Listen for the moment it stops sounding like a note.",
+                    prompt: "Step RATIO through its positions and play the same note each time. Whole numbers ring; the ones in between clang. Watch the bottom wave settle at 1, 2 and 3, and never settle at 1.5 or 7.",
                     visibleParams: [.fmRatio, .fmAmount],
                     // Depth starts high on purpose. This lesson is about ratio, and at a low
                     // index every ratio still reads as a clear note, so there is nothing to hear.
                     basePatch: Patch([.fmAmount: 0.7, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
                                       .ampAttack: 0.0, .ampDecay: 0.5, .ampSustain: 0.7, .ampRelease: 0.4]),
                     visual: .fm,
-                    tip: "Ratio 1, 2, and 3 sound like instruments. 1.5 and 7 sound like something you would hit with a stick.",
+                    tip: "Set RATIO to 7 and play a tune. It still works as a tune — that is a carillon. Now go back to 2 and play the same one.",
                     controlsHint: "RATIO steps through fixed speeds: 0.5, 1, 1.5, 2, 3, 5, 7"
                 )
             ),
@@ -332,35 +333,35 @@ enum Curriculum {
                 )
             ),
             Lesson(
-                id: "mfx5", title: "It Is All Level and Time",
-                concept: "Every effect you have just built does one of two things to a sound: changes how loud it is, or changes when it arrives.",
+                id: "mfx5", title: "It Is All Gain and Delay",
+                concept: "Every effect you have just built does one of two things to a sound: gain, which changes how loud it is, or delay, which changes when it arrives.",
                 theory: [
                     "A shop will sell you hundreds of effects. Names, colours, a story about the studio in the sixties it was modelled on. It is worth knowing, before you spend any money, that underneath there are two ingredients.",
-                    "The first is level: how loud the sound is. The second is time: when it reaches you. That is the entire list.",
-                    "Move the level up and down in a steady rhythm and you have tremolo. Put a ceiling in the way so the loud parts cannot get through and you have distortion. Both are the same ingredient, one gentle and one violent.",
-                    "Now the other one. Take the sound, wait, and play it again: an echo. Wait a very short time instead and the copy lands on top of the original rather than after it, so the two interfere and you get a comb filter. Let that short wait drift slowly and the interference moves around, which is chorus.",
+                    "The first is gain: how loud the sound is. The second is delay: how long it waits before it reaches you. That is the entire list.",
+                    "Move the gain up and down in a steady rhythm and you have tremolo. Put a ceiling in the way so the loud parts cannot get through and you have distortion. Both are gain, one gentle and one violent.",
+                    "Now delay. Take the sound, wait, and play it again: an echo. Wait a very short time instead and the copy lands on top of the original rather than after it, so the two interfere and you get a comb filter. Let that short wait drift slowly and the interference moves around, which is chorus.",
                     "Reverb uses both. Thousands of copies, each arriving a little later than the last and each a little quieter, and your ear reads all of it as a room.",
                     "This is why the picture in each of those lessons kept looking like the previous one. It was not a shortcut in the drawings. The effects really are that closely related.",
-                    "The useful part is what it does to your ears. When you meet an effect you have never heard of, you now have one question to ask instead of reading the manual: is it doing something to the level, to the time, or to both? Almost always the answer tells you what the knobs will do before you touch them."
+                    "The useful part is what it does to your ears. When you meet an effect you have never heard of, you now have one question to ask instead of reading the manual: is it gain, delay, or both? Almost always the answer tells you what the knobs will do before you touch them."
                 ],
                 takeaways: [
-                    "There are two ingredients in every effect: level and time",
-                    "Tremolo and distortion are both level; echo, comb and chorus are all time",
+                    "There are two ingredients in every effect: gain and delay",
+                    "Tremolo and distortion are both gain; echo, comb and chorus are all delay",
                     "Reverb is both: thousands of copies, later and quieter",
-                    "Meeting a new effect, ask which of the two it moves"
+                    "Meeting a new effect, ask whether it is gain, delay, or both"
                 ],
                 demo: nil,
                 terms: [G.tremolo, G.distortion, G.echo, G.reverb, G.amplitude],
                 exercise: Exercise(
-                    prompt: "One knob per ingredient. Everything in the table is built out of these two.",
+                    prompt: "One knob per ingredient: DRIVE is gain, ECHO is delay. Everything in the table is built out of these two.",
                     visibleParams: [.drive, .delayMix],
                     basePatch: Patch([.drive: 0.0, .delayMix: 0.0, .delayTime: 0.35, .delayFeedback: 0.4,
                                       .oscWave: 0.3, .cutoff: 0.8,
                                       .ampAttack: 0.01, .ampDecay: 0.3, .ampSustain: 0.0, .ampRelease: 0.25]),
                     visual: .effectFamilies,
                     holdDefault: false,
-                    tip: "Next time you open a plugin you have never used, find the control that changes level and the one that changes time. Most of the rest is decoration.",
-                    controlsHint: "DRIVE is the level ingredient, ECHO is the time one",
+                    tip: "Next time you open a plugin you have never used, find the gain control and the delay control. Most of the rest is decoration.",
+                    controlsHint: "DRIVE is the gain ingredient, ECHO is the delay one",
                     labels: [.delayMix: "Echo"]
                 )
             )
@@ -842,13 +843,17 @@ enum Curriculum {
                     // 32 eighths at 0.28s, plus the lead-in and a moment of quiet at the end.
                     duration: 9.6,
                     startPatch: Patch(),
+                    // An octave below where this started. At 130–220 flaps a second the buzz is
+                    // so dense that the tune is hard to pick out of it; down here you can hear
+                    // the individual note, which is the only reason the demo exists.
                     bee: pitches([
-                        (130.8, 2), (130.8, 2), (196.0, 2), (196.0, 2),   // twin-kle twin-kle
-                        (220.0, 2), (220.0, 2), (196.0, 4),               // lit-tle star
-                        (174.6, 2), (174.6, 2), (164.8, 2), (164.8, 2),   // how I won-der
-                        (146.8, 2), (146.8, 2), (130.8, 4),               // what you are
+                        (65.4, 2), (65.4, 2), (98.0, 2), (98.0, 2),       // twin-kle twin-kle
+                        (110.0, 2), (110.0, 2), (98.0, 4),                // lit-tle star
+                        (87.3, 2), (87.3, 2), (82.4, 2), (82.4, 2),       // how I won-der
+                        (73.4, 2), (73.4, 2), (65.4, 4),                  // what you are
                     ])
                 ),
+                demoCaption: "Just for fun: the bee plays Twinkle Twinkle Little Star. Nothing is added to make this work — the only thing changing is how fast the wings beat.",
                 // Watch comes after Play here: the demo is only impressive once you have dragged
                 // the slider yourself and know there is nothing in there but flap speed.
                 watchLast: true,
@@ -867,28 +872,26 @@ enum Curriculum {
                 theory: [
                     "When a vibration is steady and fast enough, your ear stops hearing separate vibrations and hears one clear musical note instead.",
                     "Every note has an exact frequency. For example, the note A above middle C vibrates 440 times per second, or 440 Hz. Double the frequency and you get the same note one octave higher.",
-                    "This is the big idea: musical notes are just specific frequencies. In the exercise, sweep the slider and watch the note name land on each one.",
-                    "The demo plays a lullaby by doing nothing but moving that slider to a series of numbers. No instrument, no notes as such — a list of frequencies, in order, is already a tune."
+                    "This is the big idea: musical notes are just specific frequencies. In the exercise, sweep the slider and watch the note name land on each one."
                 ],
                 takeaways: [
                     "A musical note is a specific frequency",
-                    "Doubling the frequency raises it one octave",
-                    "A tune is a list of frequencies played in order"
+                    "Doubling the frequency raises it one octave"
                 ],
-                // Brahms' lullaby, written as the frequencies themselves: the slider walks the
-                // melody and the note name lands on each one, which is the lesson stated as music.
+                // Not a tune: the demo does what the exercise asks you to do, a step at a time,
+                // and lands on C three times at 131, 262 and 523 so the doubling is something you
+                // watch happen rather than something the text claims.
                 demo: DemoScript(
-                    // 32 eighths at 0.34s, plus the lead-in and a moment of quiet at the end.
-                    duration: 11.6,
+                    // 14 eighths at 0.4s, plus the lead-in and a moment of quiet at the end.
+                    duration: 6.4,
                     startPatch: Patch(),
                     tone: pitches([
-                        (392.0, 1), (392.0, 1), (493.9, 4),               // lul-la-by
-                        (392.0, 1), (392.0, 1), (493.9, 4),               // and good night
-                        (392.0, 1), (392.0, 1), (587.3, 2), (493.9, 2),
-                        (440.0, 2), (440.0, 2), (493.9, 4),
-                        (349.2, 1), (349.2, 1), (440.0, 4),
-                    ], eighth: 0.34)
+                        (130.8, 2), (164.8, 2), (196.0, 2),               // C3 E3 G3
+                        (261.6, 2), (329.6, 2), (392.0, 2),               // C4 — double of C3
+                        (523.3, 2),                                       // C5 — double again
+                    ], eighth: 0.4)
                 ),
+                demoCaption: "The slider, moved the way you are about to move it. Watch the note name land — and watch it read C each time the number doubles.",
                 terms: [G.frequency, G.pitch, G.fundamental],
                 exercise: Exercise(
                     prompt: "Sweep and watch the note name. Try both snapping modes below: the C major scale, or all twelve notes.",

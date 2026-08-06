@@ -320,16 +320,26 @@ final class LFO {
 
     func reset() { phase = 0 }
 
-    // shape: 0 sine · 1 triangle · 2 saw · 3 square (quantized). Returns bipolar -1…1.
+    /// The shape itself, at a given phase. shape: 0 sine · 1 triangle · 2 saw · 3 square
+    /// (quantized). Returns bipolar -1…1.
+    ///
+    /// Static and public because the LFO display has to draw exactly this. It used to keep its
+    /// own copy, which had the triangle and the saw the other way up — so on those two shapes the
+    /// drawn curve was a mirror of the one being played, and the playhead rode the wrong side of
+    /// its own line.
+    @inline(__always) static func value(phase: Double, shape: Double) -> Double {
+        let p = phase - floor(phase)
+        switch Int(clamp01(shape / 3.0) * 3.0 + 0.5) {
+        case 1:  return 4.0 * abs(p - 0.5) - 1.0            // triangle
+        case 2:  return 2.0 * p - 1.0                        // saw
+        case 3:  return p < 0.5 ? 1.0 : -1.0                 // square
+        default: return sin(2.0 * .pi * p)                  // sine
+        }
+    }
+
     @inline(__always) func render(hz: Double, shape: Double) -> Double {
         phase += hz / sampleRate
         if phase >= 1 { phase -= 1 }
-        let s = Int(clamp01(shape / 3.0) * 3.0 + 0.5)
-        switch s {
-        case 1:  return 4.0 * abs(phase - 0.5) - 1.0            // triangle
-        case 2:  return 2.0 * phase - 1.0                        // saw
-        case 3:  return phase < 0.5 ? 1.0 : -1.0                 // square
-        default: return sin(2.0 * .pi * phase)                  // sine
-        }
+        return LFO.value(phase: phase, shape: shape)
     }
 }

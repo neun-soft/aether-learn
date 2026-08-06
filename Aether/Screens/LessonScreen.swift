@@ -321,7 +321,7 @@ struct LessonScreen: View {
 
     private var demoView: some View {
         VStack(spacing: 18) {
-            Text(lang.t(lesson.concept))
+            Text(lang.t(lesson.demoCaption ?? lesson.concept))
                 .ui(14).foregroundColor(Theme.textMuted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24).padding(.top, 16)
@@ -484,7 +484,23 @@ struct LessonScreen: View {
                 }
             }
 
-            bottomBar
+            // On a watch-last lesson the exercise is the middle step, so offering "Next lesson"
+            // here would skip the demo the lesson is building towards.
+            if let next = nextPhase {
+                Button { go(to: next) } label: {
+                    HStack(spacing: 6) {
+                        Text(lang.t(next == .demo ? "Now watch it" : "Next"))
+                        Image(systemName: "arrow.right")
+                    }
+                    .font(AppFont.ui(15, .semibold)).foregroundColor(.black)
+                    .frame(maxWidth: .infinity).padding(.vertical, 13)
+                    .background(accent).clipShape(RoundedRectangle(cornerRadius: 14))
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 20).padding(.bottom, 8)
+            } else {
+                bottomBar
+            }
         }
     }
 

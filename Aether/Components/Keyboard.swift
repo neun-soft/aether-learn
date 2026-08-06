@@ -50,12 +50,12 @@ struct Keyboard: View {
                 }
             }
         }
-        // Halved twice now, and it costs nothing either time. A thumb aims at key *width*, which
-        // is set by the panel, not by this — the tap targets are the same size as they were at
-        // 148pt. All that shortens is the vertical run of the black keys, which nobody uses for
-        // aiming. The 96pt this gives back is the difference between the exercise visual and its
-        // knobs being on screen together or the lesson being a scroll.
-        .frame(height: 38)
+        // Down from 148pt, then briefly to 38 which was a key too far — at that height the keys
+        // read as a strip rather than as something to play. A thumb aims at key *width*, which
+        // the panel sets rather than this, so the tap targets never changed; what shortening
+        // costs is the feel, and 52 keeps it while still giving back most of the 96pt that put
+        // the exercise visual and its knobs on screen together.
+        .frame(height: 52)
     }
 
     private struct Key: View {

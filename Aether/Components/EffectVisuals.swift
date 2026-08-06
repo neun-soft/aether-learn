@@ -308,18 +308,17 @@ struct RoomView: View {
 
 // MARK: - The recap: every effect in the module, sorted into its two ingredients
 
-/// The last effects lesson claims there are only two ingredients — change the level, or change
-/// the arrival time — and that every box on the shelf is some arrangement of those. A claim that
-/// broad is only convincing if you can see it applied to the specific effects the reader has just
-/// built, so this lists exactly those, tagged, with the two live knobs at the bottom proving the
-/// two ingredients are still just DRIVE and DELAY.
+/// The last effects lesson claims there are only two ingredients, gain and delay, and that every
+/// box on the shelf is some arrangement of those. A claim that broad is only convincing if you can
+/// see it applied to the specific effects the reader has just built, so this lists exactly those
+/// and tags each one.
 struct EffectFamiliesView: View {
     var accent: Color
 
     private struct Row { let name: String; let gain: Bool; let delay: Bool; let how: String }
     private let rows: [Row] = [
-        Row(name: "Tremolo",   gain: true,  delay: false, how: "level, moved up and down"),
-        Row(name: "Distortion", gain: true, delay: false, how: "level, with a ceiling in the way"),
+        Row(name: "Tremolo",   gain: true,  delay: false, how: "gain, moved up and down"),
+        Row(name: "Distortion", gain: true, delay: false, how: "gain, with a ceiling in the way"),
         Row(name: "Echo",      gain: false, delay: true,  how: "one late copy, quieter each time"),
         Row(name: "Comb",      gain: false, delay: true,  how: "one copy so close it interferes"),
         Row(name: "Chorus",    gain: false, delay: true,  how: "a late copy whose lateness drifts"),
@@ -331,8 +330,8 @@ struct EffectFamiliesView: View {
             // A legend rather than column headings: the columns are two dots wide, and any
             // heading long enough to read is wider than the column it would be naming.
             HStack(spacing: 14) {
-                key(color: accent, label: "changes the level")
-                key(color: Theme.textPrimary, label: "changes the time")
+                key(color: accent, label: "gain")
+                key(color: Theme.textPrimary, label: "delay")
                 Spacer()
             }
 

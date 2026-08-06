@@ -204,7 +204,7 @@ struct FMView: View {
                 sin(2 * .pi * t * cycles)
             }
             row(label: "RESULT",
-                note: amount < 0.02 ? "turn FM up" : (isWhole ? "repeats: still a note" : "never repeats: metal"),
+                note: amount < 0.02 ? "turn FM up" : (isWhole ? "repeats: rings" : "never repeats: clangs"),
                 dim: false) { t in
                 // The same phase-modulation maths the engine uses, so the drawing and the sound
                 // can never disagree.

@@ -37,10 +37,10 @@ final class Voice {
     /// harmonic series. This is the whole lesson of FM in one array.
     static let fmRatios: [Double] = [0.5, 1, 1.5, 2, 3, 5, 7]
 
-    /// FM depth 0…1 to modulation index. This has to reach a genuinely high index: below about
-    /// 2 the carrier still dominates and every ratio — harmonic or not — reads as a clear note,
-    /// which made "Repetition Makes a Note" impossible to hear. At index 6 an in-between ratio
-    /// scatters enough energy off the harmonic series that the ear stops finding a pitch.
+    /// FM depth 0…1 to modulation index. This has to reach a genuinely high index: below about 2
+    /// the carrier still dominates and every ratio — harmonic or not — sounds much the same, so
+    /// "Instruments and Bells" had nothing to demonstrate. At index 6 an in-between ratio
+    /// scatters enough energy off the harmonic series to read as struck metal.
     /// The FM visual calls this too, so the drawing and the sound cannot disagree.
     static func fmIndex(_ amount: Double) -> Double { amount * 6.0 }
 

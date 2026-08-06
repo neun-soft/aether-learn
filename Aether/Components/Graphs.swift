@@ -173,7 +173,9 @@ struct DetuneGraph: View {
         TimelineView(.animation) { ctx in
             GeometryReader { geo in
                 let w = geo.size.width, h = geo.size.height, mid = h / 2
-                let amp = mid - 12
+                // Deliberately short of the panel. The sum swelling to full height was hitting
+                // the edges, which reads as clipping rather than as two waves reinforcing.
+                let amp = (mid - 12) * 0.68
                 let half = phase / 2      // one copy leads by half, the other lags by half
                 ZStack {
                     Rectangle().fill(Theme.plot)
@@ -463,15 +465,10 @@ struct LFOGraph: View {
     var height: CGFloat = 150
     private let cycles = 1.0   // one clean iteration, like Vital / Serum
 
+    /// The engine's own shape function, not a second copy of it. `shape` arrives here 0…1 and the
+    /// engine takes 0…3, which is the scaling the render path does too.
     private func shapeVal(_ phase: Double) -> Double {
-        let s = Int(min(1, max(0, shape / 1.0)) * 3 + 0.5) // shape is 0..1 here
-        let ph = phase - floor(phase)
-        switch s {
-        case 1: return 1 - 4 * abs(ph - 0.5)      // triangle
-        case 2: return 1 - 2 * ph                 // saw (down)
-        case 3: return ph < 0.5 ? 1 : -1          // square
-        default: return sin(2 * .pi * ph)         // sine
-        }
+        LFO.value(phase: phase, shape: min(1, max(0, shape)) * 3.0)
     }
 
     private var shapeName: String {

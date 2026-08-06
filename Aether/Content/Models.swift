@@ -73,6 +73,9 @@ struct Lesson: Identifiable {
     let theory: [String]           // paragraphs
     let takeaways: [String]
     let demo: DemoScript?
+    /// One line on the Watch screen saying what is about to happen. Without it a demo that plays
+    /// a tune just starts playing a tune, and it is not obvious that it is the point.
+    var demoCaption: String? = nil
     /// Put Watch after Play instead of before it. Normally you watch a thing done and then do it,
     /// but where the exercise *is* the explanation — the bee, where dragging the flap speed is
     /// the lesson — the demo only lands once you have felt what the control does.
