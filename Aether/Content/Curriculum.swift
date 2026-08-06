@@ -11,6 +11,19 @@ private func held(_ midi: Int, _ dur: Double) -> [NoteEvent] { [NoteEvent(t: 0, 
 private func pulses(_ midi: Int, count: Int, every: Double, dur: Double) -> [NoteEvent] {
     (0..<count).map { NoteEvent(t: Double($0) * every, midi: midi, dur: dur) }
 }
+/// A tune written as (frequency, length in eighth notes), for the demos that play on a raw
+/// frequency rather than on the keyboard. The short gap at the end of each note is what makes it
+/// read as separate notes instead of one tone sliding around.
+private func pitches(_ steps: [(Double, Int)], eighth: Double = 0.28) -> [PitchEvent] {
+    var out: [PitchEvent] = []
+    var t = 0.4                    // a beat of silence first, so the tune has an attack
+    for (hz, len) in steps {
+        let span = Double(len) * eighth
+        out.append(PitchEvent(t: t, hz: hz, dur: span - 0.05))
+        t += span
+    }
+    return out
+}
 
 enum Curriculum {
     // Flattened, ordered list of every lesson with its owning module, for linear navigation.
@@ -782,13 +795,30 @@ enum Curriculum {
                 theory: [
                     "A speaker makes sound the same way a bee does: by moving something back and forth, fast. The bee beats its wings; a speaker pushes its cone out and pulls it back in. Each beat, each push, shoves the air and sends a vibration on its way.",
                     "How fast it moves is the frequency. A bee beats its wings around two hundred times a second, which is why you hear one steady buzz at a pitch, not separate flaps. Beat slower and the pitch drops; beat faster and it climbs.",
-                    "In the exercise, drag the flap speed. Watch the wings beat faster and hear the buzz rise with them. It is the same idea behind every note a synth plays: something vibrating, and how fast it vibrates is the pitch."
+                    "In the exercise, drag the flap speed. Watch the wings beat faster and hear the buzz rise with them. It is the same idea behind every note a synth plays: something vibrating, and how fast it vibrates is the pitch.",
+                    "Then let the bee play you a tune. Nothing is added to make that work: it is one insect, beating its wings, and the only thing changing is how fast. A melody made of nothing but flap speed is the proof that speed and pitch are the same fact."
                 ],
                 takeaways: [
                     "A vibration is something moving back and forth, fast",
-                    "How fast it moves is the frequency, and that is the pitch"
+                    "How fast it moves is the frequency, and that is the pitch",
+                    "Change nothing but the flap speed and you get a melody"
                 ],
-                demo: nil,
+                // Twinkle Twinkle, played on the wingbeat alone — C3, G3, A3 sit inside the range
+                // a bee's wings actually cover, so nothing has to be faked to reach the notes.
+                demo: DemoScript(
+                    // 32 eighths at 0.28s, plus the lead-in and a moment of quiet at the end.
+                    duration: 9.6,
+                    startPatch: Patch(),
+                    bee: pitches([
+                        (130.8, 2), (130.8, 2), (196.0, 2), (196.0, 2),   // twin-kle twin-kle
+                        (220.0, 2), (220.0, 2), (196.0, 4),               // lit-tle star
+                        (174.6, 2), (174.6, 2), (164.8, 2), (164.8, 2),   // how I won-der
+                        (146.8, 2), (146.8, 2), (130.8, 4),               // what you are
+                    ])
+                ),
+                // Watch comes after Play here: the demo is only impressive once you have dragged
+                // the slider yourself and know there is nothing in there but flap speed.
+                watchLast: true,
                 terms: [G.frequency, G.pitch],
                 exercise: Exercise(
                     prompt: "Drag the flap speed. Faster wings, faster vibration, higher buzz.",
@@ -804,10 +834,28 @@ enum Curriculum {
                 theory: [
                     "When a vibration is steady and fast enough, your ear stops hearing separate vibrations and hears one clear musical note instead.",
                     "Every note has an exact frequency. For example, the note A above middle C vibrates 440 times per second, or 440 Hz. Double the frequency and you get the same note one octave higher.",
-                    "This is the big idea: musical notes are just specific frequencies. In the exercise, sweep the slider and watch the note name land on each one."
+                    "This is the big idea: musical notes are just specific frequencies. In the exercise, sweep the slider and watch the note name land on each one.",
+                    "The demo plays a lullaby by doing nothing but moving that slider to a series of numbers. No instrument, no notes as such — a list of frequencies, in order, is already a tune."
                 ],
-                takeaways: ["A musical note is a specific frequency", "Doubling the frequency raises it one octave"],
-                demo: nil,
+                takeaways: [
+                    "A musical note is a specific frequency",
+                    "Doubling the frequency raises it one octave",
+                    "A tune is a list of frequencies played in order"
+                ],
+                // Brahms' lullaby, written as the frequencies themselves: the slider walks the
+                // melody and the note name lands on each one, which is the lesson stated as music.
+                demo: DemoScript(
+                    // 32 eighths at 0.34s, plus the lead-in and a moment of quiet at the end.
+                    duration: 11.6,
+                    startPatch: Patch(),
+                    tone: pitches([
+                        (392.0, 1), (392.0, 1), (493.9, 4),               // lul-la-by
+                        (392.0, 1), (392.0, 1), (493.9, 4),               // and good night
+                        (392.0, 1), (392.0, 1), (587.3, 2), (493.9, 2),
+                        (440.0, 2), (440.0, 2), (493.9, 4),
+                        (349.2, 1), (349.2, 1), (440.0, 4),
+                    ], eighth: 0.34)
+                ),
                 terms: [G.frequency, G.pitch, G.fundamental],
                 exercise: Exercise(
                     prompt: "Sweep and watch the note name. Try both snapping modes below: the C major scale, or all twelve notes.",

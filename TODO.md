@@ -76,15 +76,24 @@ line so the whole thing fits above the keyboard without scrolling.
 
 ## P2 — Content completeness
 
-### 8. The Bee plays a song (`m1l2b`) — order Learn → **Play** → Watch
+### 8. The Bee plays a song (`m1l2b`) — order Learn → **Play** → Watch — **done**
 
-**Want:** you hear the bee as an actual short piece. Uniquely, Play comes _before_ Watch here: fiddle
-first, then watch it click. Needs a per-lesson phase-order override in `LessonScreen.phases`.
+**Want:** you hear the bee as an actual short piece. Play comes _before_ Watch here: fiddle first,
+then watch it click.
 
-### 9. "Frequency Becomes Pitch" gets a Watch (`m1l3`)
+**Fix:** `DemoScript.bee` plays a tune on the wingbeat itself (Twinkle Twinkle — C3/G3/A3 are all
+inside a bee's real range, so nothing is faked). `Lesson.watchLast` reorders the phases, and the
+Watch screen grows the same Done/Next buttons the exercise has, since it is now the last step.
+The slider and wings follow the demo's rate. Verified on device.
+
+### 9. "Frequency Becomes Pitch" gets a Watch (`m1l3`) — **done**
 
 **Want:** same exercise UI, playing a short lullaby, so the frequency→pitch mapping is heard as
 music rather than as a sweep.
+
+**Fix:** `DemoScript.tone` plays Brahms' lullaby as raw frequencies; the Watch screen shows the
+frequency explorer itself (the generic visual would have been an empty panel) with the handle and
+the note name following the tune. Verified on device: 494 Hz reads B4 mid-melody.
 
 ### 10. Effects lessons use real effects (module `mfx`)
 

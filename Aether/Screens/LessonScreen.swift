@@ -47,10 +47,23 @@ struct LessonScreen: View {
     }
 
     private var phases: [Phase] {
-        lesson.demo == nil ? [.theory, .play] : [.theory, .demo, .play]
+        guard lesson.demo != nil else { return [.theory, .play] }
+        return lesson.watchLast ? [.theory, .play, .demo] : [.theory, .demo, .play]
+    }
+
+    /// The phase after the current one, or nil at the end of the lesson.
+    private var nextPhase: Phase? {
+        guard let i = phases.firstIndex(of: phase), i + 1 < phases.count else { return nil }
+        return phases[i + 1]
     }
 
     private func go(to p: Phase) { withAnimation(.easeInOut(duration: 0.28)) { phase = p } }
+
+    /// Inverse of `frequencyFor`, so a demo playing exact frequencies can put the explorer's
+    /// handle where the sound is.
+    private func normFor(_ c: ToneConfig, hz: Double) -> Double {
+        min(1, max(0, log(hz / c.minHz) / log(c.maxHz / c.minHz)))
+    }
 
     var body: some View {
         ZStack {
@@ -290,8 +303,10 @@ struct LessonScreen: View {
                 }
                 .padding(16).frame(maxWidth: .infinity, alignment: .leading).panel()
 
-                Button { go(to: phases.contains(.demo) ? .demo : .play) } label: {
-                    Text(lang.t(phases.contains(.demo) ? "Watch the demo" : "Try it"))
+                // Follows the lesson's own phase order, so a watch-last lesson sends you to
+                // the exercise from here rather than to a demo it has not earned yet.
+                Button { if let next = nextPhase { go(to: next) } } label: {
+                    Text(lang.t(nextPhase == .demo ? "Watch the demo" : "Try it"))
                         .ui(15, .semibold).foregroundColor(.black)
                         .frame(maxWidth: .infinity).padding(.vertical, 14)
                         .background(accent).clipShape(RoundedRectangle(cornerRadius: 14))
@@ -311,8 +326,24 @@ struct LessonScreen: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 24).padding(.top, 16)
 
-            visual(interactive: false)
-            knobRow(interactive: false)
+            // A tone lesson's exercise *is* the frequency explorer, so its demo has to be the
+            // same control moving on its own — the generic visual would show an empty panel.
+            if let tone = lesson.exercise.tone {
+                FrequencyExplorer(
+                    norm: $toneNorm,
+                    minHz: tone.minHz, maxHz: tone.maxHz, snap: tone.snap,
+                    toneOn: synth.toneOn, scope: synth.scope, accent: accent,
+                    onHz: { _ in }, onToggle: {},
+                    interactive: false
+                )
+                .allowsHitTesting(false)
+                .onChange(of: synth.toneHz) { _, hz in
+                    if demo.isPlaying { toneNorm = normFor(tone, hz: hz) }
+                }
+            } else {
+                visual(interactive: false)
+                knobRow(interactive: false)
+            }
 
             ProgressBar(value: demo.progress, tint: accent).padding(.horizontal, 40)
 
@@ -330,17 +361,25 @@ struct LessonScreen: View {
             }
             .buttonStyle(.plain).padding(.horizontal, 20)
 
-            Button { demo.stop(); go(to: .play) } label: {
-                HStack(spacing: 6) {
-                    Text(lang.t("Try it yourself"))
-                    Image(systemName: "arrow.right")
+            if let next = nextPhase {
+                Button { demo.stop(); go(to: next) } label: {
+                    HStack(spacing: 6) {
+                        Text(lang.t("Try it yourself"))
+                        Image(systemName: "arrow.right")
+                    }
+                    .font(AppFont.ui(15, .semibold)).foregroundColor(Theme.textPrimary)
+                    .frame(maxWidth: .infinity).padding(.vertical, 13).panel(14)
                 }
-                .font(AppFont.ui(15, .semibold)).foregroundColor(Theme.textPrimary)
-                .frame(maxWidth: .infinity).padding(.vertical, 13).panel(14)
+                .buttonStyle(.plain).padding(.horizontal, 20)
             }
-            .buttonStyle(.plain).padding(.horizontal, 20)
 
             Spacer()
+
+            // On a watch-last lesson this is the end of the lesson, so it needs the same way
+            // out that the exercise screen has. Without it Watch is a dead end.
+            if nextPhase == nil {
+                bottomBar.onDisappear { demo.stop() }
+            }
         }
         .padding(.horizontal, 20)
     }
@@ -565,7 +604,13 @@ struct LessonScreen: View {
         case .bee:
             BeeView(norm: $beeNorm, buzzing: synth.toneOn, accent: accent,
                     onUpdate: { flapRate in synth.setBee(flapRate: flapRate) },
-                    onToggle: { synth.toggleBeeBuzz() })
+                    onToggle: { synth.toggleBeeBuzz() },
+                    interactive: interactive)
+                // While the demo plays the tune, the slider and the wings follow it. Watching a
+                // still slider while the pitch changes would teach the opposite of the lesson.
+                .onChange(of: synth.beeFlapHz) { _, hz in
+                    if demo.isPlaying { beeNorm = BeeView.norm(forFlapHz: hz) }
+                }
         case .door:
             DoorView(cutoff: synth.binding(.cutoff), accent: accent)
         case .envelope:

@@ -165,6 +165,28 @@ final class SynthController: ObservableObject {
         engine.setBee(on: toneOn, flapRate: flapRate)
     }
 
+    /// Buzz at an exact rate, for the demo that plays a tune on the wingbeat. Unlike
+    /// `toggleBeeBuzz` this never toggles: repeated calls just retune the same continuous buzz.
+    func playBee(hz: Double) {
+        beeFlutterHz = hz
+        beeFlapHz = hz
+        toneOn = true
+        toneBuzz = true
+        engine.setBee(on: true, flapRate: hz)
+    }
+
+    /// The rate the bee is buzzing at, so the wings on screen beat at the rate you are hearing.
+    @Published private(set) var beeFlapHz: Double = 6
+
+    /// Sound the pure tone at an exact frequency, for a demo that plays a tune on it. Like
+    /// `playBee`, never a toggle: repeated calls retune one continuous tone.
+    func playTone(hz: Double) {
+        toneHz = hz
+        toneOn = true
+        toneBuzz = false
+        engine.setTone(hz: hz, on: true, buzz: false)
+    }
+
     func toggleBeeBuzz() {
         toneOn.toggle()
         toneBuzz = toneOn

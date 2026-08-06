@@ -27,12 +27,20 @@ struct AutomationLane {
 
 struct NoteEvent { let t: Double; let midi: Int; let dur: Double }
 
+/// A note written as a raw frequency, for the two lessons that make sound without the keyboard:
+/// the bee's wingbeat and the pure test tone. Both exist to argue that a frequency *is* a note,
+/// so their demos have to play a tune in frequencies — a melody on the synth voices would be a
+/// different instrument agreeing with the lesson instead of the lesson demonstrating itself.
+struct PitchEvent { let t: Double; let hz: Double; let dur: Double }
+
 struct DemoScript {
     var duration: Double
     var startPatch: Patch
     var routing: Routing = .off
     var lanes: [AutomationLane] = []
     var notes: [NoteEvent] = []
+    var bee: [PitchEvent] = []
+    var tone: [PitchEvent] = []
 }
 
 final class DemoPlayer: ObservableObject {
@@ -79,9 +87,18 @@ final class DemoPlayer: ObservableObject {
             if t >= n.t && !firedOn.contains(i) { firedOn.insert(i); controller.noteOn(n.midi) }
             if t >= n.t + n.dur && !firedOff.contains(i) { firedOff.insert(i); controller.noteOff(n.midi) }
         }
+        // The bee is one continuous buzz whose rate changes, not a series of separate notes:
+        // retriggering it between notes would break the illusion that this is one insect.
+        if let b = script.bee.last(where: { t >= $0.t }) {
+            if t < b.t + b.dur { controller.playBee(hz: b.hz) } else { controller.stopTone() }
+        }
+        if let n = script.tone.last(where: { t >= $0.t }) {
+            if t < n.t + n.dur { controller.playTone(hz: n.hz) } else { controller.stopTone() }
+        }
 
         if t >= script.duration {
             controller.allOff()
+            if !script.bee.isEmpty || !script.tone.isEmpty { controller.stopTone() }
             timer?.invalidate(); timer = nil
             isPlaying = false
             progress = 1

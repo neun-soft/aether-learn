@@ -73,6 +73,10 @@ struct Lesson: Identifiable {
     let theory: [String]           // paragraphs
     let takeaways: [String]
     let demo: DemoScript?
+    /// Put Watch after Play instead of before it. Normally you watch a thing done and then do it,
+    /// but where the exercise *is* the explanation — the bee, where dragging the flap speed is
+    /// the lesson — the demo only lands once you have felt what the control does.
+    var watchLast: Bool = false
     var terms: [Term] = []         // tappable definitions for this lesson's jargon
     let exercise: Exercise
 }

@@ -12,10 +12,17 @@ struct BeeView: View {
     var accent: Color
     var onUpdate: (Double) -> Void           // flap rate (Hz) as the slider moves
     var onToggle: () -> Void                 // start/stop the buzz
+    var interactive: Bool = true             // false on Watch, where the demo drives it
 
     // One flap = one puff of air. The rate spans separate, countable flaps up to a
     // real bee buzz (~230 Hz), where the flaps fuse into a pitch.
-    private func flap(_ n: Double) -> Double { 3.0 * pow(220.0 / 3.0, n) }
+    private func flap(_ n: Double) -> Double { BeeView.flap(n) }
+    static func flap(_ n: Double) -> Double { 3.0 * pow(220.0 / 3.0, n) }
+    /// The inverse, so the demo can drive the slider from the rate it is playing and the wings
+    /// beat at what you are hearing.
+    static func norm(forFlapHz hz: Double) -> Double {
+        min(1, max(0, log(max(hz, 3.0) / 3.0) / log(220.0 / 3.0)))
+    }
     // Cap the on-screen flapping so fast rates read as a blur, not 60 fps aliasing.
     private var flapHz: Double { min(flap(norm), 16) }
 
@@ -40,21 +47,26 @@ struct BeeView: View {
                 }
             }
 
-            Button(action: onToggle) {
-                HStack(spacing: 8) {
-                    Image(systemName: buzzing ? "stop.fill" : "play.fill")
-                    Text(buzzing ? "Stop" : "Buzz")
+            // On the Watch screen the demo owns the transport and the flap speed, so its own
+            // Buzz button would be a second Stop next to the demo's, wired to something else.
+            if interactive {
+                Button(action: onToggle) {
+                    HStack(spacing: 8) {
+                        Image(systemName: buzzing ? "stop.fill" : "play.fill")
+                        Text(buzzing ? "Stop" : "Buzz")
+                    }
+                    .font(AppFont.ui(15, .semibold)).foregroundColor(buzzing ? .black : Theme.textPrimary)
+                    .frame(maxWidth: .infinity).padding(.vertical, 12)
+                    .background(buzzing ? accent : Theme.inset)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
-                .font(AppFont.ui(15, .semibold)).foregroundColor(buzzing ? .black : Theme.textPrimary)
-                .frame(maxWidth: .infinity).padding(.vertical, 12)
-                .background(buzzing ? accent : Theme.inset)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
 
             VStack(spacing: 6) {
                 Text("FLAP SPEED").mono(10, .semibold).tracking(1.5).foregroundColor(Theme.textDim)
                 AnalogySlider(value: $norm, accent: accent) { n in onUpdate(flap(n)) }
+                    .allowsHitTesting(interactive)
                 HStack {
                     Text("slow · low").mono(9).foregroundColor(Theme.textFaint)
                     Spacer()
@@ -62,7 +74,7 @@ struct BeeView: View {
                 }
             }
         }
-        .onAppear { onUpdate(flap(norm)) }
+        .onAppear { if interactive { onUpdate(flap(norm)) } }
     }
 
     private func drawBee(_ ctx: GraphicsContext, _ size: CGSize, wing: Double, moving: Bool) {

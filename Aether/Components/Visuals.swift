@@ -297,6 +297,7 @@ struct FrequencyExplorer: View {
     let accent: Color
     let onHz: (Double) -> Void
     let onToggle: () -> Void
+    var interactive: Bool = true             // false on Watch, where the demo drives it
     @EnvironmentObject var lang: LangStore
 
     @State private var scaleSnap = false   // false = nearest of all 12 notes, true = C major scale
@@ -355,16 +356,20 @@ struct FrequencyExplorer: View {
 
             slider
 
-            Button(action: onToggle) {
-                HStack(spacing: 8) {
-                    Image(systemName: toneOn ? "stop.fill" : "play.fill")
-                    Text(lang.t(toneOn ? "Stop tone" : "Play tone"))
+            // On the Watch screen the demo owns the transport, so this would be a second Stop
+            // next to the demo's own, wired to something else.
+            if interactive {
+                Button(action: onToggle) {
+                    HStack(spacing: 8) {
+                        Image(systemName: toneOn ? "stop.fill" : "play.fill")
+                        Text(lang.t(toneOn ? "Stop tone" : "Play tone"))
+                    }
+                    .font(AppFont.ui(15, .semibold)).foregroundColor(.black)
+                    .frame(maxWidth: .infinity).padding(.vertical, 13)
+                    .background(accent).clipShape(RoundedRectangle(cornerRadius: 12))
                 }
-                .font(AppFont.ui(15, .semibold)).foregroundColor(.black)
-                .frame(maxWidth: .infinity).padding(.vertical, 13)
-                .background(accent).clipShape(RoundedRectangle(cornerRadius: 12))
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
     }
 
