@@ -32,11 +32,17 @@ engine. Same nominal rate, unrelated phase — it drifted within seconds of open
 multiply by) each control block; the graph reads them per frame via `SynthController.lfoPhase` /
 `.lfoValue`. Not `@Published` on purpose — the 30 Hz display timer would alias a 20 Hz LFO.
 
-### 3. Detune visual moves while nothing is playing (`m1l8`)
+### 3. Detune visual moves while nothing is playing (`m1l8`) — **done**
 
-**Want:** the visual is silent and still when no note sounds, and its motion rate equals the real
-beat frequency (|f1 − f2|). Confirm the math is right, not just the idle case — if it is a free-run
-animation rather than engine-derived, replace it.
+**Want:** still when no note sounds; motion rate = the real beat frequency.
+
+**Cause:** two bugs. It animated off its own timeline with no idea whether the synth was making
+sound, and the rate was `detune * 1.4` — invented, and independent of the note, when the real beat
+is `2 * spread * hz`. At C3 and 0.15 detune it drew 0.21 Hz against an actual 0.79 Hz.
+
+**Fix:** rate now derives from `Voice.detuneSpread` and the engine's `soundingHz`, capped at 12 Hz
+for legibility (past that you hear two pitches, not a pulse). Silent = frozen, with the caption
+switching to "play a note to hear them drift" so a still picture doesn't read as broken.
 
 ---
 

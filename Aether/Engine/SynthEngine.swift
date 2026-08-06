@@ -85,6 +85,11 @@ final class SynthEngine {
     // dot has to sit at the top exactly when the sound is loudest.
     private(set) var lfoPhaseOut = 0.0
     private(set) var lfoValueOut = 0.0
+
+    /// The note currently making sound, or 0 when nothing is. The detune display needs it because
+    /// the beat rate depends on the note, not just the knob — and because a display that keeps
+    /// moving while the synth is silent is showing something that isn't happening.
+    var soundingHz: Double { voices.first(where: { $0.active })?.noteHz ?? 0 }
     private var started = false
 
     // Live scope: a ring of recent output samples for the waveform display. Raw pointer so the

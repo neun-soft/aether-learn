@@ -555,7 +555,7 @@ struct LessonScreen: View {
                         filterType: synth.patch[.filterType], spectrum: synth.spectrum,
                         accent: accent, interactive: interactive)
         case .detune:
-            DetuneGraph(detune: synth.binding(.detune), accent: accent)
+            DetuneGraph(detune: synth.binding(.detune), accent: accent, engine: synth)
         case .bee:
             BeeView(norm: $beeNorm, buzzing: synth.toneOn, accent: accent,
                     onUpdate: { flapRate in synth.setBee(flapRate: flapRate) },

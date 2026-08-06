@@ -49,6 +49,9 @@ final class SynthController: ObservableObject {
     var lfoPhase: Double { engine.lfoPhaseOut }
     var lfoValue: Double { engine.lfoValueOut }
 
+    /// The note actually sounding right now, or 0 when silent. Same reasoning: read per frame.
+    var soundingHz: Double { engine.soundingHz }
+
     private let engine = SynthEngine()
     private var displayTimer: Timer?
     private var volObserver: NSKeyValueObservation?

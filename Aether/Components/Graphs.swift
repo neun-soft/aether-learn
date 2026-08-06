@@ -105,6 +105,8 @@ struct AdditiveGraph: View {
 struct DetuneGraph: View {
     @Binding var detune: Double      // 0…1, the same normalized value the engine uses
     var accent: Color
+    /// Read per frame for the sounding note. See `SynthController.soundingHz`.
+    var engine: SynthController
     @EnvironmentObject var lang: LangStore
     var height: CGFloat = 190
 
@@ -114,14 +116,26 @@ struct DetuneGraph: View {
     // that growth *is* the beating. We hold the carrier still and let the copies
     // slide past each other, so the sum swells and cancels in place (what you
     // hear) instead of the whole shape drifting sideways.
-    private let maxBeatHz = 1.4
+    //
+    // The rate is the real one: two copies at hz * (1 ± spread) beat at 2 * spread * hz.
+    // It used to be `detune * 1.4`, a made-up number that ignored the note entirely — so the
+    // picture showed a beat that was not the beat you were listening to. Above the cap the
+    // copies are far enough apart that you hear two pitches rather than one pulsing note, and
+    // drawing it faster than this only strobes.
+    private let maxDrawnBeatHz = 12.0
 
     // Accumulated phase between the copies, integrated over time so that turning
     // the knob changes the beat *rate* without ever jumping the wave.
     @State private var phase: Double = 0
     @State private var lastTick: Date?
 
-    private var beatHz: Double { detune * maxBeatHz }
+    /// Zero when nothing is sounding, which freezes the display. Beating is something two real
+    /// notes do to each other; with no note playing there is nothing to animate.
+    private var beatHz: Double {
+        let hz = engine.soundingHz
+        guard hz > 0 else { return 0 }
+        return min(2 * Voice.detuneSpread(detune) * hz, maxDrawnBeatHz)
+    }
 
     private func copy(_ u: Double, shift: Double) -> Double {
         sin(2 * .pi * baseCycles * u + shift)
@@ -143,6 +157,10 @@ struct DetuneGraph: View {
     private func advance(to now: Date) {
         let dt = min(lastTick.map { now.timeIntervalSince($0) } ?? 0, 1.0 / 30)
         lastTick = now
+        // Nothing sounding: hold everything exactly where it is. Freezing rather than resetting
+        // means the picture you were looking at when the note ended is still the picture you get
+        // back when you play the next one.
+        guard engine.soundingHz > 0 else { return }
         if beatHz > 0.001 {
             phase = (phase + 2 * .pi * beatHz * dt).truncatingRemainder(dividingBy: 4 * .pi)
         } else {
@@ -177,7 +195,10 @@ struct DetuneGraph: View {
                         Text(lang.t("TWO COPIES OF ONE NOTE")).mono(10, .semibold).tracking(1.2)
                             .foregroundColor(Theme.textDim)
                         Spacer()
-                        Text(lang.t("bright line: what you hear")).mono(10)
+                        // Saying why it is still is better than a still picture with no
+                        // explanation, which just reads as broken.
+                        Text(lang.t(engine.soundingHz > 0 ? "bright line: what you hear"
+                                                          : "play a note to hear them drift")).mono(10)
                             .foregroundColor(Theme.textFaint)
                     }
                     .padding(8)

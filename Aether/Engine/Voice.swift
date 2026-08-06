@@ -44,9 +44,16 @@ final class Voice {
     /// The FM visual calls this too, so the drawing and the sound cannot disagree.
     static func fmIndex(_ amount: Double) -> Double { amount * 6.0 }
 
+    /// How far each copy is pushed from the note, as a fraction of its frequency. The two copies
+    /// sit at hz * (1 ± this), so they beat at `2 * spread * hz`. The detune display derives its
+    /// rate from here rather than inventing one.
+    static func detuneSpread(_ amount: Double) -> Double { amount * 0.02 }
+
     private(set) var midi = 60
     private var vel = 0.8
-    private var noteHz = 261.63
+    /// Readable so the detune display can work out the real beat rate, which depends on the note
+    /// being played and not only on the knob.
+    private(set) var noteHz = 261.63
 
     var active: Bool { env.isActive }
     var startedAt = 0
@@ -98,7 +105,7 @@ final class Voice {
         }
 
         let hz = noteHz * pow(2.0, pitchSemi / 12.0)
-        let det = s.v(.detune) * 0.02
+        let det = Voice.detuneSpread(s.v(.detune))
         let pulse = s.v(.oscPulse)
 
         // The second oscillator can only do one job at a time, so the three ways of using it
