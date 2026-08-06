@@ -37,6 +37,13 @@ final class Voice {
     /// harmonic series. This is the whole lesson of FM in one array.
     static let fmRatios: [Double] = [0.5, 1, 1.5, 2, 3, 5, 7]
 
+    /// FM depth 0…1 to modulation index. This has to reach a genuinely high index: below about
+    /// 2 the carrier still dominates and every ratio — harmonic or not — reads as a clear note,
+    /// which made "Repetition Makes a Note" impossible to hear. At index 6 an in-between ratio
+    /// scatters enough energy off the harmonic series that the ear stops finding a pitch.
+    /// The FM visual calls this too, so the drawing and the sound cannot disagree.
+    static func fmIndex(_ amount: Double) -> Double { amount * 6.0 }
+
     private(set) var midi = 60
     private var vel = 0.8
     private var noteHz = 261.63
@@ -112,7 +119,7 @@ final class Voice {
             // only as the sidebands it puts on osc1.
             let ratio = Voice.fmRatios[Int(clamp01(s.v(.fmRatio)) * Double(Voice.fmRatios.count - 1) + 0.5)]
             let mod = osc2.render(hz: hz * ratio, morph: 0, pulse: 0.5)
-            raw = osc1.render(hz: hz, morph: morph, pulse: pulse, phaseMod: mod * fm * 1.5)
+            raw = osc1.render(hz: hz, morph: morph, pulse: pulse, phaseMod: mod * Voice.fmIndex(fm))
         } else if sync > 0.001 {
             // osc1 is the master: inaudible, it only keeps time. osc2 is the slave, tuned up
             // to 3 octaves above and forced to restart on every master cycle. The pitch you

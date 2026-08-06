@@ -18,3 +18,5 @@ fastlane/test_output/
 *.dSYM.zip
 build-sim/
 build-dev/
+build-check/
+build-unlocked/

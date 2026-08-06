@@ -119,7 +119,9 @@ enum Curriculum {
                 exercise: Exercise(
                     prompt: "Step RATIO through its positions. Watch the bottom wave: at whole numbers it settles into a repeating shape, and in between it never does. Listen for the moment it stops sounding like a note.",
                     visibleParams: [.fmRatio, .fmAmount],
-                    basePatch: Patch([.fmAmount: 0.5, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
+                    // Depth starts high on purpose. This lesson is about ratio, and at a low
+                    // index every ratio still reads as a clear note, so there is nothing to hear.
+                    basePatch: Patch([.fmAmount: 0.7, .fmRatio: 0.5, .oscWave: 0.0, .cutoff: 1.0,
                                       .ampAttack: 0.0, .ampDecay: 0.5, .ampSustain: 0.7, .ampRelease: 0.4]),
                     visual: .fm,
                     tip: "Ratio 1, 2, and 3 sound like instruments. 1.5 and 7 sound like something you would hit with a stick.",

@@ -208,7 +208,7 @@ struct FMView: View {
                 dim: false) { t in
                 // The same phase-modulation maths the engine uses, so the drawing and the sound
                 // can never disagree.
-                sin(2 * .pi * t * cycles + sin(2 * .pi * t * ratio * cycles) * amount * 3)
+                sin(2 * .pi * t * cycles + sin(2 * .pi * t * ratio * cycles) * Voice.fmIndex(amount))
             }
 
             Text(amount < 0.02
