@@ -62,11 +62,15 @@ aims at key *width* and that comes from the panel width, not the height.
 **Fix:** the `concept` line spent the whole slow-wobble/fast-wobble pair that paragraphs 2 and 3
 then deliver properly. It is now just the hook.
 
-### 6. Filter-cutoff visual under the Sync knob (`msr4`, "Restarting Adds Harmonics")
+### 6. Filter-cutoff visual under the Sync knob (`msr4`, "Restarting Adds Harmonics") — **done**
 
-**Want:** a small spectrum/cutoff display below the Sync knob showing which frequencies are actually
-sounding, so "restarting adds harmonics" is visible, not just claimed. `Engine/Spectrum.swift`
-already exists — reuse it.
+**Want:** a small spectrum display below the Sync knob showing which frequencies are actually
+sounding, so "restarting adds harmonics" is visible, not just claimed.
+
+**Fix:** new `Exercise.showSpectrum` flag renders `SpectrumBars` under the knob row, with a new
+`markerHz` line on the fundamental — without that marker you see energy move but not the point,
+which is that the note stayed put. Verified on device: the sync plot lost 24pt and the prompt a
+line so the whole thing fits above the keyboard without scrolling.
 
 ---
 

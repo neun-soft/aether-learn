@@ -389,6 +389,12 @@ struct LessonScreen: View {
                                 .padding(.horizontal, 8)
                         }
                         knobRow(interactive: true)
+                        if lesson.exercise.showSpectrum {
+                            // Under the knobs, not above them: the point is to watch it react to
+                            // the hand that is already on the knob.
+                            SpectrumBars(spectrum: synth.spectrum, accent: accent,
+                                         markerHz: synth.soundingHz, height: 72)
+                        }
                         if lesson.exercise.showSystemVolume { systemVolumeBar }
                         if lesson.exercise.showRouting {
                             RoutingPicker(

@@ -165,8 +165,21 @@ struct HarmonicBars: View {
 struct SpectrumBars: View {
     var spectrum: [Float]
     var accent: Color
+    /// Optional marker on the note being played. A spectrum alone shows energy moving around;
+    /// a line on the fundamental is what turns it into "the harmonics climbed, the note did not".
+    var markerHz: Double = 0
+    var markerLabel: String = "the note"
     @EnvironmentObject var lang: LangStore
     var height: CGFloat = 150
+
+    /// Bar centres are log-spaced between the analyzer's fMin and fMax, so the marker has to be
+    /// placed the same way or it will not line up with the bar it is naming.
+    private func x(forHz hz: Double, slot: CGFloat) -> CGFloat? {
+        let lo = Double(SpectrumAnalyzer.fMin), hi = Double(SpectrumAnalyzer.fMax)
+        guard hz > lo, hz < hi else { return nil }
+        let u = log(hz / lo) / log(hi / lo) * Double(SpectrumAnalyzer.barCount - 1)
+        return (CGFloat(u) + 0.5) * slot
+    }
 
     var body: some View {
         GeometryReader { geo in
@@ -174,6 +187,17 @@ struct SpectrumBars: View {
             let slot = geo.size.width / CGFloat(n)
             ZStack {
                 Rectangle().fill(Theme.plot)
+                if let mx = x(forHz: markerHz, slot: slot) {
+                    Path { p in
+                        p.move(to: CGPoint(x: mx, y: 0))
+                        p.addLine(to: CGPoint(x: mx, y: geo.size.height - 14))
+                    }
+                    .stroke(Theme.textPrimary.opacity(0.45),
+                            style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                    Text(lang.t(markerLabel)).mono(8).foregroundColor(Theme.textMuted)
+                        .fixedSize()
+                        .position(x: mx + 26, y: 10)
+                }
                 HStack(alignment: .bottom, spacing: 0) {
                     ForEach(0..<spectrum.count, id: \.self) { i in
                         RoundedRectangle(cornerRadius: 1.5)

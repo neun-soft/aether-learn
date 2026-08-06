@@ -155,11 +155,15 @@ enum Curriculum {
                     G.pitch
                 ],
                 exercise: Exercise(
-                    prompt: "Hold a note and turn SYNC up slowly. Watch the dotted lines stay exactly where they are while the wave between them gets squeezed in. That is why the note does not change.",
+                    prompt: "Hold a note and turn SYNC up slowly. The cuts never move, so neither does the note — watch the harmonics climb away from it.",
                     visibleParams: [.syncAmount],
                     basePatch: Patch([.syncAmount: 0.0, .oscWave: 0.55, .cutoff: 1.0, .resonance: 0.0,
                                       .ampAttack: 0.01, .ampDecay: 0.4, .ampSustain: 0.9, .ampRelease: 0.3]),
                     visual: .sync,
+                    // The lesson's whole claim is "the brightness climbs, the note does not". The
+                    // wave drawing shows the tearing; only the spectrum, with the fundamental
+                    // marked, shows the claim itself.
+                    showSpectrum: true,
                     tip: "Play the lowest note you can and turn SYNC very slowly. The bottom of the sound never moves.",
                     controlsHint: "SYNC tunes the wave you hear. The note does not follow it"
                 )

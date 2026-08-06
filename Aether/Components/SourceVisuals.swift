@@ -318,7 +318,10 @@ struct SyncView: View {
                     }
                 }
             }
-            .frame(height: 96)
+            // Shorter than it wants to be, so the spectrum underneath the knob is on the same
+            // screen as the knob. The tearing reads fine at this height; a claim you have to
+            // scroll to check is a claim most people will not check.
+            .frame(height: 72)
             .background(Theme.inset)
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 

@@ -45,6 +45,7 @@ struct Exercise {
     var holdDefault: Bool = true                        // start with keep-note-playing on?
     var showSystemVolume: Bool = false                  // live phone-volume readout
     var showBassTest: Bool = false                      // sub-bass + kick test buttons
+    var showSpectrum: Bool = false                      // live spectrum under the knobs
     var tip: String? = nil                              // an idea/tip callout
     var controlsHint: String? = nil                     // one line above the knobs saying what they are
     var labels: [ParamID: String] = [:]                 // per-lesson knob label overrides
