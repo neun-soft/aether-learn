@@ -436,6 +436,8 @@ struct LFOGraph: View {
     var rate: Double, shape: Double, depth: Double
     var dest: ModDest
     var accent: Color
+    /// Read once per frame for the playhead. Not observed — see `SynthController.lfoPhase`.
+    var engine: SynthController
     @EnvironmentObject var lang: LangStore
     var height: CGFloat = 150
     private let cycles = 1.0   // one clean iteration, like Vital / Serum
@@ -466,7 +468,11 @@ struct LFOGraph: View {
                 let w = geo.size.width, h = geo.size.height, mid = h / 2
                 let amp = (mid - 10) * CGFloat(depth)
                 let rateHz = 0.05 * pow(2.0, rate * 8.6)
-                let head = (ctx.date.timeIntervalSince1970 * rateHz / cycles).truncatingRemainder(dividingBy: 1)
+                // The playhead is the engine's own LFO phase, not a wall-clock animation at the
+                // same nominal rate. The two used to drift apart within seconds, so on the
+                // tremolo lesson the dot and the loudness you heard disagreed.
+                let _ = ctx.date        // keep the timeline driving a redraw every frame
+                let head = engine.lfoPhase.truncatingRemainder(dividingBy: 1)
                 ZStack {
                     Rectangle().fill(Theme.plot)
                     Path { p in p.move(to: CGPoint(x: 0, y: mid)); p.addLine(to: CGPoint(x: w, y: mid)) }
@@ -483,9 +489,12 @@ struct LFOGraph: View {
                     }
                     .stroke(accent, style: StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
 
+                    // Height comes from the smoothed value the voices are actually multiplying by,
+                    // not from re-evaluating the shape. On a square LFO that keeps the dot on the
+                    // real 2 ms ramp instead of teleporting ahead of the sound.
                     let hx = CGFloat(head) * w
                     Circle().fill(Theme.handle).frame(width: 12, height: 12)
-                        .position(x: hx, y: mid - CGFloat(shapeVal(head * cycles)) * amp)
+                        .position(x: hx, y: mid - CGFloat(engine.lfoValue) * amp)
                 }
                 .overlay(alignment: .top) {
                     HStack {

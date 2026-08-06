@@ -43,6 +43,12 @@ final class SynthController: ObservableObject {
     // Live system (phone) volume, 0…1 (amplitude lesson)
     @Published var systemVolume: Double = 0.5
 
+    // Where the LFO actually is right now, straight off the engine. Deliberately not @Published:
+    // the display timer runs at 30 Hz and the LFO reaches 20 Hz, so a published copy would alias
+    // into a slow crawl. The LFO graph reads these inside its own per-frame timeline instead.
+    var lfoPhase: Double { engine.lfoPhaseOut }
+    var lfoValue: Double { engine.lfoValueOut }
+
     private let engine = SynthEngine()
     private var displayTimer: Timer?
     private var volObserver: NSKeyValueObservation?

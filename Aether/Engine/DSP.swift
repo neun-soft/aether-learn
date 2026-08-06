@@ -312,7 +312,9 @@ final class KickSynth {
 // MARK: - LFO (a mappable modulation source)
 
 final class LFO {
-    private var phase = 0.0
+    /// Readable so the display can put its playhead on the phase that is actually sounding,
+    /// instead of running its own wall-clock animation that drifts away from the audio.
+    private(set) var phase = 0.0
     let sampleRate: Double
     init(sampleRate: Double) { self.sampleRate = sampleRate }
 

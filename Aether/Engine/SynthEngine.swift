@@ -78,6 +78,13 @@ final class SynthEngine {
     private var ctrl = 0
     private var lfoV = 0.0
     private var lfoS = 0.0    // smoothed LFO, kills the click when saw/square shapes jump
+
+    // Live LFO state for the display, written here on the audio thread and read by the UI once
+    // per frame. A torn read only misplaces a dot for one frame, so no lock. The value is the
+    // smoothed one the voices actually use, which is the whole point: on the tremolo lesson the
+    // dot has to sit at the top exactly when the sound is loudest.
+    private(set) var lfoPhaseOut = 0.0
+    private(set) var lfoValueOut = 0.0
     private var started = false
 
     // Live scope: a ring of recent output samples for the waveform display. Raw pointer so the
@@ -218,6 +225,8 @@ final class SynthEngine {
                 let rateHz = 0.05 * pow(2.0, current.v(.lfoRate) * 8.6)
                 lfoV = lfo.render(hz: rateHz, shape: current.v(.lfoShape) * 3.0)
                 lfoS += (lfoV - lfoS) * 0.35   // ~2 ms slew at block rate; edges stay audibly sharp
+                lfoPhaseOut = lfo.phase
+                lfoValueOut = lfoS
             }
             ctrl = (ctrl + 1) & 31
 

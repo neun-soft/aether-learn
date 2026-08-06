@@ -571,7 +571,8 @@ struct LessonScreen: View {
                           height: lesson.exercise.visibleParams.count > 4 ? 140 : 180)
         case .lfo:
             LFOGraph(rate: synth.patch[.lfoRate], shape: synth.patch[.lfoShape],
-                     depth: synth.patch[.lfoDepth], dest: synth.routing.dest, accent: accent)
+                     depth: synth.patch[.lfoDepth], dest: synth.routing.dest, accent: accent,
+                     engine: synth)
         case .equipment:
             FrequencyRangeChart(gear: Playback.gear, selectedID: selectedGear,
                                 markerHz: markerHz, accent: accent)

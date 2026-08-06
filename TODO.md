@@ -21,11 +21,16 @@ otherwise.
 **Fix:** `Voice.fmIndex(_:)` (= `amount * 6`) is now the single source for both engine and
 `FMView`. Exercise depth starts at 0.7 so the default position already demonstrates the point.
 
-### 2. Tremolo dot doesn't match what you hear (`m4l3`)
+### 2. Tremolo dot doesn't match what you hear (`m4l3`) — **done**
 
-**Want:** the moving dot on the shape is sample-accurate with the amplitude you hear — dot at the
-top = loudest. Today the visual phase and the LFO phase drift apart. Drive the visual from the
-engine's LFO phase, not from an independent view-side animation.
+**Want:** dot at the top exactly when the sound is loudest.
+
+**Cause:** `LFOGraph` ran its own wall-clock playhead (`ctx.date * rateHz`), never once reading the
+engine. Same nominal rate, unrelated phase — it drifted within seconds of opening the lesson.
+
+**Fix:** the engine publishes `lfoPhaseOut` / `lfoValueOut` (the *smoothed* value the voices
+multiply by) each control block; the graph reads them per frame via `SynthController.lfoPhase` /
+`.lfoValue`. Not `@Published` on purpose — the 30 Hz display timer would alias a 20 Hz LFO.
 
 ### 3. Detune visual moves while nothing is playing (`m1l8`)
 
