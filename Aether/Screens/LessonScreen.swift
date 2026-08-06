@@ -656,6 +656,8 @@ struct LessonScreen: View {
             CombView(time: synth.patch[.delayTime], feedback: synth.patch[.delayFeedback], accent: accent)
         case .room:
             RoomView(size: synth.patch[.reverb], mix: synth.patch[.reverbMix], accent: accent)
+        case .effectFamilies:
+            EffectFamiliesView(accent: accent)
         case .hitShape:
             HitShapeView(attack: synth.patch[.ampAttack], decay: synth.patch[.ampDecay],
                          sustain: synth.patch[.ampSustain], playhead: synth.noteAge, accent: accent)

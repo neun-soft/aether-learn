@@ -330,6 +330,39 @@ enum Curriculum {
                     tip: "Put MIX high and play one short note, then stop. What you can still hear is the room, not the note.",
                     controlsHint: "SIZE is how big the room is, MIX is how far away you are"
                 )
+            ),
+            Lesson(
+                id: "mfx5", title: "It Is All Level and Time",
+                concept: "Every effect you have just built does one of two things to a sound: changes how loud it is, or changes when it arrives.",
+                theory: [
+                    "A shop will sell you hundreds of effects. Names, colours, a story about the studio in the sixties it was modelled on. It is worth knowing, before you spend any money, that underneath there are two ingredients.",
+                    "The first is level: how loud the sound is. The second is time: when it reaches you. That is the entire list.",
+                    "Move the level up and down in a steady rhythm and you have tremolo. Put a ceiling in the way so the loud parts cannot get through and you have distortion. Both are the same ingredient, one gentle and one violent.",
+                    "Now the other one. Take the sound, wait, and play it again: an echo. Wait a very short time instead and the copy lands on top of the original rather than after it, so the two interfere and you get a comb filter. Let that short wait drift slowly and the interference moves around, which is chorus.",
+                    "Reverb uses both. Thousands of copies, each arriving a little later than the last and each a little quieter, and your ear reads all of it as a room.",
+                    "This is why the picture in each of those lessons kept looking like the previous one. It was not a shortcut in the drawings. The effects really are that closely related.",
+                    "The useful part is what it does to your ears. When you meet an effect you have never heard of, you now have one question to ask instead of reading the manual: is it doing something to the level, to the time, or to both? Almost always the answer tells you what the knobs will do before you touch them."
+                ],
+                takeaways: [
+                    "There are two ingredients in every effect: level and time",
+                    "Tremolo and distortion are both level; echo, comb and chorus are all time",
+                    "Reverb is both: thousands of copies, later and quieter",
+                    "Meeting a new effect, ask which of the two it moves"
+                ],
+                demo: nil,
+                terms: [G.tremolo, G.distortion, G.echo, G.reverb, G.amplitude],
+                exercise: Exercise(
+                    prompt: "One knob per ingredient. Everything in the table is built out of these two.",
+                    visibleParams: [.drive, .delayMix],
+                    basePatch: Patch([.drive: 0.0, .delayMix: 0.0, .delayTime: 0.35, .delayFeedback: 0.4,
+                                      .oscWave: 0.3, .cutoff: 0.8,
+                                      .ampAttack: 0.01, .ampDecay: 0.3, .ampSustain: 0.0, .ampRelease: 0.25]),
+                    visual: .effectFamilies,
+                    holdDefault: false,
+                    tip: "Next time you open a plugin you have never used, find the control that changes level and the one that changes time. Most of the rest is decoration.",
+                    controlsHint: "DRIVE is the level ingredient, ECHO is the time one",
+                    labels: [.delayMix: "Echo"]
+                )
             )
         ]
     )

@@ -95,9 +95,14 @@ music rather than as a sweep.
 frequency explorer itself (the generic visual would have been an empty panel) with the handle and
 the note name following the tune. Verified on device: 494 Hz reads B4 mid-melody.
 
-### 10. Effects lessons use real effects (module `mfx`)
+### 10. Effects lessons use real effects (module `mfx`) — **done**
 
 **Want:** add a lesson that teaches why every audio effect is either gain, delay or both
+
+**Fix:** new lesson `mfx5`, "It Is All Level and Time", closing the effects module. Sorts the five
+effects the module just built into the two ingredients, with a table (`EffectFamiliesView`) whose
+point is that no row needs a third column. The exercise gives one knob per ingredient — DRIVE and
+ECHO — so the claim is testable, not just asserted. Verified on device.
 
 ---
 
